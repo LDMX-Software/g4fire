@@ -61,8 +61,9 @@ namespace ldmx {
         layerNumber = int(cpynum/7);
         int module_position = cpynum%7;
 
-        EcalID partialId = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
+        EcalID partialId = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1], hitPosition[2]);
 	    EcalID id(layerNumber, module_position, partialId.cell());
+        //Why not use partialId.layer() and partialId.module() here?
         hit->setID(id.raw());
 
         // Set the track ID on the hit.
