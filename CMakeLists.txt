@@ -43,6 +43,12 @@ setup_library(module SimCore
               dependencies Framework::Exception
                            Geant4::Interface)
 
+# Library of our interactions with G4
+setup_library(module SimCore
+              name G4User
+              dependencies Framework::Framework
+                           Geant4::Interface)
+
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
                                        ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
@@ -53,6 +59,7 @@ setup_library(module SimCore
                            ROOT::Physics
                            Framework::Configure
                            Framework::Framework
+                           SimCore::G4User
                            DetDescr::DetDescr
                            Boost::log
                            "${registered_targets}"

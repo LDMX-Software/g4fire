@@ -51,11 +51,11 @@ void PluginFactory::createGenerator(const std::string& className,
 
 actionMap PluginFactory::getActions() {
   if (actions_.empty()) {
-    actions_[simcore::TYPE::RUN] = new simcore::UserRunAction();
-    actions_[simcore::TYPE::EVENT] = new simcore::UserEventAction();
-    actions_[simcore::TYPE::TRACKING] = new simcore::UserTrackingAction();
-    actions_[simcore::TYPE::STEPPING] = new simcore::USteppingAction();
-    actions_[simcore::TYPE::STACKING] = new simcore::UserStackingAction();
+    actions_[simcore::TYPE::RUN] = new simcore::g4user::RunAction();
+    actions_[simcore::TYPE::EVENT] = new simcore::g4user::EventAction();
+    actions_[simcore::TYPE::TRACKING] = new simcore::g4user::TrackingAction();
+    actions_[simcore::TYPE::STEPPING] = new simcore::g4user::SteppingAction();
+    actions_[simcore::TYPE::STACKING] = new simcore::g4user::StackingAction();
   }
 
   return actions_;
@@ -84,16 +84,16 @@ void PluginFactory::createAction(const std::string& className,
   std::vector<simcore::TYPE> types = act->getTypes();
   for (auto& type : types) {
     if (type == simcore::TYPE::RUN)
-      std::get<simcore::UserRunAction*>(actions_[simcore::TYPE::RUN])->registerAction(act);
+      std::get<simcore::g4user::RunAction*>(actions_[simcore::TYPE::RUN])->registerAction(act);
     else if (type == simcore::TYPE::EVENT)
-      std::get<simcore::UserEventAction*>(actions_[simcore::TYPE::EVENT])->registerAction(act);
+      std::get<simcore::g4user::EventAction*>(actions_[simcore::TYPE::EVENT])->registerAction(act);
     else if (type == simcore::TYPE::TRACKING)
-      std::get<simcore::UserTrackingAction*>(actions_[simcore::TYPE::TRACKING])
+      std::get<simcore::g4user::TrackingAction*>(actions_[simcore::TYPE::TRACKING])
           ->registerAction(act);
     else if (type == simcore::TYPE::STEPPING)
-      std::get<simcore::USteppingAction*>(actions_[simcore::TYPE::STEPPING])->registerAction(act);
+      std::get<simcore::g4user::SteppingAction*>(actions_[simcore::TYPE::STEPPING])->registerAction(act);
     else if (type == simcore::TYPE::STACKING)
-      std::get<simcore::UserStackingAction*>(actions_[simcore::TYPE::STACKING])
+      std::get<simcore::g4user::StackingAction*>(actions_[simcore::TYPE::STACKING])
           ->registerAction(act);
     else
       EXCEPTION_RAISE("PluginFactory", "User action type doesn't exist.");

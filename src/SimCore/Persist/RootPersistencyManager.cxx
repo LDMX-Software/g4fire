@@ -21,9 +21,9 @@
 #include "SimCore/Event/SimTrackerHit.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/UserEventInformation.h"
-#include "SimCore/UserTrackingAction.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -203,7 +203,7 @@ void RootPersistencyManager::writeCalorimeterHitsCollection(
     G4CalorimeterHitsCollection *hc,
     std::vector<simcore::event::SimCalorimeterHit> &outputColl) {
   // get ancestral tracking information
-  auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
+  auto trackMap{simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap()};
 
   int nHits = hc->GetSize();
   for (int iHit = 0; iHit < nHits; iHit++) {

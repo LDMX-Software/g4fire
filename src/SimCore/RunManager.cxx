@@ -14,11 +14,6 @@
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
 #include "SimCore/PrimaryGeneratorAction.h"
-#include "SimCore/USteppingAction.h"
-#include "SimCore/UserEventAction.h"
-#include "SimCore/UserRunAction.h"
-#include "SimCore/UserStackingAction.h"
-#include "SimCore/UserTrackingAction.h"
 #include "SimCore/PluginFactory.h"
 
 //------------//

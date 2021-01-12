@@ -1,6 +1,6 @@
 #include "SimCore/EcalHitIO.h"
 
-#include "SimCore/UserTrackingAction.h"  //to get handle on track map
+#include "SimCore/G4User/TrackingAction.h"  //to get handle on track map
 
 // STL
 #include <map>
@@ -24,7 +24,7 @@ void EcalHitIO::writeHitsCollection(
           ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // get ancestral mapping of tracks
-  auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
+  auto trackMap{simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap()};
 
   int nHits = hc->GetSize();
   std::map<int, simcore::event::SimCalorimeterHit> hitMap;

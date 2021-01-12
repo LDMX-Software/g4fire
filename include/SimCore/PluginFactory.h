@@ -5,14 +5,14 @@
 
 #include "Framework/Configure/Parameters.h"
 
-#include "SimCore/USteppingAction.h"
-#include "SimCore/UserEventAction.h"
-#include "SimCore/UserRunAction.h"
-#include "SimCore/UserStackingAction.h"
-#include "SimCore/UserTrackingAction.h"
+#include "SimCore/G4User/SteppingAction.h"
+#include "SimCore/G4User/EventAction.h"
+#include "SimCore/G4User/RunAction.h"
+#include "SimCore/G4User/StackingAction.h"
+#include "SimCore/G4User/TrackingAction.h"
 
-#include "SimCore/PrimaryGenerator.h"
 #include "SimCore/UserAction.h"
+#include "SimCore/PrimaryGenerator.h"
 #include "SimCore/XsecBiasingOperator.h"
 
 namespace simcore {
@@ -22,9 +22,9 @@ namespace simcore {
  * A map of the different types of actions to their reference.
  */
 typedef std::map<simcore::TYPE,
-                 std::variant<simcore::UserRunAction*, simcore::UserEventAction*,
-                              simcore::UserTrackingAction*, simcore::USteppingAction*,
-                              simcore::UserStackingAction*>>
+                 std::variant<simcore::g4user::RunAction*, simcore::g4user::EventAction*,
+                              simcore::g4user::TrackingAction*, simcore::g4user::SteppingAction*,
+                              simcore::g4user::StackingAction*>>
     actionMap;
 
 /**

@@ -1,4 +1,4 @@
-#include "SimCore/UserTrackingAction.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 // LDMX
 #include "SimCore/TrackMap.h"
@@ -16,8 +16,9 @@
 #include <iostream>
 
 namespace simcore {
+namespace g4user {
 
-void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
+void TrackingAction::PreUserTrackingAction(const G4Track* track) {
   int trackID = track->GetTrackID();
 
   if (trackMap_.contains(trackID)) {
@@ -35,7 +36,7 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
     trackingAction->PreUserTrackingAction(track);
 }
 
-void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
+void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   // Activate user tracking actions
   for (auto& trackingAction : trackingActions_)
     trackingAction->PostUserTrackingAction(track);
@@ -64,7 +65,7 @@ void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
   }
 }
 
-void UserTrackingAction::storeTrajectory(const G4Track* track) {
+void TrackingAction::storeTrajectory(const G4Track* track) {
   // Create a new trajectory for this track.
   fpTrackingManager->SetStoreTrajectory(true);
   Trajectory* traj = new Trajectory(track);
@@ -84,7 +85,7 @@ void UserTrackingAction::storeTrajectory(const G4Track* track) {
   trackMap_.addTrajectory(traj);
 }
 
-void UserTrackingAction::processTrack(const G4Track* track) {
+void TrackingAction::processTrack(const G4Track* track) {
   // Set user track info on new track.
   if (!track->GetUserInformation()) {
     auto trackInfo = new UserTrackInformation;
@@ -126,4 +127,6 @@ void UserTrackingAction::processTrack(const G4Track* track) {
   if (track->GetParentID() > 0)
     trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
 }
+
+}  // namespace g4user
 }  // namespace simcore

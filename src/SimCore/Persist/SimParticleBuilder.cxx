@@ -7,8 +7,8 @@
 #include "Framework/Exception/Exception.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "SimCore/G4TrackerHit.h"
-#include "SimCore/UserTrackingAction.h"
 #include "SimCore/Event/SimParticle.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 // Geant4
 #include "G4Event.hh"
@@ -21,7 +21,7 @@ namespace simcore {
 namespace persist {
 
 SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
-  trackMap_ = UserTrackingAction::getUserTrackingAction()->getTrackMap();
+  trackMap_ = simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap();
 }
 
 SimParticleBuilder::~SimParticleBuilder() {}

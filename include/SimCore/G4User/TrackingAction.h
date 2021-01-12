@@ -1,11 +1,11 @@
 /**
- * @file UserTrackingAction.h
+ * @file TrackingAction.h
  * @brief Class which implements the user tracking action
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_USERTRACKINGACTION_H_
-#define SIMCORE_USERTRACKINGACTION_H_
+#ifndef SIMCORE_G4USER_TRACKINGACTION_H_
+#define SIMCORE_G4USER_TRACKINGACTION_H_
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -26,22 +26,23 @@
 #include "SimCore/UserAction.h"
 
 namespace simcore {
+namespace g4user {
 
 /**
- * @class UserTrackingAction
+ * @class TrackingAction
  * @brief Implementation of user tracking action
  */
-class UserTrackingAction : public G4UserTrackingAction {
+class TrackingAction : public G4UserTrackingAction {
  public:
   /**
    * Class constructor.
    */
-  UserTrackingAction() {}
+  TrackingAction() {}
 
   /**
    * Class destructor.
    */
-  virtual ~UserTrackingAction() {}
+  virtual ~TrackingAction() {}
 
   /**
    * Implementation of pre-tracking action.
@@ -80,11 +81,11 @@ class UserTrackingAction : public G4UserTrackingAction {
   void storeTrajectory(const G4Track* aTrack);
 
   /**
-   * Get a pointer to the current UserTrackingAction from the G4RunManager.
-   * @return A pointer to the current UserTrackingAction.
+   * Get a pointer to the current TrackingAction from the G4RunManager.
+   * @return A pointer to the current TrackingAction.
    */
-  static UserTrackingAction* getUserTrackingAction() {
-    return static_cast<UserTrackingAction*>(const_cast<G4UserTrackingAction*>(
+  static TrackingAction* getUserTrackingAction() {
+    return static_cast<TrackingAction*>(const_cast<G4UserTrackingAction*>(
         G4RunManager::GetRunManager()->GetUserTrackingAction()));
   }
 
@@ -104,6 +105,8 @@ class UserTrackingAction : public G4UserTrackingAction {
   /** Stores parentage information for all tracks in the event. */
   TrackMap trackMap_;
 };
+
+}  // namespace g4user
 }  // namespace simcore
 
 #endif
