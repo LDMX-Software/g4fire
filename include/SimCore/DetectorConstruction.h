@@ -35,7 +35,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
    * Class constructor.
    * @param theParser GDML parser defining the geometry.
    */
-  DetectorConstruction(G4GDMLParser *theParser, framework::config::Parameters &parameters,
+  DetectorConstruction(G4GDMLParser *theParser, 
+                       const framework::config::Parameters &parameters,
                        ConditionsInterface &ci);
 
   /**
@@ -73,7 +74,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   AuxInfoReader *auxInfoReader_;
 
   /// The set of parameters used to configure this class
-  framework::config::Parameters parameters_;
+  const framework::config::Parameters& parameters_;
 };
 
 }  // namespace simcore

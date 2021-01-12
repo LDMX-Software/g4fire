@@ -42,7 +42,7 @@ class RunManager : public G4RunManager {
   /**
    * Class constructor.
    */
-  RunManager(framework::config::Parameters& parameters, ConditionsInterface& ci);
+  RunManager(const framework::config::Parameters& parameters, ConditionsInterface& ci);
 
   /**
    * Class destructor.
@@ -86,7 +86,7 @@ class RunManager : public G4RunManager {
 
  private:
   /// The set of parameters used to configure the RunManager
-  framework::config::Parameters parameters_;
+  const framework::config::Parameters& parameters_;
 
   /**
    * Factory class for instantiating the physics list.

@@ -7,12 +7,11 @@
 namespace simcore {
 
 DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser,
-                                           framework::config::Parameters& parameters,
+                                           const framework::config::Parameters& parameters,
                                            ConditionsInterface& ci)
     : parser_(theParser),
-      auxInfoReader_(new AuxInfoReader(theParser, parameters, ci)) {
-  parameters_ = parameters;
-}
+      auxInfoReader_(new AuxInfoReader(theParser, parameters, ci)),
+      parameters_(parameters) {}
 
 DetectorConstruction::~DetectorConstruction() { delete auxInfoReader_; }
 

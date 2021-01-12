@@ -31,7 +31,8 @@ using std::string;
 
 namespace simcore {
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, framework::config::Parameters ps,
+AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, 
+                             const framework::config::Parameters& ps,
                              ConditionsInterface& ci)
     : parser_(theParser),
       eval_(new G4GDMLEvaluator),

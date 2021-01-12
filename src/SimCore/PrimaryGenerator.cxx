@@ -12,10 +12,8 @@
 namespace simcore {
 
 PrimaryGenerator::PrimaryGenerator(const std::string& name,
-                                   const framework::config::Parameters& parameters) {
-  name_ = name;
-  parameters_ = parameters;
-}
+                                   const framework::config::Parameters& parameters) :
+  name_(name), parameters_(parameters) {}
 
 PrimaryGenerator::~PrimaryGenerator() {}
 

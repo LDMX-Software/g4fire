@@ -164,7 +164,7 @@ class UserAction {
   std::string name_{""};
 
   /// The set of parameters used to configure this class
-  framework::config::Parameters parameters_;
+  const framework::config::Parameters& parameters_;
 
 };  // UserAction
 

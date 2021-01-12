@@ -30,7 +30,7 @@ class AuxInfoReader {
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, framework::config::Parameters ps, ConditionsInterface &ci);
+  AuxInfoReader(G4GDMLParser *parser, const framework::config::Parameters& ps, ConditionsInterface &ci);
 
   /**
    * Class destructor.
@@ -108,7 +108,7 @@ class AuxInfoReader {
   ldmx::DetectorHeader *detectorHeader_{nullptr};
 
   /// Configuration parameters
-  framework::config::Parameters parameters_;
+  const framework::config::Parameters& parameters_;
 
   /// ConditionsInterface
   ConditionsInterface &conditionsIntf_;

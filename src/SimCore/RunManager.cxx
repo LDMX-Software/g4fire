@@ -33,13 +33,12 @@
 
 namespace simcore {
 
-RunManager::RunManager(framework::config::Parameters& parameters, ConditionsInterface& ci)
-    : conditionsIntf_(ci) {
-  parameters_ = parameters;
+RunManager::RunManager(const framework::config::Parameters& parameters, ConditionsInterface& ci)
+    : conditionsIntf_(ci), parameters_(parameters) {
 
   // Set whether the ROOT primary generator should use the persisted seed.
   auto rootPrimaryGenUseSeed{
-      parameters.getParameter<bool>("rootPrimaryGenUseSeed")};
+      parameters_.getParameter<bool>("rootPrimaryGenUseSeed")};
 
   // Validate the geometry if specified.
   setUseRootSeed(rootPrimaryGenUseSeed);
