@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/RootCompleteReSim.h"
+#include "SimCore/Generators/RootCompleteReSim.h"
 
 //------------//
 //   Geant4   //
@@ -24,6 +24,7 @@
 #include "SimCore/Event/SimParticle.h"
 
 namespace simcore {
+namespace generators {
 
 RootCompleteReSim::RootCompleteReSim(const std::string& name,
                                      const framework::config::Parameters& parameters)
@@ -97,6 +98,7 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, RootCompleteReSim)
+DECLARE_GENERATOR(simcore::generators, RootCompleteReSim)

@@ -82,7 +82,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
     uiManager_->SetCoutDestination(sessionHandle_.get());
 
   // Instantiate the run manager.
-  runManager_ = std::make_unique<RunManager>(parameters, conditionsIntf_);
+  runManager_ = std::make_unique<RunManager>(parameters_, conditionsIntf_);
 
   // Instantiate the GDML parser and corresponding messenger owned and
   // managed by DetectorConstruction
@@ -94,7 +94,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
   runManager_->SetUserInitialization(
-      new DetectorConstruction(parser, parameters, conditionsIntf_));
+      new DetectorConstruction(parser, parameters_, conditionsIntf_));
 
   // Parse the detector geometry and validate if specified.
   auto detectorPath{parameters_.getParameter<std::string>("detector")};

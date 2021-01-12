@@ -9,18 +9,19 @@
 #define SIMCORE_LHEPRIMARYGENERATOR_H
 
 // LDMX
-#include "SimCore/LHEReader.h"
+#include "SimCore/LHE/LHEReader.h"
 #include "SimCore/PrimaryGenerator.h"
 
 class G4Event;
 
 namespace simcore {
+namespace generators {
 
 /**
  * @class LHEPrimaryGenerator
  * @brief Generates a Geant4 event from an LHEEvent
  */
-class LHEPrimaryGenerator : public PrimaryGenerator {
+class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
  public:
   /**
    * Class constructor.
@@ -43,9 +44,10 @@ class LHEPrimaryGenerator : public PrimaryGenerator {
   /**
    * The LHE reader with the event data.
    */
-  LHEReader* reader_;
+  simcore::lhe::LHEReader* reader_;
 };
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_LHEPRIMARYGENERATOR_H

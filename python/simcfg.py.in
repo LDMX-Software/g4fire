@@ -56,11 +56,16 @@ class PrimaryGenerator:
         Unique name for this particular instance of a PrimaryGenerator
     class_name : str
         Name of C++ class that this PrimaryGenerator should be
+    module_name : str, optional
+        Name of C++ library that this primary generator is compiled into
     """
 
-    def __init__(self, instance_name, class_name):
+    def __init__(self, instance_name, class_name, module_name = 'SimCore_Generators'):
         self.class_name    = class_name
         self.instance_name = instance_name
+
+        from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
+        ldmxcfg.Process.addModule(module_name)
 
     def __str__(self): 
         """Stringify this PrimaryGenerator

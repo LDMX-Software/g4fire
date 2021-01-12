@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/RootSimFromEcalSP.h"
+#include "SimCore/Generators/RootSimFromEcalSP.h"
 
 //----------------//
 //   C++ StdLib   //
@@ -29,6 +29,7 @@
 #include "SimCore/Event/SimTrackerHit.h"
 
 namespace simcore {
+namespace generators {
 
 RootSimFromEcalSP::RootSimFromEcalSP(const std::string& name,
                                      const framework::config::Parameters& parameters)
@@ -120,6 +121,7 @@ void RootSimFromEcalSP::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, RootSimFromEcalSP)
+DECLARE_GENERATOR(simcore::generators, RootSimFromEcalSP)

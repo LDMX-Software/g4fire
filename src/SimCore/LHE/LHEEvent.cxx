@@ -1,4 +1,4 @@
-#include "SimCore/LHEEvent.h"
+#include "SimCore/LHE/LHEEvent.h"
 #include "Framework/Exception/Exception.h"
 
 // Geant4
@@ -9,6 +9,7 @@
 #include <sstream>
 
 namespace simcore {
+namespace lhe {
 
 LHEEvent::LHEEvent(std::string& line) {
   std::istringstream iss(line);
@@ -96,4 +97,5 @@ void LHEEvent::setVertex(const std::string& line) {
   vtx_[2] = atof(tokens[3].c_str());
 }
 
+}  // namespace lhe
 }  // namespace simcore

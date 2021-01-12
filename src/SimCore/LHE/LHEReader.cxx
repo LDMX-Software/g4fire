@@ -1,9 +1,10 @@
-#include "SimCore/LHEReader.h"
+#include "SimCore/LHE/LHEReader.h"
 
 // STL
 #include <iostream>
 
 namespace simcore {
+namespace lhe {
 
 LHEReader::LHEReader(std::string& filename) {
   std::cout << "Opening LHE file " << filename << std::endl;
@@ -68,4 +69,5 @@ LHEEvent* LHEReader::readNextEvent() {
   return nextEvent;
 }
 
+}  // namespace lhe
 }  // namespace simcore

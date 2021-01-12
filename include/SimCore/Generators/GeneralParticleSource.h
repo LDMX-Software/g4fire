@@ -21,12 +21,13 @@
 class G4Event;
 
 namespace simcore {
+namespace generators {
 
 /**
  * @class GeneralParticleSource
  * @brief Class that extends the functionality of G4GeneralParticleSource.
  */
-class GeneralParticleSource : public PrimaryGenerator {
+class GeneralParticleSource : public simcore::PrimaryGenerator {
  public:
   /**
    * Constructor.
@@ -59,6 +60,7 @@ class GeneralParticleSource : public PrimaryGenerator {
 
 };  // GeneralParticleSource
 
+}  // namesapce generators
 }  // namespace simcore
 
 #endif  // SIMCORE_GENERALPARTICLESOURCE_H

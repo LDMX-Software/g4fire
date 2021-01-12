@@ -37,6 +37,11 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
+# Set the LHE Reading Library
+setup_library(module SimCore 
+              name LHE
+              dependencies Framework::Exception
+                           Geant4::Interface)
 
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
@@ -57,6 +62,11 @@ setup_library(module SimCore
 setup_library(module SimCore
               name BiasOperators
               dependencies SimCore::SimCore)
+
+# Primary Generators library
+setup_library(module SimCore
+              name Generators
+              dependencies SimCore::SimCore SimCore::LHE)
 
 # Set some target properties
 set_target_properties(SimCore

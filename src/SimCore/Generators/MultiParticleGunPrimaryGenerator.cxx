@@ -5,9 +5,10 @@
  * @author Nhan Tran, FNAL
  */
 
-#include "SimCore/MultiParticleGunPrimaryGenerator.h"
+#include "SimCore/Generators/MultiParticleGunPrimaryGenerator.h"
 
 namespace simcore {
+namespace generators {
 
 MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
@@ -72,6 +73,7 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   }
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, MultiParticleGunPrimaryGenerator)
+DECLARE_GENERATOR(simcore::generators, MultiParticleGunPrimaryGenerator)

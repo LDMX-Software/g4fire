@@ -33,6 +33,7 @@
 class G4Event;
 
 namespace simcore {
+namespace generators {
 
 /**
  * @class RootSimFromEcalSP
@@ -98,6 +99,7 @@ class RootSimFromEcalSP : public PrimaryGenerator {
   framework::Event ievent_;
 };
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_ROOTSIMFROMECALSP_H

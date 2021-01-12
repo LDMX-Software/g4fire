@@ -22,12 +22,13 @@
 class G4Event;
 
 namespace simcore {
+namespace generators {
 
 /**
  * @class ParticleGun
  * @brief Class that extends the functionality of G4ParticleGun.
  */
-class ParticleGun : public PrimaryGenerator {
+class ParticleGun : public simcore::PrimaryGenerator {
  public:
   /**
    * Constructor.
@@ -67,6 +68,7 @@ class ParticleGun : public PrimaryGenerator {
 
 };  // ParticleGun
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_PARTICLE_GUN_H

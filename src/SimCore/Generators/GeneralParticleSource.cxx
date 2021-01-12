@@ -4,7 +4,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/GeneralParticleSource.h"
+#include "SimCore/Generators/GeneralParticleSource.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -18,6 +18,7 @@
 #include "Framework/Configure/Parameters.h"
 
 namespace simcore {
+namespace generators {
 
 GeneralParticleSource::GeneralParticleSource(const std::string& name,
                                              const framework::config::Parameters& parameters)
@@ -45,6 +46,7 @@ void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   return;
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, GeneralParticleSource)
+DECLARE_GENERATOR(simcore::generators, GeneralParticleSource)

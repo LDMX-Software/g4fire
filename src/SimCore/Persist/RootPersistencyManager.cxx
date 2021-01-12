@@ -79,9 +79,6 @@ G4bool RootPersistencyManager::Store(const G4Run *) {
   runHeader.setIntParameter("Event Count", eventsCompleted_);
   runHeader.setIntParameter("Events Began", eventsBegan_);
 
-  // debug printout TODO add to logging
-  file_.getRunHeader(run_).Print();
-
   return true;
 }
 

@@ -9,12 +9,13 @@
 #define SIMCORE_LHEEVENT_H_
 
 // LDMX
-#include "SimCore/LHEParticle.h"
+#include "SimCore/LHE/LHEParticle.h"
 
 // STL
 #include <vector>
 
 namespace simcore {
+namespace lhe {
 
 /**
  * @class LHEEvent
@@ -145,6 +146,7 @@ class LHEEvent {
   std::vector<LHEParticle*> particles_;
 };
 
+}  // namespace lhe
 }  // namespace simcore
 
 #endif

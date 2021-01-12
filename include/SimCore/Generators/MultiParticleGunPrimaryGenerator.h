@@ -42,13 +42,14 @@
 #include "SimCore/UserPrimaryParticleInformation.h"
 
 namespace simcore {
+namespace generators {
 
 /**
  * @class MultiParticleGunPrimaryGenerator
  * @brief Generates a Geant4 event from particle gun, but can have many
  * particles
  */
-class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
+class MultiParticleGunPrimaryGenerator : public simcore::PrimaryGenerator {
  public:
   /**
    * Constructor
@@ -100,6 +101,7 @@ class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
 
 };  // MultiParticleGunPrimaryGenerator
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_MULTIPARTICLEGUNPRIMARYGENERATOR_H_

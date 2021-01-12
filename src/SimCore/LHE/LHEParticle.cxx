@@ -1,4 +1,4 @@
-#include "SimCore/LHEParticle.h"
+#include "SimCore/LHE/LHEParticle.h"
 #include "Framework/Exception/Exception.h"
 
 // STL
@@ -11,6 +11,7 @@
 #include "globals.hh"
 
 namespace simcore {
+namespace lhe {
 
 LHEParticle::LHEParticle(std::string& line) {
   std::istringstream iss(line);
@@ -82,4 +83,5 @@ std::ostream& operator<<(std::ostream& stream, const LHEParticle& particle) {
   return stream;
 }
 
+}  // namespace lhe
 }  // namespace simcore
