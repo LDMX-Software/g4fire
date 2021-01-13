@@ -1,4 +1,4 @@
-#include "SimCore/TrackerSD.h"
+#include "SimCore/SDs/TrackerSD.h"
 
 // STL
 #include <iostream>
@@ -6,25 +6,20 @@
 // Geant4
 #include "G4ChargedGeantino.hh"
 #include "G4Geantino.hh"
-#include "G4SDManager.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-// LDMX
-#include "DetDescr/IDField.h"
-
 namespace simcore {
 
-TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subDetID)
-    : G4VSensitiveDetector(name), hitsCollection_(0) {
-  // Add the collection name to vector of names.
-  this->collectionName.push_back(theCollectionName);
+TrackerSD::TrackerSD(const std::string& name,
+            simcore::ConditionsInterface& ci,
+            const framework::config::Parameters& p) {
 
-  // Register this SD with the manager.
-  G4SDManager::GetSDMpointer()->AddNewDetector(this);
+  subsystem_       = p.getParameter<std::string>("subsystem");
+  collection_name_ = p.getParameter<std::string>("collection_name");
 
-  // Set the subdet ID as it will always be the same for every hit.
-  subDetID_ = ldmx::SubdetectorIDType(subDetID);
+  subDetID_ = ldmx::SubdetectorIDType(p.getParameter<int>("subdet_id"));
+
 }
 
 TrackerSD::~TrackerSD() {}
@@ -51,13 +46,13 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   }
 
   // Create a new hit object.
-  G4TrackerHit* hit = new G4TrackerHit();
+  simcore::event::SimTrackerHit hit;
 
   // Assign track ID for finding the SimParticle in post event processing.
-  hit->setTrackID(aStep->GetTrack()->GetTrackID());
+  hit.setTrackID(aStep->GetTrack()->GetTrackID());
 
   // Set the edep.
-  hit->setEdep(edep);
+  hit.setEdep(edep);
 
   // Set the start position.
   G4StepPoint* prePoint = aStep->GetPreStepPoint();
@@ -72,29 +67,22 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
   // Set the mid position.
   G4ThreeVector mid = 0.5 * (start + end);
-  hit->setPosition(mid.x(), mid.y(), mid.z());
+  hit.setPosition(mid.x(), mid.y(), mid.z());
 
   // Compute path length.
   G4double pathLength =
       sqrt(pow(start.x() - end.x(), 2) + pow(start.y() - end.y(), 2) +
            pow(start.z() - end.z(), 2));
-  hit->setPathLength(pathLength);
+  hit.setPathLength(pathLength);
 
   // Set the global time.
-  hit->setTime(aStep->GetTrack()->GetGlobalTime());
+  hit.setTime(aStep->GetTrack()->GetGlobalTime());
 
   /*
    * Compute and set the momentum.
    */
-  /*
-   double mag = (prePoint->GetMomentum().mag() + postPoint->GetMomentum().mag())
-   / 2; G4ThreeVector p = (postPoint->GetPosition() - prePoint->GetPosition());
-   if (mag > 0) {
-   p.setMag(mag);
-   }
-   */
   G4ThreeVector p = postPoint->GetMomentum();
-  hit->setMomentum(p.x(), p.y(), p.z());
+  hit.setMomentum(p.x(), p.y(), p.z());
 
   /*
    * Set the 32-bit ID on the hit.
@@ -104,48 +92,19 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   int layer = copyNum / 10;
   int module = copyNum % 10;
   ldmx::TrackerID id(subDetID_, layer, module);
-  hit->setID(id.raw());
-  hit->setLayerID(layer);
-  hit->setModuleID(module);
+  hit.setID(id.raw());
+  hit.setLayerID(layer);
+  hit.setModuleID(module);
 
   // Set energy and pdg code of SimParticle (common things requested)
-  hit->setEnergy(postPoint->GetTotalEnergy());
-  hit->setPdgID(aStep->GetTrack()->GetDynamicParticle()->GetPDGcode());
+  hit.setEnergy(postPoint->GetTotalEnergy());
+  hit.setPdgID(aStep->GetTrack()->GetDynamicParticle()->GetPDGcode());
 
-  /*
-   * Debug print.
-   */
-  if (this->verboseLevel > 2) {
-    hit->Print();
-  }
-
-  // Insert hit into current hits collection.
-  hitsCollection_->insert(hit);
+  hits_.push_back(hit);
 
   return true;
 }
 
-void TrackerSD::Initialize(G4HCofThisEvent* hce) {
-  // Setup hits collection and the HC ID.
-  hitsCollection_ =
-      new G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
-  int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
-  hce->AddHitsCollection(hcID, hitsCollection_);
-}
-
-void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
-  // Print number of hits.
-  if (this->verboseLevel > 0) {
-    std::cout << GetName() << " had " << hitsCollection_->entries()
-              << " hits in event" << std::endl;
-  }
-
-  // Print each hit in hits collection.
-  if (this->verboseLevel > 1) {
-    for (unsigned iHit = 0; iHit < hitsCollection_->GetSize(); iHit++) {
-      (*hitsCollection_)[iHit]->Print();
-    }
-  }
-}
-
 }  // namespace simcore
+
+DECLARE_SENSITIVEDETECTOR(simcore, TrackerSD)

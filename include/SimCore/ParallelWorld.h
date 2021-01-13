@@ -27,8 +27,7 @@ namespace simcore {
 class ParallelWorld : public G4VUserParallelWorld {
  public:
   /** Constructor */
-  ParallelWorld(G4GDMLParser* parser, G4String worldName,
-                ConditionsInterface& ci);
+  ParallelWorld(G4GDMLParser* parser, G4String worldName);
 
   /** Destructor */
   ~ParallelWorld();

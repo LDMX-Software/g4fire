@@ -13,7 +13,6 @@ namespace simcore {
  */
 class HcalSD : public SensitiveDetector {
  public:
-
   /// name of collection to be added to event bus
   static const std::string COLLECTION_NAME;
 
@@ -24,10 +23,8 @@ class HcalSD : public SensitiveDetector {
    * @param ci Conditions interface handle
    * @param params python configuration parameters
    */
-  HcalSD(const std::string& name,
-                 simcore::ConditionsInterface& ci,
-                 const framework::config::Parameters& params);
-
+  HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
+         const framework::config::Parameters& params);
 
   /// Destructor
   ~HcalSD();
@@ -53,7 +50,8 @@ class HcalSD : public SensitiveDetector {
    * @param[in] step The current step.
    * @param[in] history The readout history.
    */
-  virtual G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) final override;
+  virtual G4bool ProcessHits(G4Step* aStep,
+                             G4TouchableHistory* ROhist) final override;
 
   /**
    * Add our hits to the event bus and then reset the container

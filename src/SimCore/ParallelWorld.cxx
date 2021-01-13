@@ -5,10 +5,9 @@
 
 namespace simcore {
 
-ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName,
-                             ConditionsInterface &ci)
+ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName)
     : G4VUserParallelWorld(worldName), parser_(parser),
-      auxInfoReader_(new AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
+      auxInfoReader_(new AuxInfoReader(parser, framework::config::Parameters())) {}
 
 ParallelWorld::~ParallelWorld() { delete auxInfoReader_; }
 

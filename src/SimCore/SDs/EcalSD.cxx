@@ -1,4 +1,4 @@
-#include "SimCore/EcalSD.h"
+#include "SimCore/SDs/EcalSD.h"
 
 // Geant4
 #include "G4ChargedGeantino.hh"
@@ -15,14 +15,15 @@
 
 namespace simcore {
 
-EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID,
-               ConditionsInterface& ci)
-    : CalorimeterSD(name, theCollectionName), conditionsIntf_(ci) {}
+EcalSD::EcalSD(const std::string& name,
+         simcore::ConditionsInterface& ci,
+         const framework::config::Parameters& p) :
+  SensitiveDetector(name, ci, p) {}
 
 EcalSD::~EcalSD() {}
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
-  const ldmx::EcalHexReadout& hitMap = conditionsIntf_.getCondition<ldmx::EcalHexReadout>(
+  const ldmx::EcalHexReadout& hitMap = getCondition<ldmx::EcalHexReadout>(
       ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Determine if current particle of this step is a Geantino.
@@ -46,23 +47,23 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   }
 
   // Create a new cal hit.
-  G4CalorimeterHit* hit = new G4CalorimeterHit();
+  simcore::event::SimCalorimeterHit hit;
 
   // Set the edep.
-  hit->setEdep(edep);
+  hit.setEdep(edep);
 
   // Compute the hit position using the utility function.
   G4ThreeVector hitPosition = getHitPosition(aStep);
-  hit->setPosition(hitPosition.x(), hitPosition.y(), hitPosition.z());
+  hit.setPosition(hitPosition.x(), hitPosition.y(), hitPosition.z());
 
   // Set the global time.
-  hit->setTime(aStep->GetTrack()->GetGlobalTime());
+  hit.setTime(aStep->GetTrack()->GetGlobalTime());
 
   // Create the ID for the hit.
   int cpynum = aStep->GetPreStepPoint()
                    ->GetTouchableHandle()
                    ->GetHistory()
-                   ->GetVolume(layerDepth_)
+                   ->GetVolume(2) //this index depends on GDML implementation
                    ->GetCopyNo();
   int layerNumber;
   layerNumber = int(cpynum / 7);
@@ -70,23 +71,23 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
   ldmx::EcalID partialId = hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
   ldmx::EcalID id(layerNumber, module_position, partialId.cell());
-  hit->setID(id.raw());
+  hit.setID(id.raw());
 
   // Set the track ID on the hit.
-  hit->setTrackID(aStep->GetTrack()->GetTrackID());
+  hit.setTrackID(aStep->GetTrack()->GetTrackID());
 
   // Set the PDG code from the track.
-  hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+  hit.setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
   if (this->verboseLevel > 2) {
     G4cout << "Created new SimCalorimeterHit in detector " << this->GetName()
            << " with subdet ID " << id << " ...";
-    hit->Print();
+    hit.Print();
     G4cout << G4endl;
   }
 
   // Insert the hit into the hits collection.
-  hitsCollection_->insert(hit);
+  hits_.push_back(hit);
 
   return true;
 }

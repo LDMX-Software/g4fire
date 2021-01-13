@@ -2,19 +2,16 @@
 #ifndef SIMCORE_DETECTORCONSTRUCTION_H_
 #define SIMCORE_DETECTORCONSTRUCTION_H_
 
-// LDMX
-#include "AuxInfoReader.h"
-
 // Geant4
 #include "G4GDMLParser.hh"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4VUserDetectorConstruction.hh"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
+// LDMX
 #include "Framework/Configure/Parameters.h"
+#include "SimCore/ConditionsInterface.h"
+#include "SimCore/AuxInfoReader.h"
 
 namespace simcore {
 

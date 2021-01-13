@@ -9,18 +9,33 @@ class ScoringPlaneSD(simcfg.SensitiveDetector) :
         self.collection_name = f'{subsystem.capitalize()}ScoringPlaneHits'
         self.match_substr = f'sp_{subsystem.lower()}' #depends on gdml
 
-class EcalScoringPlanes(ScoringPlaneSD) :
-    def __init__(self) :
-        super().__init__('ecal')
+    def ecal() :
+        return ScoringPlaneSD('ecal')
 
-class HcalScoringPlanes(ScoringPlaneSD) :
-    def __init__(self) :
-        super().__init__('hcal')
+    def hcal()
+        return ScoringPlaneSD('hcal')
 
-class TargetScoringPlanes(ScoringPlaneSD) :
-    def __init__(self) :
-        super().__init__('target')
+    def target()
+        return ScoringPlaneSD('target')
 
-class MagentScoringPlanes(ScoringPlaneSD) :
+    def magnet()
+        return ScoringPlaneSD('magnet')
+
+class TrackerSD(simcfg.SensitiveDetector) :
+    def __init__(self,subsystem,subdet_id) :
+        super().__init__(f'{subsystem}_TrackerSD','simcore::TrackerSD')
+
+        self.subsystem = subsystem
+        self.subdet_id = subdet_id
+
+        self.collection_name = f'{subsystem}SimHits'
+
+    def tagger() :
+        return TrackerSD('Tagger',1)
+
+    def recoil() :
+        return TrackerSD('Recoil',4)
+
+class HcalSD(simcfg.SensitiveDetector) :
     def __init__(self) :
-        super().__init__('magnet')
+        super().__init__('hcal_sd', 'simcore::HcalSD')

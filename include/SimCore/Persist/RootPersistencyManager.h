@@ -16,9 +16,6 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/EcalHitIO.h"
-#include "SimCore/G4CalorimeterHit.h"
-#include "SimCore/G4TrackerHit.h"
 #include "SimCore/Persist/SimParticleBuilder.h"
 
 /*~~~~~~~~~~~~*/
@@ -65,7 +62,7 @@ public:
    */
   RootPersistencyManager(framework::EventFile &file,
                          framework::config::Parameters &parameters,
-                         const int &runNumber, ConditionsInterface &ci);
+                         const int &runNumber);
 
   /// Destructor
   virtual ~RootPersistencyManager() {}
@@ -140,48 +137,11 @@ public:
 
 public:
   /**
-   * Build an output event from the current Geant4 event.
-   *
-   * @param anEvent The Geant4 event.
-   * @param outputEvent The output event.
-   */
-  void buildEvent(const G4Event *anEvent);
-
-  /**
    * Write header info into the output event from Geant4.
    *
    * @param anEvent The Geant4 event.
    */
   void writeHeader(const G4Event *anEvent);
-
-  /**
-   * Write hits collections from Geant4 into a ROOT event.
-   *
-   * @param anEvent The Geant4 event.
-   * @param outputEvent The output event.
-   */
-  void writeHitsCollections(const G4Event *anEvent,
-                            framework::Event *outputEvent);
-
-  /**
-   * Write a collection of tracker hits to an output collection.
-   *
-   * @param hc The collection of G4TrackerHits.
-   * @param outputColl The output collection of SimTrackerHits.
-   */
-  void writeTrackerHitsCollection(
-      G4TrackerHitsCollection *hc,
-      std::vector<simcore::event::SimTrackerHit> &outputColl);
-
-  /**
-   * Write a collection of tracker hits to an output collection.
-   *
-   * @param hc The collection of G4CalorimeterHits.
-   * @param outputColl The output collection of SimCalorimeterHits.
-   */
-  void writeCalorimeterHitsCollection(
-      G4CalorimeterHitsCollection *hc,
-      std::vector<simcore::event::SimCalorimeterHit> &outputColl);
 
 private:
   /// Configuration parameters passed to Simulator
@@ -201,9 +161,6 @@ private:
 
   /// The event container used to manage the tree/branches/collections.
   framework::Event *event_{nullptr};
-
-  /// Handles ECal hit readout and IO.
-  EcalHitIO ecalHitIO_;
 
   /// Helper for building output SimParticle collection.
   SimParticleBuilder simParticleBuilder_;

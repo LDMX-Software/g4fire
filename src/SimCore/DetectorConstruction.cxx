@@ -11,7 +11,7 @@ DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser,
                                            ConditionsInterface& ci)
     : parser_(theParser),
       conditions_interface_{ci},
-      auxInfoReader_(new AuxInfoReader(theParser, parameters, ci)),
+      auxInfoReader_(new AuxInfoReader(theParser, parameters)),
       parameters_(parameters) {}
 
 DetectorConstruction::~DetectorConstruction() { delete auxInfoReader_; }
@@ -42,7 +42,12 @@ void DetectorConstruction::ConstructSDandField() {
     // Go through sensitive detectors and see if any of them
     //  should be attached to this volume
     for (SensitiveDetector* det : factory.getSensitiveDetectors()) {
-      if (det->isSensDet(volume)) volume->SetSensitiveDetector(det);
+      if (det->isSensDet(volume)) {
+        std::cout << "[ DetectorConstruction ] : "
+          << "Attaching " << det->GetName()
+          << " to " << volume->GetName() << std::endl;
+        volume->SetSensitiveDetector(det);
+      }
     }  // loop over sensitive detectors
 
     // Biasing operators were created in RunManager::setupPhysics

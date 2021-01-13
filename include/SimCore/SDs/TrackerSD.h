@@ -1,42 +1,41 @@
 #ifndef SIMCORE_TRACKERSD_H
 #define SIMCORE_TRACKERSD_H
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
-#include "G4VSensitiveDetector.hh"
-
-/*~~~~~~~~~~~~~~*/
-/*   DetDescr   */
-/*~~~~~~~~~~~~~~*/
 #include "DetDescr/TrackerID.h"
 
-/*~~~~~~~~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~~~~~~~~*/
-#include "SimCore/G4TrackerHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "SimCore/SensitiveDetector.h"
 
 namespace simcore {
 
 /**
  * @class TrackerSD
  * @brief Basic sensitive detector for trackers
- *
- * @note
- * This class creates a G4TrackerHit for each step within the subdetector.
  */
-class TrackerSD : public G4VSensitiveDetector {
+class TrackerSD : public SensitiveDetector {
  public:
   /**
    * Class constructor.
    * @param[in] name The name of the sensitive detector.
-   * @param[in] collectionName The name of the hits collection.
-   * @param[in] subDetID The subdetector ID.
+   * @param[in] ci conditions interface handle
+   * @param[in] p parameters to configure sensitive detector
    */
-  TrackerSD(G4String name, G4String collectionName, int subDetID);
+  TrackerSD(const std::string& name,
+            simcore::ConditionsInterface& ci,
+            const framework::config::Parameters& p);
 
   /// Destructor
   ~TrackerSD();
+
+  /**
+   * Should the input logical volume be attached to
+   * this sensitive detector?
+   *
+   * @note This is dependent on the naming convention in the GDML!
+   */
+  virtual bool isSensDet(G4LogicalVolume* volume) const final override {
+    return (volume->GetName().contains("Sensor") and volume->GetName().contains(subsystem_));
+  }
 
   /**
    * Process a step by creating a hit.
@@ -47,20 +46,22 @@ class TrackerSD : public G4VSensitiveDetector {
   G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
 
   /**
-   * Initialize the sensitive detector.
-   * @param hcEvent The hits collections of the event.
+   * Add the hits to the event and then reset the container
    */
-  void Initialize(G4HCofThisEvent* hcEvent);
-
-  /**
-   * End of event hook.
-   * @param hcEvent The hits collections of the event.
-   */
-  void EndOfEvent(G4HCofThisEvent* hcEvent);
+  virtual void saveHits(framework::Event& event) final override {
+    event.add(collection_name_, hits_);
+    hits_.clear();
+  }
 
  private:
-  /// The output hits collection of G4TrackerHits.
-  G4TrackerHitsCollection* hitsCollection_;
+  /// The name of the subsystem we are apart of
+  std::string subsystem_;
+
+  /// The name of the output collection
+  std::string collection_name_;
+
+  /// The collection of hits
+  std::vector<simcore::event::SimTrackerHit> hits_;
 
   /// The detector ID
   ldmx::SubdetectorIDType subDetID_;

@@ -1,4 +1,4 @@
-#include "SimCore/HcalSD.h"
+#include "SimCore/SDs/HcalSD.h"
 
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
@@ -22,8 +22,8 @@ namespace simcore {
  
 static const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 
-HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID)
-    : CalorimeterSD(name, collectionName),
+HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
+    const framework::config::Parameters& p) : SensitiveDetector(name, ci, p),
       birksc1_(1.29e-2),
       birksc2_(9.59e-6) {}
 
@@ -125,7 +125,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   int copyNum = aStep->GetPreStepPoint()
                     ->GetTouchableHandle()
                     ->GetHistory()
-                    ->GetVolume(layerDepth_)
+                    ->GetVolume(2)
                     ->GetCopyNo();
   int section = copyNum / 1000;
   int layer = copyNum % 1000;
@@ -188,4 +188,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
   return true;
 }
+
 }  // namespace simcore
+
+DECLARE_SENSITIVEDETECTOR(simcore, HcalSD)
