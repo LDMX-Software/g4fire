@@ -19,6 +19,8 @@
 #include "G4StepPoint.hh"
 
 namespace simcore {
+ 
+static const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 
 HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID)
     : CalorimeterSD(name, collectionName),
@@ -92,10 +94,10 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   }
 
   // Create a new cal hit.
-  G4CalorimeterHit* hit = new G4CalorimeterHit();
+  simcore::event::SimCalorimeterHit hit;
 
   // Set the edep.
-  hit->setEdep(edep * birksFactor);
+  hit.setEdep(edep * birksFactor);
 
   // Get the scintillator solid box
   G4Box* scint = static_cast<G4Box*>(aStep->GetPreStepPoint()
@@ -114,10 +116,10 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
                                     ->GetHistory()
                                     ->GetTopTransform()
                                     .TransformPoint(position);
-  hit->setPosition(position[0], position[1], position[2]);
+  hit.setPosition(position[0], position[1], position[2]);
 
   // Set the global time.
-  hit->setTime(aStep->GetTrack()->GetGlobalTime());
+  hit.setTime(aStep->GetTrack()->GetGlobalTime());
 
   // Create the ID for the hit.
   int copyNum = aStep->GetPreStepPoint()
@@ -155,13 +157,13 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // << "\t strip = " << stripID << std::endl;
 
   ldmx::HcalID id(section, layer, stripID);
-  hit->setID(id.raw());
+  hit.setID(id.raw());
 
   // Set the track ID on the hit.
-  hit->setTrackID(aStep->GetTrack()->GetTrackID());
+  hit.setTrackID(aStep->GetTrack()->GetTrackID());
 
   // Set the PDG code from the track.
-  hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+  hit.setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
   // do we want to set the hit coordinate in the middle of the absorber?
   // G4ThreeVector volumePosition =
@@ -177,12 +179,12 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
               << " subdet ID <" << subdet_ << ">, layer <" << layer
               << "> and section <" << section << ">, copynum <" << copyNum
               << ">" << std::endl;
-    hit->Print();
+    hit.Print();
     std::cout << std::endl;
   }
 
   // Insert the hit into the hits collection.
-  hitsCollection_->insert(hit);
+  hits_.push_back(hit);
 
   return true;
 }

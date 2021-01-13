@@ -31,7 +31,7 @@ class ScoringPlaneSD : public SensitiveDetector {
    * Check if the input logical volume is a scoring plane we should include.
    */
   bool isSensDet(G4LogicalVolume* volume) const final override {
-    return volume ? volume->GetName().contains("sp_ecal") : false;
+    return volume->GetName().contains(match_substr_);
   }
 
   /**
@@ -52,6 +52,9 @@ class ScoringPlaneSD : public SensitiveDetector {
   virtual void saveHits(framework::Event& event) final override;
 
  private:
+  /// Substring to match to logical volumes
+  std::string match_substr_;
+  
   /// Name of output collection to add
   std::string collection_name_;
 

@@ -75,6 +75,11 @@ setup_library(module SimCore
               name Generators
               dependencies SimCore::SimCore SimCore::LHE)
 
+# Sensitive Detectors library
+setup_library(module SimCore
+              name SDs
+              dependencies SimCore::SimCore)
+
 # Set some target properties
 set_target_properties(SimCore
                       PROPERTIES CXX_STANDARD 17

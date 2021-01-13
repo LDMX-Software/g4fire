@@ -4,30 +4,47 @@
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
-#include "SimCore/CalorimeterSD.h"
-
-// Forward declarations
-class G4Step;
-class G4TouchableHistory;
+#include "SimCore/SensitiveDetector.h"
 
 namespace simcore {
 
 /**
  * Class defining a sensitive detector of type HCal.
  */
-class HcalSD : public CalorimeterSD {
+class HcalSD : public SensitiveDetector {
  public:
+
+  /// name of collection to be added to event bus
+  static const std::string COLLECTION_NAME;
+
   /**
-   * Class constructor.
+   * Constructor
    *
-   * @param[in] name The namme of the sensitive detector.
-   * @param[in] collectionName Name of the colleciton of hits.
-   * #param[in] subDetID The subdetectorID
+   * @param name The name of the sensitive detector.
+   * @param ci Conditions interface handle
+   * @param params python configuration parameters
    */
-  HcalSD(G4String name, G4String collectionName, int subDetID);
+  HcalSD(const std::string& name,
+                 simcore::ConditionsInterface& ci,
+                 const framework::config::Parameters& params);
+
 
   /// Destructor
   ~HcalSD();
+
+  /**
+   * Check if the input logical volume is a part of the hcal sensitive
+   * volumes.
+   *
+   * @note Depends on the volume names defined in the GDML!
+   */
+  bool isSensDet(G4LogicalVolume* volume) const final override {
+    auto region = volume->GetRegion();
+    if (region and region->GetName().contains("CalorimeterRegion")) {
+      return volume->GetName().contains("ScintBox");
+    }
+    return false;
+  }
 
   /**
    * Create a hit out of the energy deposition deposited during a
@@ -36,7 +53,15 @@ class HcalSD : public CalorimeterSD {
    * @param[in] step The current step.
    * @param[in] history The readout history.
    */
-  G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+  virtual G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) final override;
+
+  /**
+   * Add our hits to the event bus and then reset the container
+   */
+  virtual void saveHits(framework::Event& event) final override {
+    event.add(COLLECTION_NAME, hits_);
+    hits_.clear();
+  }
 
  private:
   // TODO: document!
@@ -44,6 +69,9 @@ class HcalSD : public CalorimeterSD {
 
   // TODO: document!
   double birksc2_;
+
+  // collection of hits to write to event bus
+  std::vector<simcore::event::SimCalorimeterHit> hits_;
 
 };  // HcalSD
 
