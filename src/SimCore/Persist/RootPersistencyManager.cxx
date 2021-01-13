@@ -18,6 +18,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/PluginFactory.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/UserEventInformation.h"
@@ -95,7 +96,9 @@ void RootPersistencyManager::buildEvent(const G4Event *anEvent) {
   simParticleBuilder_.buildSimParticles(event_);
 
   // Copy hit objects from SD hit collections into the output event.
-  writeHitsCollections(anEvent, event_);
+  for (auto& sd : simcore::PluginFactory::getInstance().getSensitiveDetectors()) {
+    sd->saveHits(*event_);
+  }
 }
 
 void RootPersistencyManager::writeHeader(const G4Event *anEvent) {

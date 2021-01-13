@@ -1,74 +1,65 @@
 #ifndef SIMCORE_SCORINGPLANESD_H
 #define SIMCORE_SCORINGPLANESD_H
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
-#include "G4VSensitiveDetector.hh"
-
-/*~~~~~~~~~~~~~~*/
-/*   DetDescr   */
-/*~~~~~~~~~~~~~~*/
 #include "DetDescr/DetectorID.h"
 
-/*~~~~~~~~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~~~~~~~~*/
-#include "SimCore/G4TrackerHit.h"
-
-// Forward declaration
-class G4Step;
+#include "SimCore/SensitiveDetector.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace simcore {
 
 /**
  * Class defining a basic sensitive detector for scoring planes.
  */
-class ScoringPlaneSD : public G4VSensitiveDetector {
+class ScoringPlaneSD : public SensitiveDetector {
  public:
   /**
    * Constructor
    *
    * @param name The name of the sensitive detector.
-   * @param collectionID The name of the hits collection.
-   * @param subDetID The subdetector ID.
+   * @param ci Conditions interface handle
+   * @param params python configuration parameters
    */
-  ScoringPlaneSD(G4String name, G4String colName, int subDetID);
+  ScoringPlaneSD(const std::string& name,
+                 simcore::ConditionsInterface& ci,
+                 const framework::config::Parameters& params);
 
   /** Destructor */
   ~ScoringPlaneSD();
 
   /**
-   * Process a step and create a hit out of it.
-   *
-   * @param step The current step.
-   * @param history The readout history.
+   * Check if the input logical volume is a scoring plane we should include.
    */
-  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
+  bool isSensDet(G4LogicalVolume* volume) const final override {
+    return volume ? volume->GetName().contains("sp_ecal") : false;
+  }
 
   /**
-   * Initialize the sensitive detector.
+   * This is Geant4's handle to tell us that a particle has stepped
+   * through our sensitive detector and we should process its interaction with us.
    *
-   * @param hcEvent The hits collections associated with this event.
+   * @param[in] step the step that happened within one of our logical volumes
+   * @param[in] hist the touchable history of the step
    */
-  void Initialize(G4HCofThisEvent* hcEvent);
+  virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist) final override;
 
   /**
-   * End of event hook.
+   * We are given the event bus here and we must decide
+   * now what to persist into the event.
    *
-   * @param hcEvent The hits collections associated with this event.
+   * @param[in,out] event event bus to add thing(s) to
    */
-  void EndOfEvent(G4HCofThisEvent* hcEvent);
+  virtual void saveHits(framework::Event& event) final override;
 
  private:
-  /** Output hits collection */
-  G4TrackerHitsCollection* hitsCollection_{nullptr};
+  /// Name of output collection to add
+  std::string collection_name_;
 
-  /** The detector ID. */
-  //            DetectorID* detID_{new DefaultDetectorID()};
+  /// The actual output collection
+  std::vector<simcore::event::SimTrackerHit> hits_;
 
 };  // ScoringPlaneSD
 
 }  // namespace simcore
 
-#endif  // SIMCORE_SCORINGPLANESD_H_
+#endif  // SIMCORE_SCORINGPLANESD_H

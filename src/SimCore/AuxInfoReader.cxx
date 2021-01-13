@@ -129,7 +129,7 @@ void AuxInfoReader::createSensitiveDetector(
   } else if (sdType == "HcalSD") {
     sd = new HcalSD(theSensDetName, hcName, subdetID);
   } else if (sdType == "ScoringPlaneSD") {
-    sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID);
+    //sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID);
   } else if (sdType == "TrigScintSD") {
     sd = new TrigScintSD(theSensDetName, hcName, subdetID);
   } else {
