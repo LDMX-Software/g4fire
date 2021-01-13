@@ -129,4 +129,30 @@ void PluginFactory::createBiasingOperator(const std::string& className,
   biasing_operators_.push_back(bop);
 }
 
+void PluginFactory::registerSensitiveDetector(
+    const std::string& className, SensitiveDetectorBuilder* builder) {
+
+  if (registeredDetectors_.find(className) != registeredDetectors_.end()) {
+    EXCEPTION_RAISE(
+        "ExistingOperatorDefinition",
+        "The biasing operator " + className + " has already been registered.");
+  }
+
+  registeredDetectors_[className] = builder;
+}
+
+void PluginFactory::createSensitiveDetector(const std::string& className,
+                                            const std::string& instanceName,
+                                            simcore::ConditionsInterface& ci,
+                                            const framework::config::Parameters& parameters) {
+  if (registeredDetectors_.find(className) == registeredDetectors_.end()) {
+    EXCEPTION_RAISE("CreateSensitiveDetector",
+                    "Failed to create detector '" + className + "'.");
+  }
+
+  auto det{registeredDetectors_[className](instanceName, ci, parameters)};
+
+  sensitive_detectors_.push_back(det);
+}
+
 }  // namespace simcore

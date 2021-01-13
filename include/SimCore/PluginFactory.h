@@ -14,6 +14,7 @@
 #include "SimCore/UserAction.h"
 #include "SimCore/PrimaryGenerator.h"
 #include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/SensitiveDetector.h"
 
 namespace simcore {
 
@@ -164,6 +165,46 @@ class PluginFactory {
   void createBiasingOperator(const std::string& className,
                     const std::string& instanceName, const framework::config::Parameters& parameters);
 
+  /**
+   * Retrieve the current list of created sensitive detectors.
+   *
+   * @return vector of pointers to sensitive detectors
+   */
+  std::vector<SensitiveDetector*> getSensitiveDetectors() const { return sensitive_detectors_; }
+
+  /**
+   * Put the sensitive detector into the list of possible sensitive detectors.
+   *
+   * @see simcore::SensitiveDetector::declare for where this method is called.
+   * The declare method is then called using the DECLARE_SENSITIVEDETECTOR macro.
+   *
+   * @param[in] className Full name of class (including namespaces) of the detector
+   * @param[in] builder a pointer to the function that should be used to create the detector
+   */
+  void registerSensitiveDetector(const std::string& className, SensitiveDetectorBuilder* builder);
+
+  /**
+   * Create a sensitive detector from the input parameters.
+   *
+   * This checks the list of registered sensitive detectors for the input className.
+   * If the className is not found, then we assume that the sensitive detector is not
+   * registered and throw and exception.
+   *
+   * Otherwise, we use the registered builder to create an operator and give
+   * it the passed instanceName and paramters. Then we store the pointer to
+   * this object in our list of sensitive detectors.
+   *
+   * @note The G4SDManager owns and cleans up the sensitive detectors that are
+   * registered with it. We register all sensitive detectors in the constructor.
+   *
+   * @param[in] classNmae Full name of class (including namespaces) of the detector
+   * @param[in] instanceName unique run-time instance name for the detector
+   * @param[in] ci handle to conditions interface to pass to the detector
+   * @param[in] parameters Parameters to pass to the detector for configuration
+   */
+  void createSensitiveDetector(const std::string& className, const std::string& instanceName, 
+      simcore::ConditionsInterface& ci, const framework::config::Parameters& parameters);
+
  private:
   /// Constructor - private to prevent initialization
   PluginFactory() {}
@@ -185,6 +226,12 @@ class PluginFactory {
 
   /// Container for all biasing operators
   std::vector<simcore::XsecBiasingOperator*> biasing_operators_;
+
+  /// A map of all registered sensitive detectors
+  std::map<std::string, simcore::SensitiveDetectorBuilder*> registeredDetectors_;
+
+  /// Container of all created sensitive detectors
+  std::vector<simcore::SensitiveDetector*> sensitive_detectors_;
 
 };  // PluginFactory
 

@@ -46,11 +46,24 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
   /**
    * Construct the detector.
+   *
+   * This is called in G4RunManager::InitializeGeometry()
+   * and is comes *before* ConstructSDandField().
+   *
    * @return The top volume of the detector.
    */
   G4VPhysicalVolume *Construct();
 
   /**
+   * Construct sensitive detectors and magnetic field.
+   *
+   * This is called in G4RunManager::InitializeGeometry()
+   * and is comes *after* Construct(), so we can assume
+   * logical volumes are created.
+   *
+   * We use this opportunity to not only construct our sensitive
+   * detectors, but also to attach the biasing operators to
+   * the logical volumes that they should be attached to.
    */
   void ConstructSDandField();
 
@@ -75,6 +88,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
   /// The set of parameters used to configure this class
   const framework::config::Parameters& parameters_;
+
+  /// Handle to the interface for conditions
+  ConditionsInterface& conditions_interface_;
 };
 
 }  // namespace simcore
