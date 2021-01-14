@@ -9,7 +9,7 @@
 
 namespace simcore {
 
-int TrackMap::findIncident(G4int trackID) {
+int TrackMap::findIncident(G4int trackID) const {
   int currTrackID = trackID;
   bool foundIncident = false;
   while (not foundIncident) {

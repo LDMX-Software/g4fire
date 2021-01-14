@@ -17,10 +17,7 @@ const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";
 
 EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
-    : SensitiveDetector(name, ci, p) {
-  track_map_ =
-      simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap();
-}
+    : SensitiveDetector(name, ci, p) {}
 
 EcalSD::~EcalSD() {}
 
@@ -70,7 +67,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   //  time of this hit
   const G4Track* track = aStep->GetTrack();
   int track_id = track->GetTrackID();
-  hit.addContrib(track_map_->findIncident(track_id), track_id,
+  hit.addContrib(getTrackMap().findIncident(track_id), track_id,
                  track->GetParticleDefinition()->GetPDGEncoding(),
                  edep, track->GetGlobalTime());
 

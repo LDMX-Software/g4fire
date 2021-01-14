@@ -50,7 +50,7 @@ class TrackMap {
    * @param trackID The track ID of the trajectory to search its parentage for
    * the incident
    */
-  int findIncident(G4int trackID);
+  int findIncident(G4int trackID) const;
 
   /**
    * Return true if the given track ID has an explicitly assigned trajectory.

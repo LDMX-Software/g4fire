@@ -97,9 +97,6 @@ class EcalSD : public SensitiveDetector {
    */
   std::map<G4VSolid*, G4Polyhedron*> polyMap_;
 
-  /// Handle to the track map for finding incidient IDs
-  simcore::TrackMap* track_map_;
-
   /// Collection of hits to add to the event
   std::vector<simcore::event::SimCalorimeterHit> hits_;
 };

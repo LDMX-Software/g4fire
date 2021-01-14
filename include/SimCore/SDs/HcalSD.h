@@ -74,9 +74,6 @@ class HcalSD : public SensitiveDetector {
   // collection of hits to write to event bus
   std::vector<simcore::event::SimCalorimeterHit> hits_;
 
-  /// Handle to the track map for finding incidient IDs
-  simcore::TrackMap* track_map_;
-
 };  // HcalSD
 
 }  // namespace simcore

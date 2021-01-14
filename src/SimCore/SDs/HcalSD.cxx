@@ -20,10 +20,7 @@ const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 
 HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
-    : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {
-  track_map_ =
-      simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap();
-}
+    : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {}
 
 HcalSD::~HcalSD() {}
 
@@ -68,6 +65,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //              we have to divide the energy deposit in MeV by the
   //              product of the step length (in cm) and the density
   //              of the scintillator:
+
 
   G4double birksFactor(1.0);
   G4double stepLength = aStep->GetStepLength() / CLHEP::cm;
@@ -155,7 +153,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //  time of this hit
   const G4Track* track = aStep->GetTrack();
   int track_id = track->GetTrackID();
-  hit.addContrib(track_map_->findIncident(track_id), track_id,
+  hit.addContrib(getTrackMap().findIncident(track_id), track_id,
                  track->GetParticleDefinition()->GetPDGEncoding(),
                  edep, track->GetGlobalTime());
 

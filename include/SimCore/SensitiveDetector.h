@@ -5,6 +5,8 @@
 #include "Framework/RunHeader.h"
 
 #include "SimCore/ConditionsInterface.h"
+#include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/TrackMap.h"
 
 //------------//
 //   Geant4   //
@@ -105,6 +107,17 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * @returns true if step is coming from neutral/charged genatino
    */
   bool isGeantino(const G4Step* step) const;
+
+  /**
+   * Get a handle to the current track map.
+   *
+   * The track map is created only after the event
+   * begins, so you will get a segmentation violation
+   * if you call this function before an event has started.
+   */
+  const TrackMap& getTrackMap() const {
+    return *(simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap());
+  }
 
  private:
   /// Handle to our interface to conditions objects
