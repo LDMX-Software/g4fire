@@ -34,7 +34,7 @@ G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   G4double edep = step->GetTotalEnergyDeposit();
 
   // Create a new hit object.
-  simcore::event::SimTrackerHit hit;
+  simcore::event::SimTrackerHit& hit{hits_.emplace_back()};
 
   // Assign track ID for finding the SimParticle in post event processing.
   hit.setTrackID(step->GetTrack()->GetTrackID());
@@ -76,8 +76,6 @@ G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   int cpNumber = prePoint->GetTouchableHandle()->GetCopyNumber();
   ldmx::SimSpecialID id = ldmx::SimSpecialID::ScoringPlaneID(cpNumber);
   hit.setID(id.raw());
-
-  hits_.push_back(hit);
 
   return true;
 }

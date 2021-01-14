@@ -1,8 +1,6 @@
 #include "SimCore/SDs/EcalSD.h"
 
 // Geant4
-#include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh"
 #include "G4Polyhedron.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
@@ -15,10 +13,14 @@
 
 namespace simcore {
 
-EcalSD::EcalSD(const std::string& name,
-         simcore::ConditionsInterface& ci,
-         const framework::config::Parameters& p) :
-  SensitiveDetector(name, ci, p) {}
+const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";
+
+EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
+               const framework::config::Parameters& p)
+    : SensitiveDetector(name, ci, p) {
+  track_map_ =
+      simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap();
+}
 
 EcalSD::~EcalSD() {}
 
@@ -26,19 +28,11 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   const ldmx::EcalHexReadout& hitMap = getCondition<ldmx::EcalHexReadout>(
       ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
-  // Determine if current particle of this step is a Geantino.
-  G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
-  bool isGeantino = false;
-  if (pdef == G4Geantino::Definition() ||
-      pdef == G4ChargedGeantino::Definition()) {
-    isGeantino = true;
-  }
-
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
 
   // Skip steps with no energy dep which come from non-Geantino particles.
-  if (edep == 0.0 && !isGeantino) {
+  if (edep == 0.0 and not isGeantino(aStep)) {
     if (verboseLevel > 2) {
       G4cout << "CalorimeterSD skipping step with zero edep." << G4endl
              << G4endl;
@@ -46,38 +40,39 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     return false;
   }
 
-  // Create a new cal hit.
-  simcore::event::SimCalorimeterHit hit;
-
-  // Set the edep.
-  hit.setEdep(edep);
+  // Create a new cal hit at back of list
+  simcore::event::SimCalorimeterHit& hit{hits_.emplace_back()};
 
   // Compute the hit position using the utility function.
   G4ThreeVector hitPosition = getHitPosition(aStep);
   hit.setPosition(hitPosition.x(), hitPosition.y(), hitPosition.z());
 
-  // Set the global time.
-  hit.setTime(aStep->GetTrack()->GetGlobalTime());
-
   // Create the ID for the hit.
   int cpynum = aStep->GetPreStepPoint()
                    ->GetTouchableHandle()
                    ->GetHistory()
-                   ->GetVolume(2) //this index depends on GDML implementation
+                   ->GetVolume(2)  // this index depends on GDML implementation
                    ->GetCopyNo();
   int layerNumber;
   layerNumber = int(cpynum / 7);
   int module_position = cpynum % 7;
 
-  ldmx::EcalID partialId = hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
+  ldmx::EcalID partialId =
+      hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
   ldmx::EcalID id(layerNumber, module_position, partialId.cell());
   hit.setID(id.raw());
 
-  // Set the track ID on the hit.
-  hit.setTrackID(aStep->GetTrack()->GetTrackID());
-
-  // Set the PDG code from the track.
-  hit.setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+  // add one contributor for this hit with
+  //  ID of ancestor incident on Cal-Region
+  //  ID of this track
+  //  PDG of this track
+  //  EDEP 
+  //  time of this hit
+  const G4Track* track = aStep->GetTrack();
+  int track_id = track->GetTrackID();
+  hit.addContrib(track_map_->findIncident(track_id), track_id,
+                 track->GetParticleDefinition()->GetPDGEncoding(),
+                 edep, track->GetGlobalTime());
 
   if (this->verboseLevel > 2) {
     G4cout << "Created new SimCalorimeterHit in detector " << this->GetName()
@@ -85,9 +80,6 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     hit.Print();
     G4cout << G4endl;
   }
-
-  // Insert the hit into the hits collection.
-  hits_.push_back(hit);
 
   return true;
 }
@@ -141,3 +133,5 @@ G4ThreeVector EcalSD::getHitPosition(G4Step* aStep) {
 }
 
 }  // namespace simcore
+
+DECLARE_SENSITIVEDETECTOR(simcore, EcalSD)

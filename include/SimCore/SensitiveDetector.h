@@ -98,6 +98,14 @@ class SensitiveDetector : public G4VSensitiveDetector {
     return conditions_interface_.getCondition<T>(condition_name);
   }
 
+  /**
+   * Check if the passed step is a step of a geantino
+   *
+   * @param[in] step Current step to check
+   * @returns true if step is coming from neutral/charged genatino
+   */
+  bool isGeantino(const G4Step* step) const;
+
  private:
   /// Handle to our interface to conditions objects
   simcore::ConditionsInterface& conditions_interface_;

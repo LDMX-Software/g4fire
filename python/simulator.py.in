@@ -101,17 +101,6 @@ class simulator(Producer):
         self.darkbrem_method = 0
         self.darkbrem_globalxsecfactor = 1.
 
-    def declareGeoProvide(self):
-      """
-        TODO: Move this to the ECal module.
-      """
-        
-      #######################################################################
-      # Declare the Ecal Geometry Provider that the simulation requires
-      from LDMX.Ecal import EcalGeometry
-      EcalGeometry.EcalGeometryProvider.getInstance()
-
-
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
 
@@ -125,12 +114,26 @@ class simulator(Producer):
         See Also
         --------
         @PYTHON_PACKAGE_NAME@.Detectors.makePath for definitions of the path making functions.
+        @PYTHON_PACKAGE_NAME@.SimCore.sensitive_detectors for configuring the SDs
         """
 
         from @PYTHON_PACKAGE_NAME@.Detectors import makePath as mP
+        from @PYTHON_PACKAGE_NAME@.SimCore import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
+        self.sensitive_detectors = [
+                sds.TrackerSD.tagger(),
+                sds.TrackerSD.recoil(),
+                sds.HcalSD(),
+                sds.EcalSD(),
+                sds.TrigScintSD()]
         if include_scoring_planes :
             self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
+            self.sensitive_detectors.extend([
+                sds.ScoringPlaneSD.ecal(),
+                sds.ScoringPlaneSD.hcal(),
+                sds.ScoringPlaneSD.target(),
+                sds.ScoringPlaneSD.magnet()
+                ])
 
     def darkBremOn(self,ap_mass,lhe_file_path,method=1,globalxsecfactor=1.) :
         """Configure the dark brem simulation

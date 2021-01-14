@@ -12,6 +12,8 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "SimCore/SensitiveDetector.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/TrackMap.h"
 
 // ROOT
 #include "TMath.h"
@@ -27,6 +29,9 @@ namespace simcore {
  */
 class EcalSD : public SensitiveDetector {
  public:
+  /// Name of output collection of hits
+  static const std::string COLLECTION_NAME;
+
   /**
    * Class constructor.
    * @param name The name of the sensitive detector.
@@ -91,6 +96,9 @@ class EcalSD : public SensitiveDetector {
    * Map of polygonal layers for getting Z positions.
    */
   std::map<G4VSolid*, G4Polyhedron*> polyMap_;
+
+  /// Handle to the track map for finding incidient IDs
+  simcore::TrackMap* track_map_;
 
   /// Collection of hits to add to the event
   std::vector<simcore::event::SimCalorimeterHit> hits_;

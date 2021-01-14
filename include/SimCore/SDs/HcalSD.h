@@ -5,6 +5,9 @@
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
 #include "SimCore/SensitiveDetector.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/TrackMap.h"
 
 namespace simcore {
 
@@ -70,6 +73,9 @@ class HcalSD : public SensitiveDetector {
 
   // collection of hits to write to event bus
   std::vector<simcore::event::SimCalorimeterHit> hits_;
+
+  /// Handle to the track map for finding incidient IDs
+  simcore::TrackMap* track_map_;
 
 };  // HcalSD
 

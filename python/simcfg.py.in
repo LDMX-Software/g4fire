@@ -104,11 +104,11 @@ class SensitiveDetector:
         Unique name for this particular instance of a PrimaryGenerator
     class_name : str
         Name of C++ class that this PrimaryGenerator should be
-    module_name : str, optional
+    module_name : str
         Name of C++ library that this primary generator is compiled into
     """
 
-    def __init__(self, instance_name, class_name, module_name = 'SimCore'):
+    def __init__(self, instance_name, class_name, module_name):
         self.class_name    = class_name
         self.instance_name = instance_name
 

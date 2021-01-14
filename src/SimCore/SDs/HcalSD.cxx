@@ -10,39 +10,30 @@
 
 // Geant4
 #include "G4Box.hh"
-#include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh"
-#include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
-#include "G4SDManager.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
 namespace simcore {
  
-static const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
+const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 
 HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
-    const framework::config::Parameters& p) : SensitiveDetector(name, ci, p),
-      birksc1_(1.29e-2),
-      birksc2_(9.59e-6) {}
+               const framework::config::Parameters& p)
+    : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {
+  track_map_ =
+      simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap();
+}
 
 HcalSD::~HcalSD() {}
 
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
-  // Determine if current particle of this step is a Geantino.
-  G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
-  bool isGeantino = false;
-  if (pdef == G4Geantino::Definition() ||
-      pdef == G4ChargedGeantino::Definition()) {
-    isGeantino = true;
-  }
 
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
 
   // Skip steps with no energy dep which come from non-Geantino particles.
-  if (edep == 0.0 && !isGeantino) {
+  if (edep == 0.0 and not isGeantino(aStep)) {
     if (verboseLevel > 2) {
       std::cout << "CalorimeterSD skipping step with zero edep." << std::endl
                 << std::endl;
@@ -93,11 +84,11 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
       birksFactor = 1.0;
   }
 
-  // Create a new cal hit.
-  simcore::event::SimCalorimeterHit hit;
+  // update edep to include birksFactor
+  edep *= birksFactor;
 
-  // Set the edep.
-  hit.setEdep(edep * birksFactor);
+  // Create a new cal hit.
+  simcore::event::SimCalorimeterHit& hit{hits_.emplace_back()};
 
   // Get the scintillator solid box
   G4Box* scint = static_cast<G4Box*>(aStep->GetPreStepPoint()
@@ -117,9 +108,6 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
                                     ->GetTopTransform()
                                     .TransformPoint(position);
   hit.setPosition(position[0], position[1], position[2]);
-
-  // Set the global time.
-  hit.setTime(aStep->GetTrack()->GetGlobalTime());
 
   // Create the ID for the hit.
   int copyNum = aStep->GetPreStepPoint()
@@ -159,11 +147,17 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   ldmx::HcalID id(section, layer, stripID);
   hit.setID(id.raw());
 
-  // Set the track ID on the hit.
-  hit.setTrackID(aStep->GetTrack()->GetTrackID());
-
-  // Set the PDG code from the track.
-  hit.setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+  // add one contributor for this hit with
+  //  ID of ancestor incident on Cal-Region
+  //  ID of this track
+  //  PDG of this track
+  //  EDEP (including birks factor)
+  //  time of this hit
+  const G4Track* track = aStep->GetTrack();
+  int track_id = track->GetTrackID();
+  hit.addContrib(track_map_->findIncident(track_id), track_id,
+                 track->GetParticleDefinition()->GetPDGEncoding(),
+                 edep, track->GetGlobalTime());
 
   // do we want to set the hit coordinate in the middle of the absorber?
   // G4ThreeVector volumePosition =
@@ -174,17 +168,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // position[2]); elseif (section==ldmx::HcalID::LEFT || section==ldmx::HcalID::RIGHT)
   // hit->setPosition(volumePosition.x(),position[1] , position[2]);
 
-  if (this->verboseLevel > 2) {
-    std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
-              << " subdet ID <" << subdet_ << ">, layer <" << layer
-              << "> and section <" << section << ">, copynum <" << copyNum
-              << ">" << std::endl;
-    hit.Print();
-    std::cout << std::endl;
-  }
-
-  // Insert the hit into the hits collection.
-  hits_.push_back(hit);
+  if (this->verboseLevel > 2) { hit.Print(); }
 
   return true;
 }

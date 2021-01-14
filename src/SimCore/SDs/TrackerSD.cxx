@@ -4,8 +4,6 @@
 #include <iostream>
 
 // Geant4
-#include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
@@ -13,7 +11,8 @@ namespace simcore {
 
 TrackerSD::TrackerSD(const std::string& name,
             simcore::ConditionsInterface& ci,
-            const framework::config::Parameters& p) {
+            const framework::config::Parameters& p) 
+    : SensitiveDetector(name, ci, p) {
 
   subsystem_       = p.getParameter<std::string>("subsystem");
   collection_name_ = p.getParameter<std::string>("collection_name");
@@ -25,19 +24,12 @@ TrackerSD::TrackerSD(const std::string& name,
 TrackerSD::~TrackerSD() {}
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
-  // Determine if current particle of this step is a Geantino.
-  G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
-  bool isGeantino = false;
-  if (pdef == G4Geantino::Definition() ||
-      pdef == G4ChargedGeantino::Definition()) {
-    isGeantino = true;
-  }
 
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
 
   // Skip steps with no energy dep which come from non-Geantino particles.
-  if (edep == 0.0 && !isGeantino) {
+  if (edep == 0.0 and not isGeantino(aStep)) {
     if (verboseLevel > 2) {
       std::cout << "TrackerSD skipping step with zero edep" << std::endl
                 << std::endl;
@@ -46,7 +38,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   }
 
   // Create a new hit object.
-  simcore::event::SimTrackerHit hit;
+  simcore::event::SimTrackerHit& hit{hits_.emplace_back()};
 
   // Assign track ID for finding the SimParticle in post event processing.
   hit.setTrackID(aStep->GetTrack()->GetTrackID());
@@ -99,8 +91,6 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   // Set energy and pdg code of SimParticle (common things requested)
   hit.setEnergy(postPoint->GetTotalEnergy());
   hit.setPdgID(aStep->GetTrack()->GetDynamicParticle()->GetPDGcode());
-
-  hits_.push_back(hit);
 
   return true;
 }
