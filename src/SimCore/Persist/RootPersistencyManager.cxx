@@ -75,11 +75,14 @@ G4bool RootPersistencyManager::Store(const G4Run *) {
   // the run manager.
 
   // throws an exception if not correct run number
-  ldmx::RunHeader& runHeader = file_.getRunHeader(run_);
+  auto runHeader = file_.getRunHeader(run_);
 
   // Set parameter value with number of events processed.
   runHeader.setIntParameter("Event Count", eventsCompleted_);
   runHeader.setIntParameter("Events Began", eventsBegan_);
+
+  // debug printout TODO add to logging
+  file_.getRunHeader(run_).Print();
 
   return true;
 }
@@ -104,11 +107,15 @@ void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   // Retrieve a mutable version of the event header
   ldmx::EventHeader &eventHeader = event_->getEventHeader();
 
-  auto event_info{static_cast<UserEventInformation*>(anEvent->GetUserInformation())};
-
-  eventHeader.setWeight(event_info->getWeight());
-  eventHeader.setFloatParameter("total_photonuclear_energy"  , event_info->getPNEnergy());
-  eventHeader.setFloatParameter("total_electronuclear_energy", event_info->getENEnergy());
+  // Set the event weight
+  double weight{1};
+  if (anEvent->GetUserInformation() != nullptr) {
+    weight = static_cast<UserEventInformation *>(anEvent->GetUserInformation())
+                 ->getWeight();
+  } else if (anEvent->GetPrimaryVertex(0)) {
+    weight = anEvent->GetPrimaryVertex(0)->GetWeight();
+  }
+  eventHeader.setWeight(weight);
 
   // Save the state of the random engine to an output stream. A string
   // is then extracted and saved to the event header.

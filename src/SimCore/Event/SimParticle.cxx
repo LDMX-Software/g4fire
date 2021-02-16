@@ -31,7 +31,7 @@ ClassImp(ldmx::SimParticle)
     /// gamma --> mu+ mu-
     procMap["GammaToMuPair"] = ProcessType::GammaToMuPair;
     /// e- Z --> e- Z A'
-    procMap["eDarkBrem"] = ProcessType::eDarkBrem;
+    procMap["eDBrem"] = ProcessType::eDarkBrem;
     return procMap;
   }
 
