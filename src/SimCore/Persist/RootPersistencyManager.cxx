@@ -75,7 +75,7 @@ G4bool RootPersistencyManager::Store(const G4Run *) {
   // the run manager.
 
   // throws an exception if not correct run number
-  ldmx::RunHeader& runHeader = file_.getRunHeader(run_);
+  ldmx::RunHeader &runHeader = file_.getRunHeader(run_);
 
   // Set parameter value with number of events processed.
   runHeader.setIntParameter("Event Count", eventsCompleted_);
@@ -90,11 +90,10 @@ void RootPersistencyManager::buildEvent(const G4Event *anEvent) {
   // Set basic event information.
   writeHeader(anEvent);
 
-  // Set pointer to current G4Event.
-  simParticleBuilder_.setCurrentEvent(anEvent);
+  TrackMap* tracks{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
-  // Build the SimParticle list for the output ROOT event.
-  simParticleBuilder_.buildSimParticles(event_);
+  tracks->traceAncestry();
+  event_->add("SimParticles", tracks->getParticleMap());
 
   // Copy hit objects from SD hit collections into the output event.
   writeHitsCollections(anEvent, event_);
@@ -104,11 +103,14 @@ void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   // Retrieve a mutable version of the event header
   ldmx::EventHeader &eventHeader = event_->getEventHeader();
 
-  auto event_info{static_cast<UserEventInformation*>(anEvent->GetUserInformation())};
+  auto event_info{
+      static_cast<UserEventInformation *>(anEvent->GetUserInformation())};
 
   eventHeader.setWeight(event_info->getWeight());
-  eventHeader.setFloatParameter("total_photonuclear_energy"  , event_info->getPNEnergy());
-  eventHeader.setFloatParameter("total_electronuclear_energy", event_info->getENEnergy());
+  eventHeader.setFloatParameter("total_photonuclear_energy",
+                                event_info->getPNEnergy());
+  eventHeader.setFloatParameter("total_electronuclear_energy",
+                                event_info->getENEnergy());
 
   // Save the state of the random engine to an output stream. A string
   // is then extracted and saved to the event header.

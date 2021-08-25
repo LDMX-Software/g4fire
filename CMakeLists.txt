@@ -48,7 +48,8 @@ setup_library(module SimCore
 
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
-                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-zA-Z]*.cxx)
 
 # Setup the library
 setup_library(module SimCore
@@ -115,3 +116,8 @@ if(INSTALL_EXAMPLE_DB_LIBRARIES)
 endif()
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
+
+# add visualization executable
+add_executable(g4-vis ${PROJECT_SOURCE_DIR}/src/SimCore/g4_vis.cxx)
+target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::SimCore)
+install(TARGETS g4-vis DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
