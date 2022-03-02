@@ -15,7 +15,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
 
-namespace simcore {
+namespace g4fire {
 
 PluginFactory& PluginFactory::getInstance() {
   // the_factory is created on first call to getInstance
@@ -140,4 +140,4 @@ void PluginFactory::createBiasingOperator(
                  << className << "' has been created.";
 }
 
-}  // namespace simcore
+}  // namespace g4fire

@@ -14,7 +14,7 @@
 
 class G4Event;
 
-namespace simcore {
+namespace g4fire {
 
 class Parameters;
 
@@ -49,6 +49,6 @@ class LHEPrimaryGenerator : public PrimaryGenerator {
   LHEReader* reader_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_LHEPRIMARYGENERATOR_H

@@ -4,7 +4,7 @@
 #include "G4Event.hh"
 #include "G4EventManager.hh"
 
-namespace simcore {
+namespace g4fire {
 
 void TrackMap::insert(const G4Track* track) {
   ancestry_[track->GetTrackID()] = std::make_pair(track->GetParentID(),isInCalorimeterRegion(track));
@@ -108,4 +108,4 @@ bool TrackMap::isInCalorimeterRegion(const G4Track* track) const {
   return region.contains("Calorimeter");
 }
 
-}  // namespace simcore
+}  // namespace g4fire

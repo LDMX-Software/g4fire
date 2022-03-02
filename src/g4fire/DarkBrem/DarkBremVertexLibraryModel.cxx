@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-namespace simcore {
+namespace g4fire {
 namespace darkbrem {
 
 DarkBremVertexLibraryModel::DarkBremVertexLibraryModel(
@@ -448,4 +448,4 @@ DarkBremVertexLibraryModel::GetMadgraphData(double E0) {
 }
 
 }  // namespace darkbrem
-}  // namespace simcore
+}  // namespace g4fire

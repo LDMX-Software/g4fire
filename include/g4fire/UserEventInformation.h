@@ -3,7 +3,7 @@
 
 #include "G4VUserEventInformation.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * Encapsulates user defined information associated with a Geant4 event.
@@ -142,6 +142,6 @@ class UserEventInformation : public G4VUserEventInformation {
    */
   bool last_step_en_{false};
 };
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_USEREVENTINFORMATION_H

@@ -29,7 +29,7 @@
 #include "g4fire/UserRegionInformation.h"
 #include "g4fire/VisAttributesStore.h"
 
-namespace simcore::geo {
+namespace g4fire::geo {
 
 AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser,
                              framework::config::Parameters ps,
@@ -461,4 +461,4 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   G4cout << G4endl;*/
 }
 
-}  // namespace simcore::geo
+}  // namespace g4fire::geo

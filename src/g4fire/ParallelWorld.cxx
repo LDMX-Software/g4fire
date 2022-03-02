@@ -3,14 +3,14 @@
 
 #include "Framework/Configure/Parameters.h"
 
-namespace simcore {
+namespace g4fire {
 
 ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName,
                              ConditionsInterface &ci)
     : G4VUserParallelWorld(worldName),
       parser_(parser),
       auxInfoReader_(
-          new simcore::geo::AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
+          new g4fire::geo::AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
 
 ParallelWorld::~ParallelWorld() { delete auxInfoReader_; }
 
@@ -33,4 +33,4 @@ void ParallelWorld::ConstructSD() {
 
   auxInfoReader_->assignAuxInfoToVolumes();
 }
-}  // namespace simcore
+}  // namespace g4fire

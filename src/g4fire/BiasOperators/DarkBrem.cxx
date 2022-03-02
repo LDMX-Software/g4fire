@@ -6,7 +6,7 @@
 //------------//
 #include "G4RunManager.hh"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 DarkBrem::DarkBrem(std::string name, const framework::config::Parameters& p)
@@ -48,6 +48,6 @@ void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
 }
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, DarkBrem)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, DarkBrem)

@@ -1,7 +1,7 @@
 
 #include "g4fire/BiasOperators/K0LongInelastic.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 K0LongInelastic::K0LongInelastic(std::string name, const framework::config::Parameters& p)
@@ -32,6 +32,6 @@ G4VBiasingOperation* K0LongInelastic::ProposeOccurenceBiasingOperation(
 }
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, K0LongInelastic)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, K0LongInelastic)

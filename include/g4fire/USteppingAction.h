@@ -21,7 +21,7 @@
 /*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class USteppingAction
@@ -54,6 +54,6 @@ class USteppingAction : public G4UserSteppingAction {
 
 };  // USteppingAction
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_USTEPPINGACTION_H

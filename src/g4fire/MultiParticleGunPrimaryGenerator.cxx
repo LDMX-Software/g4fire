@@ -7,7 +7,7 @@
 
 #include "g4fire/MultiParticleGunPrimaryGenerator.h"
 
-namespace simcore {
+namespace g4fire {
 
 MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
     const std::string& name, framework::config::Parameters& parameters)
@@ -72,6 +72,6 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   }
 }
 
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_GENERATOR(simcore, MultiParticleGunPrimaryGenerator)
+DECLARE_GENERATOR(g4fire, MultiParticleGunPrimaryGenerator)

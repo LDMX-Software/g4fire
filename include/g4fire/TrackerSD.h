@@ -16,7 +16,7 @@
 /*~~~~~~~~~~~~~~~~~~~~*/
 #include "g4fire/G4TrackerHit.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class TrackerSD
@@ -67,6 +67,6 @@ class TrackerSD : public G4VSensitiveDetector {
 
 };  // TrackerID
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_TRACKERSD_H

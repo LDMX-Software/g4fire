@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace simcore {
+namespace g4fire {
 
 LHEEvent::LHEEvent(std::string& line) {
   std::istringstream iss(line);
@@ -102,4 +102,4 @@ void LHEEvent::setVertex(const std::string& line) {
   }
 }
 
-}  // namespace simcore
+}  // namespace g4fire

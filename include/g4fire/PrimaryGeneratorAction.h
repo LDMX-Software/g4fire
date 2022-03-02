@@ -31,7 +31,7 @@
 // Forward declarations
 class G4Event;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class PrimaryGeneratorAction
@@ -117,6 +117,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
 };  // PrimaryGeneratorAction
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_PRIMARYGENERATORACTION_H

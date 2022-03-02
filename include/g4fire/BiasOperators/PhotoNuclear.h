@@ -4,7 +4,7 @@
 
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 /**
@@ -76,6 +76,6 @@ class PhotoNuclear : public XsecBiasingOperator {
 
 };  // PhotoNuclear
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_BIASOPERATORS_PHOTONUCLEAR_H_

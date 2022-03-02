@@ -16,7 +16,7 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace simcore {
+namespace g4fire {
 
 ScoringPlaneSD::ScoringPlaneSD(G4String name, G4String colName, int subDetID)
     : G4VSensitiveDetector(name) {
@@ -115,4 +115,4 @@ void ScoringPlaneSD::EndOfEvent(G4HCofThisEvent*) {
     }
   }
 }
-}  // namespace simcore
+}  // namespace g4fire

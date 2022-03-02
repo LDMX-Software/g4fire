@@ -35,7 +35,7 @@ class Event;
 class RunHeader;
 }  // namespace framework
 
-namespace simcore {
+namespace g4fire {
 namespace persist {
 
 /**
@@ -205,6 +205,6 @@ class RootPersistencyManager : public G4PersistencyManager {
 };
 
 }  // namespace persist
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

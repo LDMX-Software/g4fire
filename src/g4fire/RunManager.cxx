@@ -32,7 +32,7 @@
 #include "G4ProcessTable.hh"
 #include "G4VModularPhysicsList.hh"
 
-namespace simcore {
+namespace g4fire {
 
 RunManager::RunManager(framework::config::Parameters& parameters,
                        ConditionsInterface& ci)
@@ -74,7 +74,7 @@ void RunManager::setupPhysics() {
 
     // create all the biasing operators that will be used
     for (framework::config::Parameters& bop : biasing_operators) {
-      simcore::PluginFactory::getInstance().createBiasingOperator(
+      g4fire::PluginFactory::getInstance().createBiasingOperator(
           bop.getParameter<std::string>("class_name"),
           bop.getParameter<std::string>("instance_name"), bop);
     }
@@ -85,8 +85,8 @@ void RunManager::setupPhysics() {
     // specify which particles are going to be biased
     //  this will put a biasing interface wrapper around *all* processes
     //  associated with these particles
-    for (const simcore::XsecBiasingOperator* bop :
-         simcore::PluginFactory::getInstance().getBiasingOperators()) {
+    for (const g4fire::XsecBiasingOperator* bop :
+         g4fire::PluginFactory::getInstance().getBiasingOperators()) {
       std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
                 << "' set to bias " << bop->getParticleToBias() << std::endl;
       biasingPhysics->Bias(bop->getParticleToBias());
@@ -182,4 +182,4 @@ DetectorConstruction* RunManager::getDetectorConstruction() {
   return static_cast<DetectorConstruction*>(this->userDetector);
 }
 
-}  // namespace simcore
+}  // namespace g4fire

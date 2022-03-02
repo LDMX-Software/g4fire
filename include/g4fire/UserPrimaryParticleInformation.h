@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VUserPrimaryParticleInformation.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class UserPrimaryParticleInformation
@@ -53,6 +53,6 @@ class UserPrimaryParticleInformation
   int hepEvtStatus_{-1};
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

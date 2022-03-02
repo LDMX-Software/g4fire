@@ -16,7 +16,7 @@
 #include "g4fire/DarkBrem/DarkBremVertexLibraryModel.h"
 #include "g4fire/DarkBrem/G4APrime.h"
 
-namespace simcore {
+namespace g4fire {
 namespace darkbrem {
 
 G4double ElementXsecCache::get(G4double energy, G4double A, G4double Z) {
@@ -193,4 +193,4 @@ G4double G4eDarkBremsstrahlung::GetMeanFreePath(const G4Track& track, G4double,
   return SIGMA > DBL_MIN ? 1. / SIGMA : DBL_MAX;
 }
 }  // namespace darkbrem
-}  // namespace simcore
+}  // namespace g4fire

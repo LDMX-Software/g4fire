@@ -14,7 +14,7 @@
 #include "G4Step.hh"
 #include "G4Track.hh"
 
-namespace simcore {
+namespace g4fire {
 
 UserAction::UserAction(const std::string& name,
                        framework::config::Parameters& parameters) {
@@ -28,4 +28,4 @@ void UserAction::declare(const std::string& className,
                          UserActionBuilder* builder) {
   PluginFactory::getInstance().registerAction(className, builder);
 }
-}  // namespace simcore
+}  // namespace g4fire

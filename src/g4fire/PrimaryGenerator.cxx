@@ -9,7 +9,7 @@
 
 #include "g4fire/PluginFactory.h"
 
-namespace simcore {
+namespace g4fire {
 
 PrimaryGenerator::PrimaryGenerator(const std::string& name,
                                    framework::config::Parameters& parameters) {
@@ -23,4 +23,4 @@ void PrimaryGenerator::declare(const std::string& className,
                                PrimaryGeneratorBuilder* builder) {
   PluginFactory::getInstance().registerGenerator(className, builder);
 }
-}  // namespace simcore
+}  // namespace g4fire

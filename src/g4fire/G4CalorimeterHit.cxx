@@ -6,7 +6,7 @@
 #include "G4VVisManager.hh"
 #include "G4VisAttributes.hh"
 
-namespace simcore {
+namespace g4fire {
 
 G4Allocator<G4CalorimeterHit> G4CalorimeterHitAllocator;
 
@@ -36,4 +36,4 @@ std::ostream& G4CalorimeterHit::print(std::ostream& os) {
   return os;
 }
 
-}  // namespace simcore
+}  // namespace g4fire

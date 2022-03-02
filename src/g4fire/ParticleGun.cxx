@@ -25,7 +25,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace simcore {
+namespace g4fire {
 
 ParticleGun::ParticleGun(const std::string& name,
                          framework::config::Parameters& parameters)
@@ -85,6 +85,6 @@ void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
   theGun_.GeneratePrimaryVertex(event);
 }
 
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_GENERATOR(simcore, ParticleGun)
+DECLARE_GENERATOR(g4fire, ParticleGun)

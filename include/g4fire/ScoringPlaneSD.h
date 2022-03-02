@@ -19,7 +19,7 @@
 // Forward declaration
 class G4Step;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * Class defining a basic sensitive detector for scoring planes.
@@ -69,6 +69,6 @@ class ScoringPlaneSD : public G4VSensitiveDetector {
 
 };  // ScoringPlaneSD
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_SCORINGPLANESD_H_

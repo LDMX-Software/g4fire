@@ -10,7 +10,7 @@
 class G4Step;
 class G4TouchableHistory;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * Class defining a sensitive detector of type HCal.
@@ -47,6 +47,6 @@ class HcalSD : public CalorimeterSD {
 
 };  // HcalSD
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_HCALSD_H

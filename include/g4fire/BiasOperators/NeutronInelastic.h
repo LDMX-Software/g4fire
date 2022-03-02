@@ -3,7 +3,7 @@
 
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 /**
@@ -64,6 +64,6 @@ class NeutronInelastic : public XsecBiasingOperator {
 };
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_

@@ -22,7 +22,7 @@
 /*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class UserStackingAction
@@ -68,6 +68,6 @@ class UserStackingAction : public G4UserStackingAction {
 
 };  // UserStackingAction
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_USERSTACKINGACTION_H

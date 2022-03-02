@@ -13,7 +13,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace simcore {
+namespace g4fire {
 namespace geo {
 
 class ParserFactory {
@@ -32,7 +32,7 @@ class ParserFactory {
    */
   Parser *createParser(const std::string &name,
                        framework::config::Parameters &parameters,
-                       simcore::ConditionsInterface &ci);
+                       g4fire::ConditionsInterface &ci);
 
   // Delete the following methods to make sure they are inaccesible.
   ParserFactory(ParserFactory const &) = delete;
@@ -57,6 +57,6 @@ class ParserFactory {
   std::map<std::string, createFunc> parser_map;
 };
 }  // namespace geo
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_GEO_PARSERFACTORY_H_

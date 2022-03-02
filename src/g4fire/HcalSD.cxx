@@ -18,7 +18,7 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace simcore {
+namespace g4fire {
 
 HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID)
     : CalorimeterSD(name, collectionName),
@@ -187,4 +187,4 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
   return true;
 }
-}  // namespace simcore
+}  // namespace g4fire

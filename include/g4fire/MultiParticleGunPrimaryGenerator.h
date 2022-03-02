@@ -43,7 +43,7 @@
 #include "g4fire/PrimaryGenerator.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class MultiParticleGunPrimaryGenerator
@@ -102,6 +102,6 @@ class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
 
 };  // MultiParticleGunPrimaryGenerator
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_MULTIPARTICLEGUNPRIMARYGENERATOR_H_

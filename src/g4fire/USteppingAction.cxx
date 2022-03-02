@@ -5,7 +5,7 @@
 
 #include "g4fire/USteppingAction.h"
 
-namespace simcore {
+namespace g4fire {
 
 void USteppingAction::UserSteppingAction(const G4Step* step) {
   auto event_info{static_cast<UserEventInformation*>(
@@ -59,4 +59,4 @@ void USteppingAction::UserSteppingAction(const G4Step* step) {
   for (auto& steppingAction : steppingActions_) steppingAction->stepping(step);
 }
 
-}  // namespace simcore
+}  // namespace g4fire

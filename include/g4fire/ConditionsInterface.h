@@ -11,7 +11,7 @@
 // LDMX
 #include "Framework/EventProcessor.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class ConditionsInterface
@@ -45,6 +45,6 @@ class ConditionsInterface {
   framework::EventProcessor* processor_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_CONDITIONSINTERFACE_H_

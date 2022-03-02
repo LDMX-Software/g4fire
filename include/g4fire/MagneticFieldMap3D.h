@@ -15,7 +15,7 @@
 #include <vector>
 using std::vector;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @brief
@@ -113,7 +113,7 @@ class MagneticFieldMap3D : public G4MagneticField {
   bool invertX_, invertY_, invertZ_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 // namespace
 
 #endif

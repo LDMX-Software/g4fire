@@ -13,7 +13,7 @@
 //---< Geant4 >---//
 #include "G4VPhysicalVolume.hh"
 
-namespace simcore {
+namespace g4fire {
 namespace geo {
 
 /**
@@ -51,9 +51,9 @@ class Parser {
 
 using createFunc =
     std::function<Parser *(framework::config::Parameters &parameters,
-                           simcore::ConditionsInterface &ci)>;
+                           g4fire::ConditionsInterface &ci)>;
 
 }  // namespace geo
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_GEO_GEOPARSER_H_

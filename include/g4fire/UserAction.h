@@ -28,7 +28,7 @@ class G4Run;
 class G4Step;
 class G4Track;
 
-namespace simcore {
+namespace g4fire {
 
 /// Enum for each of the user action types.
 enum TYPE { RUN = 1, EVENT, TRACKING, STEPPING, STACKING, NONE };
@@ -186,15 +186,15 @@ class UserAction {
 
 };  // UserAction
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #define DECLARE_ACTION(NS, CLASS)                                           \
-  simcore::UserAction* CLASS##Builder(                                      \
+  g4fire::UserAction* CLASS##Builder(                                      \
       const std::string& name, framework::config::Parameters& parameters) { \
     return new NS::CLASS(name, parameters);                                 \
   }                                                                         \
   __attribute((constructor(205))) static void CLASS##Declare() {            \
-    simcore::UserAction::declare(                                           \
+    g4fire::UserAction::declare(                                           \
         std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
   }
 

@@ -24,7 +24,7 @@
 /*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class UserTrackingAction
@@ -135,6 +135,6 @@ class UserTrackingAction : public G4UserTrackingAction {
   TrackMap trackMap_;
 };  // UserTrackingAction
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

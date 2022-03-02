@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VisAttributes.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class VisAttributesStore
@@ -70,6 +70,6 @@ class VisAttributesStore {
   VisAttributesMap visAttributesMap_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

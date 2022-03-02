@@ -13,7 +13,7 @@
 // STL
 #include <fstream>
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class LHEReader
@@ -45,6 +45,6 @@ class LHEReader {
   std::ifstream ifs_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

@@ -7,7 +7,7 @@
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 /**
@@ -49,7 +49,7 @@ class DarkBrem : public XsecBiasingOperator {
 
   /// Return the name of the process this operator biases
   virtual std::string getProcessToBias() const {
-    return simcore::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME;
+    return g4fire::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME;
   }
 
   /// Return the name of the particle this operator biases
@@ -104,6 +104,6 @@ class DarkBrem : public XsecBiasingOperator {
 
 };  // DarkBrem
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_DARKBREM_DARKBREMXSECBIASINGOPERATOR_H

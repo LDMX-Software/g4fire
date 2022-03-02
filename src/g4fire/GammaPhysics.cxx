@@ -7,7 +7,7 @@
 
 #include "g4fire/GammaPhysics.h"
 
-namespace simcore {
+namespace g4fire {
 
 GammaPhysics::GammaPhysics(const G4String& name)
     : G4VPhysicsConstructor(name) {}
@@ -51,4 +51,4 @@ void GammaPhysics::ConstructProcess() {
     }
   }
 }
-}  // namespace simcore
+}  // namespace g4fire

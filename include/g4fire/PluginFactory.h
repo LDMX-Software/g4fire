@@ -14,7 +14,7 @@
 #include "g4fire/UserTrackingAction.h"
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @typedef actionMap
@@ -203,6 +203,6 @@ class PluginFactory {
 
 };  // PluginFactory
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_PLUGINFACTORY_H

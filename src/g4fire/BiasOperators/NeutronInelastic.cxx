@@ -1,7 +1,7 @@
 
 #include "g4fire/BiasOperators/NeutronInelastic.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 NeutronInelastic::NeutronInelastic(std::string name, const framework::config::Parameters& p)
@@ -32,6 +32,6 @@ G4VBiasingOperation* NeutronInelastic::ProposeOccurenceBiasingOperation(
 }
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, NeutronInelastic)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, NeutronInelastic)

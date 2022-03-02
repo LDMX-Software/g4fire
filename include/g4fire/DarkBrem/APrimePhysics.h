@@ -15,7 +15,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @namespace darkbrem
@@ -112,6 +112,6 @@ class APrimePhysics : public G4VPhysicsConstructor {
 };
 
 }  // namespace darkbrem
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

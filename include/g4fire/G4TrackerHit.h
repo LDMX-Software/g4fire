@@ -23,7 +23,7 @@
 
 using std::vector;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class G4TrackerHit
@@ -300,6 +300,6 @@ inline void G4TrackerHit::operator delete(void* aHit) {
   G4TrackerHitAllocator.FreeSingle((G4TrackerHit*)aHit);
 }
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

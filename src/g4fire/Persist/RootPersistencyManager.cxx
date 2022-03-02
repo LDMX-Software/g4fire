@@ -35,7 +35,7 @@
 #include "G4RunManager.hh"
 #include "G4RunManagerKernel.hh"
 
-namespace simcore {
+namespace g4fire {
 namespace persist {
 
 RootPersistencyManager::RootPersistencyManager(
@@ -226,4 +226,4 @@ void RootPersistencyManager::writeCalorimeterHitsCollection(
 }
 
 }  // namespace persist
-}  // namespace simcore
+}  // namespace g4fire

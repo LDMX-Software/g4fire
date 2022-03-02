@@ -20,7 +20,7 @@
 // Forward declarations
 class G4Event;
 
-namespace simcore {
+namespace g4fire {
 
 // Forward declarations
 class Parameters;
@@ -63,6 +63,6 @@ class GeneralParticleSource : public PrimaryGenerator {
 
 };  // GeneralParticleSource
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_GENERALPARTICLESOURCE_H

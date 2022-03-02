@@ -32,13 +32,13 @@ class G4GDMLParser;
 class G4GDMLMessenger;
 class G4CascadeParameters;
 
-namespace simcore {
+namespace g4fire {
 namespace persist {
 class RootPersistencyManager;
 }
-}  // namespace simcore
+}  // namespace g4fire
 
-namespace simcore {
+namespace g4fire {
 
 class EventFile;
 class ParameterSet;
@@ -162,7 +162,7 @@ class Simulator : public framework::Producer {
   G4UImanager* uiManager_{nullptr};
 
   /// PersistencyManager
-  std::unique_ptr<simcore::persist::RootPersistencyManager> persistencyManager_;
+  std::unique_ptr<g4fire::persist::RootPersistencyManager> persistencyManager_;
 
   /// Handle to the G4Session -> how to deal with G4cout and G4cerr
   std::unique_ptr<G4UIsession> sessionHandle_;
@@ -190,6 +190,6 @@ class Simulator : public framework::Producer {
   /// Vebosity for the simulation
   int verbosity_{1};
 };
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif /* SIMCORE_SIMULATOR_H */
