@@ -1,7 +1,7 @@
 #ifndef SIMCORE_GEO_PARSERFACTORY_H_
 #define SIMCORE_GEO_PARSERFACTORY_H_
 
-#include "SimCore/Geo/Parser.h"
+#include "g4fire/Geo/Parser.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

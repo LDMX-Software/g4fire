@@ -23,7 +23,7 @@
 #include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 
-#include "SimCore/ConditionsInterface.h"
+#include "g4fire/ConditionsInterface.h"
 
 class G4UImanager;
 class G4UIsession;

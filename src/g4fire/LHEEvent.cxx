@@ -1,4 +1,4 @@
-#include "SimCore/LHEEvent.h"
+#include "g4fire/LHEEvent.h"
 #include "Framework/Exception/Exception.h"
 
 // Geant4

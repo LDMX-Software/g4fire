@@ -1,4 +1,4 @@
-#include "SimCore/G4CalorimeterHit.h"
+#include "g4fire/G4CalorimeterHit.h"
 
 // Geant4
 #include "G4Circle.hh"

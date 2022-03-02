@@ -1,4 +1,4 @@
-#include "SimCore/BiasOperators/PhotoNuclear.h"
+#include "g4fire/BiasOperators/PhotoNuclear.h"
 
 namespace simcore {
 namespace biasoperators {

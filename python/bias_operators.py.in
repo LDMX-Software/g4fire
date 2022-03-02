@@ -17,7 +17,7 @@ class XsecBiasingOperator:
         Name of module that the class was compiled into
     """
 
-    def __init__(self, instance_name, class_name, module_name='SimCore_BiasOperators'):
+    def __init__(self, instance_name, class_name, module_name='g4fire_BiasOperators'):
         self.class_name    = class_name
         self.instance_name = instance_name
 

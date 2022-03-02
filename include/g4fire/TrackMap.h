@@ -9,9 +9,9 @@
 #include "G4Track.hh"
 
 // LDMX
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/UserTrackInformation.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
+#include "g4fire/Event/SimParticle.h"
+#include "g4fire/UserTrackInformation.h"
+#include "g4fire/UserPrimaryParticleInformation.h"
 
 namespace simcore {
 

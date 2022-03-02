@@ -15,7 +15,7 @@
 #include "G4VHit.hh"
 
 // LDMX
-#include "SimCore/Event/SimTrackerHit.h"
+#include "g4fire/Event/SimTrackerHit.h"
 
 // STL
 #include <ostream>

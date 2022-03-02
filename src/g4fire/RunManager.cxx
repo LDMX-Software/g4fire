@@ -4,23 +4,23 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimCore/RunManager.h"
+#include "g4fire/RunManager.h"
 
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "SimCore/DarkBrem/APrimePhysics.h"
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"  //for process name
-#include "SimCore/DetectorConstruction.h"
-#include "SimCore/GammaPhysics.h"
-#include "SimCore/ParallelWorld.h"
-#include "SimCore/PluginFactory.h"
-#include "SimCore/PrimaryGeneratorAction.h"
-#include "SimCore/USteppingAction.h"
-#include "SimCore/UserEventAction.h"
-#include "SimCore/UserRunAction.h"
-#include "SimCore/UserStackingAction.h"
-#include "SimCore/UserTrackingAction.h"
+#include "g4fire/DarkBrem/APrimePhysics.h"
+#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"  //for process name
+#include "g4fire/DetectorConstruction.h"
+#include "g4fire/GammaPhysics.h"
+#include "g4fire/ParallelWorld.h"
+#include "g4fire/PluginFactory.h"
+#include "g4fire/PrimaryGeneratorAction.h"
+#include "g4fire/USteppingAction.h"
+#include "g4fire/UserEventAction.h"
+#include "g4fire/UserRunAction.h"
+#include "g4fire/UserStackingAction.h"
+#include "g4fire/UserTrackingAction.h"
 
 //------------//
 //   Geant4   //

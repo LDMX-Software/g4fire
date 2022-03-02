@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
 #include "Framework/RunHeader.h"
 #include "G4Electron.hh"      //for electron definition
@@ -13,8 +13,8 @@
 #include "G4ProcessTable.hh"  //for deactivating dark brem process
 #include "G4ProcessType.hh"   //for type of process
 #include "G4RunManager.hh"    //for VerboseLevel
-#include "SimCore/DarkBrem/DarkBremVertexLibraryModel.h"
-#include "SimCore/DarkBrem/G4APrime.h"
+#include "g4fire/DarkBrem/DarkBremVertexLibraryModel.h"
+#include "g4fire/DarkBrem/G4APrime.h"
 
 namespace simcore {
 namespace darkbrem {

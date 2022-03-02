@@ -8,7 +8,7 @@
 #define SIMCORE_LHEREADER_H_
 
 // LDMX
-#include "SimCore/LHEEvent.h"
+#include "g4fire/LHEEvent.h"
 
 // STL
 #include <fstream>

@@ -4,7 +4,7 @@
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
-#include "SimCore/CalorimeterSD.h"
+#include "g4fire/CalorimeterSD.h"
 
 // Forward declarations
 class G4Step;

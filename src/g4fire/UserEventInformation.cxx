@@ -1,4 +1,4 @@
-#include "SimCore/UserEventInformation.h"
+#include "g4fire/UserEventInformation.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

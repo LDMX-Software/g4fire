@@ -1,4 +1,4 @@
-#include "SimCore/Geo/GDMLParser.h"
+#include "g4fire/Geo/GDMLParser.h"
 
 namespace simcore {
 namespace geo {

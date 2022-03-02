@@ -13,7 +13,7 @@
 
 // LDMX
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
 namespace simcore {
 

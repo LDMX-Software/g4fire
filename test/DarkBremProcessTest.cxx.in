@@ -6,8 +6,8 @@
 //----------//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Logger.h"
-#include "SimCore/DarkBrem/G4APrime.h"
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/DarkBrem/G4APrime.h"
+#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
 namespace simcore {
 namespace darkbrem {
@@ -106,7 +106,7 @@ void secondary_generation(simcore::darkbrem::G4eDarkBremsstrahlung& process,
  *  - Secondaries are produced and conserve momentum
  */
 TEST_CASE("Custom Geant4 Dark Brem Process",
-          "[SimCore][signal][functionality]") {
+          "[g4fire][signal][functionality]") {
   // open logging but turn everything off
   framework::logging::open(framework::logging::level::fatal, framework::logging::level::fatal,
                       "");

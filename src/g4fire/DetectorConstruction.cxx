@@ -1,8 +1,8 @@
-#include "SimCore/DetectorConstruction.h"
+#include "g4fire/DetectorConstruction.h"
 
 #include "Framework/Exception/Exception.h"
-#include "SimCore/PluginFactory.h"
-#include "SimCore/XsecBiasingOperator.h"
+#include "g4fire/PluginFactory.h"
+#include "g4fire/XsecBiasingOperator.h"
 
 namespace simcore {
 

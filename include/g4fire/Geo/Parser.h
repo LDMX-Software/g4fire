@@ -7,8 +7,8 @@
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 
-//---< SimCore >---//
-#include "SimCore/ConditionsInterface.h"
+//---< g4fire >---//
+#include "g4fire/ConditionsInterface.h"
 
 //---< Geant4 >---//
 #include "G4VPhysicalVolume.hh"

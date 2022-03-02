@@ -18,9 +18,9 @@
 #include "G4UserStackingAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "g4fire/UserAction.h"
 
 namespace simcore {
 

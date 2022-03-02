@@ -1,4 +1,4 @@
-#include "SimCore/UserStackingAction.h"
+#include "g4fire/UserStackingAction.h"
 
 namespace simcore {
 

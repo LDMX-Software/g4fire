@@ -2,7 +2,7 @@
 #ifndef SIMCORE_BIASOPERATORS_PHOTONUCLEAR_H_
 #define SIMCORE_BIASOPERATORS_PHOTONUCLEAR_H_
 
-#include "SimCore/XsecBiasingOperator.h"
+#include "g4fire/XsecBiasingOperator.h"
 
 namespace simcore {
 namespace biasoperators {

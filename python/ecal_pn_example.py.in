@@ -2,7 +2,7 @@
 
 from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
 from @PYTHON_PACKAGE_NAME@.Biasing import ecal
-from @PYTHON_PACKAGE_NAME@.SimCore import generators
+from @PYTHON_PACKAGE_NAME@.g4fire import generators
 
 # We need to create a process
 #   this is the object that keeps track of all the files/processors/histograms/etc

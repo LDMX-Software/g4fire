@@ -1,5 +1,5 @@
 
-#include "SimCore/UserEventAction.h"
+#include "g4fire/UserEventAction.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -7,11 +7,11 @@
 #include <iostream>
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/RunManager.h"
-#include "SimCore/TrackMap.h"
-#include "SimCore/UserTrackingAction.h"
+#include "g4fire/RunManager.h"
+#include "g4fire/TrackMap.h"
+#include "g4fire/UserTrackingAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

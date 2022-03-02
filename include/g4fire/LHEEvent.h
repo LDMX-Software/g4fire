@@ -9,7 +9,7 @@
 #define SIMCORE_LHEEVENT_H_
 
 // LDMX
-#include "SimCore/LHEParticle.h"
+#include "g4fire/LHEParticle.h"
 
 // STL
 #include <vector>

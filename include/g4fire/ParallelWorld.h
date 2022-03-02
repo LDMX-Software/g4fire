@@ -20,7 +20,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "SimCore/Geo/AuxInfoReader.h"
+#include "g4fire/Geo/AuxInfoReader.h"
 
 namespace simcore {
 

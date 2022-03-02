@@ -1,5 +1,5 @@
 
-#include "SimCore/Persist/RootPersistencyManager.h"
+#include "g4fire/Persist/RootPersistencyManager.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -20,13 +20,13 @@
 #include "Framework/Version.h"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/DetectorConstruction.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "SimCore/RunManager.h"
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserTrackingAction.h"
+#include "g4fire/DetectorConstruction.h"
+#include "g4fire/Event/SimTrackerHit.h"
+#include "g4fire/RunManager.h"
+#include "g4fire/UserEventInformation.h"
+#include "g4fire/UserTrackingAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

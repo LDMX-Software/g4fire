@@ -7,9 +7,9 @@
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 
-//---< SimCore >---//
-#include "SimCore/Geo/AuxInfoReader.h"
-#include "SimCore/Geo/Parser.h"
+//---< g4fire >---//
+#include "g4fire/Geo/AuxInfoReader.h"
+#include "g4fire/Geo/Parser.h"
 
 // Forward Declarations
 class G4VPhysicalVolume;

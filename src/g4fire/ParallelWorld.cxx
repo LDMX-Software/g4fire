@@ -1,5 +1,5 @@
 
-#include "SimCore/ParallelWorld.h"
+#include "g4fire/ParallelWorld.h"
 
 #include "Framework/Configure/Parameters.h"
 

@@ -1,4 +1,4 @@
-#include "SimCore/LHEParticle.h"
+#include "g4fire/LHEParticle.h"
 #include "Framework/Exception/Exception.h"
 
 // STL

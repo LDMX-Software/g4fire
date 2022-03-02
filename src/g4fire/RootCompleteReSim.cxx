@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/RootCompleteReSim.h"
+#include "g4fire/RootCompleteReSim.h"
 
 //------------//
 //   Geant4   //
@@ -21,7 +21,7 @@
 //   ldmx-sw   //
 //-------------//
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/Event/SimParticle.h"
+#include "g4fire/Event/SimParticle.h"
 
 namespace simcore {
 

@@ -1,7 +1,7 @@
 #ifndef SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_
 #define SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_
 
-#include "SimCore/XsecBiasingOperator.h"
+#include "g4fire/XsecBiasingOperator.h"
 
 namespace simcore {
 namespace biasoperators {

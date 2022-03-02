@@ -62,7 +62,7 @@ class simulator(Producer):
     """
 
     def __init__(self, instance_name ) :
-        super().__init__( instance_name , "simcore::Simulator" , "SimCore" )
+        super().__init__( instance_name , "simcore::Simulator" , "g4fire" )
 
         #######################################################################
         #Required Parameters
@@ -87,7 +87,7 @@ class simulator(Producer):
         self.verbosity = 0
 
         #Dark Brem stuff
-        from LDMX.SimCore import dark_brem
+        from LDMX.g4fire import dark_brem
         self.dark_brem = dark_brem.DarkBrem()
 
     def setDetector(self, det_name , include_scoring_planes = False ) :

@@ -1,5 +1,5 @@
 
-#include "SimCore/ScoringPlaneSD.h"
+#include "g4fire/ScoringPlaneSD.h"
 #include "DetDescr/SimSpecialID.h"
 
 /*----------------*/

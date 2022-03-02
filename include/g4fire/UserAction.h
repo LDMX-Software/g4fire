@@ -20,7 +20,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/UserEventInformation.h"
+#include "g4fire/UserEventInformation.h"
 
 // Forward Declarations
 class G4Event;

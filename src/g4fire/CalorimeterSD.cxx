@@ -1,4 +1,4 @@
-#include "SimCore/CalorimeterSD.h"
+#include "g4fire/CalorimeterSD.h"
 
 // STL
 #include <iostream>

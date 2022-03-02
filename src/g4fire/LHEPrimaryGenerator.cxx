@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/LHEPrimaryGenerator.h"
+#include "g4fire/LHEPrimaryGenerator.h"
 
 // Geant4
 #include "G4Event.hh"
@@ -17,7 +17,7 @@
 // LDMX
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
+#include "g4fire/UserPrimaryParticleInformation.h"
 
 namespace simcore {
 

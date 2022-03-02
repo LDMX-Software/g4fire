@@ -4,9 +4,9 @@
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
-#include "SimCore/ConditionsInterface.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/G4CalorimeterHit.h"
+#include "g4fire/ConditionsInterface.h"
+#include "g4fire/Event/SimCalorimeterHit.h"
+#include "g4fire/G4CalorimeterHit.h"
 
 // STL
 #include <utility>

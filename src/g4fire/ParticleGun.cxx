@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/ParticleGun.h"
+#include "g4fire/ParticleGun.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

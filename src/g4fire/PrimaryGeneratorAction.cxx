@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimCore/PrimaryGeneratorAction.h"
+#include "g4fire/PrimaryGeneratorAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -13,11 +13,11 @@
 #include "G4RunManager.hh"  // Needed for CLHEP
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PluginFactory.h"
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
+#include "g4fire/PluginFactory.h"
+#include "g4fire/UserEventInformation.h"
+#include "g4fire/UserPrimaryParticleInformation.h"
 
 /*~~~~~~~~~~*/
 /*   ROOT   */

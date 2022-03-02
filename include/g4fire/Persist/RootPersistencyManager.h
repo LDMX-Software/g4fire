@@ -14,11 +14,11 @@
 #include "Framework/EventFile.h"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/EcalHitIO.h"
-#include "SimCore/G4CalorimeterHit.h"
-#include "SimCore/G4TrackerHit.h"
+#include "g4fire/EcalHitIO.h"
+#include "g4fire/G4CalorimeterHit.h"
+#include "g4fire/G4TrackerHit.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

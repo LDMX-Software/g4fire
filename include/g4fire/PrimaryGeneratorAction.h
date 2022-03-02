@@ -19,9 +19,9 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PluginFactory.h"
+#include "g4fire/PluginFactory.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */

@@ -1,10 +1,10 @@
 
-#include "SimCore/UserAction.h"
+#include "g4fire/UserAction.h"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PluginFactory.h"
+#include "g4fire/PluginFactory.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

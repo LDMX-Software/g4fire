@@ -5,14 +5,14 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Logger.h"
-#include "SimCore/PrimaryGenerator.h"
-#include "SimCore/USteppingAction.h"
-#include "SimCore/UserAction.h"
-#include "SimCore/UserEventAction.h"
-#include "SimCore/UserRunAction.h"
-#include "SimCore/UserStackingAction.h"
-#include "SimCore/UserTrackingAction.h"
-#include "SimCore/XsecBiasingOperator.h"
+#include "g4fire/PrimaryGenerator.h"
+#include "g4fire/USteppingAction.h"
+#include "g4fire/UserAction.h"
+#include "g4fire/UserEventAction.h"
+#include "g4fire/UserRunAction.h"
+#include "g4fire/UserStackingAction.h"
+#include "g4fire/UserTrackingAction.h"
+#include "g4fire/XsecBiasingOperator.h"
 
 namespace simcore {
 
