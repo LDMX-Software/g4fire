@@ -1,10 +1,10 @@
-#include "SimCore/UserTrackingAction.h"
+#include "g4fire/UserTrackingAction.h"
 
 // LDMX
-#include "SimCore/TrackMap.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
-#include "SimCore/UserRegionInformation.h"
-#include "SimCore/UserTrackInformation.h"
+#include "g4fire/TrackMap.h"
+#include "g4fire/UserPrimaryParticleInformation.h"
+#include "g4fire/UserRegionInformation.h"
+#include "g4fire/UserTrackInformation.h"
 
 // Geant4
 #include "G4PrimaryParticle.hh"

@@ -12,9 +12,9 @@
 #include "DetDescr/TrackerID.h"
 
 /*~~~~~~~~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~~~~~~~~*/
-#include "SimCore/G4TrackerHit.h"
+#include "g4fire/G4TrackerHit.h"
 
 namespace simcore {
 

@@ -12,9 +12,9 @@
 #include "DetDescr/DetectorID.h"
 
 /*~~~~~~~~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~~~~~~~~*/
-#include "SimCore/G4TrackerHit.h"
+#include "g4fire/G4TrackerHit.h"
 
 // Forward declaration
 class G4Step;

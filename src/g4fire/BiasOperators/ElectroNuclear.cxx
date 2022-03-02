@@ -1,5 +1,5 @@
 
-#include "SimCore/BiasOperators/ElectroNuclear.h"
+#include "g4fire/BiasOperators/ElectroNuclear.h"
 
 namespace simcore {
 namespace biasoperators {

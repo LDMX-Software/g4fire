@@ -1,4 +1,4 @@
-#include "SimCore/G4TrackerHit.h"
+#include "g4fire/G4TrackerHit.h"
 
 // Geant4
 #include "G4Circle.hh"

@@ -3,7 +3,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboraty
  */
 
-#include "SimCore/USteppingAction.h"
+#include "g4fire/USteppingAction.h"
 
 namespace simcore {
 

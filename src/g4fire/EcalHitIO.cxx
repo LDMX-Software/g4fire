@@ -1,13 +1,13 @@
-#include "SimCore/EcalHitIO.h"
+#include "g4fire/EcalHitIO.h"
 
-#include "SimCore/UserTrackingAction.h"  //to get handle on track map
+#include "g4fire/UserTrackingAction.h"  //to get handle on track map
 
 // STL
 #include <map>
 
 // LDMX
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/Event/SimParticle.h"
+#include "g4fire/Event/SimCalorimeterHit.h"
+#include "g4fire/Event/SimParticle.h"
 
 namespace simcore {
 

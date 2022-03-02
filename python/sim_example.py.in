@@ -14,7 +14,7 @@ def process() :
     Examples
     --------
     Put the following in an empy python script named 'config.py':
-        from @PYTHON_PACKAGE_NAME@.SimCore import sim_example
+        from @PYTHON_PACKAGE_NAME@.g4fire import sim_example
         myProc = sim_example.process()
     
     Then you can run it using
@@ -25,7 +25,7 @@ def process() :
     """
 
     from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
-    from @PYTHON_PACKAGE_NAME@.SimCore import examples
+    from @PYTHON_PACKAGE_NAME@.g4fire import examples
     
     p=ldmxcfg.Process("egsim")
     

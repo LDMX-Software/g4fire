@@ -28,7 +28,7 @@
 //-------------//
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
-#include "SimCore/PrimaryGenerator.h"
+#include "g4fire/PrimaryGenerator.h"
 
 class G4Event;
 

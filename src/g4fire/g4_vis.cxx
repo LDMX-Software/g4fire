@@ -7,8 +7,8 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/DetectorConstruction.h"
-#include "SimCore/Geo/ParserFactory.h"
+#include "g4fire/DetectorConstruction.h"
+#include "g4fire/Geo/ParserFactory.h"
 
 static void printUsage() {
   std::cout << "usage: g4-vis {detector.gdml}" << std::endl;

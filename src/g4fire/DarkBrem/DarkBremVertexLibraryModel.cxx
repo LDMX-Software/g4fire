@@ -1,9 +1,9 @@
 
-#include "SimCore/DarkBrem/DarkBremVertexLibraryModel.h"
+#include "g4fire/DarkBrem/DarkBremVertexLibraryModel.h"
 
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
-#include "SimCore/DarkBrem/G4APrime.h"
+#include "g4fire/DarkBrem/G4APrime.h"
 
 // Geant4
 #include "G4Electron.hh"

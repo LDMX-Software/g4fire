@@ -5,7 +5,7 @@
  * @author Nhan Tran, FNAL
  */
 
-#include "SimCore/MultiParticleGunPrimaryGenerator.h"
+#include "g4fire/MultiParticleGunPrimaryGenerator.h"
 
 namespace simcore {
 

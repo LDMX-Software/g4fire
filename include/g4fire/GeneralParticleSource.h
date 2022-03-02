@@ -15,7 +15,7 @@
 //------------//
 //   LDMX     //
 //------------//
-#include "SimCore/PrimaryGenerator.h"
+#include "g4fire/PrimaryGenerator.h"
 
 // Forward declarations
 class G4Event;

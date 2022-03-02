@@ -10,8 +10,8 @@
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
-#include "SimCore/CalorimeterSD.h"
-#include "SimCore/ConditionsInterface.h"
+#include "g4fire/CalorimeterSD.h"
+#include "g4fire/ConditionsInterface.h"
 
 // ROOT
 #include "TMath.h"

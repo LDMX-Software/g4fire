@@ -1,5 +1,5 @@
 
-#include "SimCore/BiasOperators/NeutronInelastic.h"
+#include "g4fire/BiasOperators/NeutronInelastic.h"
 
 namespace simcore {
 namespace biasoperators {

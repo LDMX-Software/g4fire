@@ -2,7 +2,7 @@
 #define SIMCORE_DARKBREM_DARKBREMVERTEXLIBRARYMODLE_H_
 
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
 // ROOT
 #include "TLorentzVector.h"
@@ -32,7 +32,7 @@ namespace darkbrem {
  * (library_path). The other parameters have helpful defaults set in the python
  * configuration class DarkBrem and are there for you to be able to tune this
  * model's behavior. An example library for each of the major mass points is
- * installed with SimCore and is compressed as stored in the data directory.
+ * installed with g4fire and is compressed as stored in the data directory.
  */
 class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
  public:

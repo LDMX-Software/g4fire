@@ -5,9 +5,9 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/PrimaryGenerator.h"
+#include "g4fire/PrimaryGenerator.h"
 
-#include "SimCore/PluginFactory.h"
+#include "g4fire/PluginFactory.h"
 
 namespace simcore {
 

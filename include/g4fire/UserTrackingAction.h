@@ -13,16 +13,16 @@
 #include <vector>
 
 // LDMX
-#include "SimCore/TrackMap.h"
+#include "g4fire/TrackMap.h"
 
 // Geant4
 #include "G4RunManager.hh"
 #include "G4UserTrackingAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "g4fire/UserAction.h"
 
 namespace simcore {
 

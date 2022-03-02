@@ -9,8 +9,8 @@
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 
-//---< SimCore >---//
-#include "SimCore/Geo/Parser.h"
+//---< g4fire >---//
+#include "g4fire/Geo/Parser.h"
 
 // Forward declaration
 namespace simcore::geo {

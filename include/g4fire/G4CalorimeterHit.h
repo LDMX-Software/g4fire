@@ -15,7 +15,7 @@
 #include "G4VHit.hh"
 
 // LDMX
-#include "SimCore/Event/SimCalorimeterHit.h"
+#include "g4fire/Event/SimCalorimeterHit.h"
 
 namespace simcore {
 

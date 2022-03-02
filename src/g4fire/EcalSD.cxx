@@ -1,4 +1,4 @@
-#include "SimCore/EcalSD.h"
+#include "g4fire/EcalSD.h"
 
 // Geant4
 #include "G4ChargedGeantino.hh"

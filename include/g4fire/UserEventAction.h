@@ -18,9 +18,9 @@
 #include "G4UserEventAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "g4fire/UserAction.h"
 
 // Forward declarations
 class G4Event;

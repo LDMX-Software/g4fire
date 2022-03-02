@@ -1,5 +1,5 @@
 
-#include "SimCore/BiasOperators/GammaToMuPair.h"
+#include "g4fire/BiasOperators/GammaToMuPair.h"
 
 namespace simcore {
 namespace biasoperators {

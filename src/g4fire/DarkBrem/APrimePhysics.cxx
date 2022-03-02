@@ -5,10 +5,10 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/DarkBrem/APrimePhysics.h"
+#include "g4fire/DarkBrem/APrimePhysics.h"
 
 // LDMX
-#include "SimCore/DarkBrem/G4APrime.h"
+#include "g4fire/DarkBrem/G4APrime.h"
 
 // Geant4
 #include "G4Electron.hh"

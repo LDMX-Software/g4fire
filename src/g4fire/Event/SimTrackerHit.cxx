@@ -1,4 +1,4 @@
-#include "SimCore/Event/SimTrackerHit.h"
+#include "g4fire/Event/SimTrackerHit.h"
 
 ClassImp(ldmx::SimTrackerHit)
 

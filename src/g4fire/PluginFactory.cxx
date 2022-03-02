@@ -1,5 +1,5 @@
 
-#include "SimCore/PluginFactory.h"
+#include "g4fire/PluginFactory.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

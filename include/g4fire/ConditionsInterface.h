@@ -33,7 +33,7 @@ class ConditionsInterface {
   const T& getCondition(const std::string& condition_name) {
     if (processor_ == 0) {
       EXCEPTION_RAISE("ConditionUnavailableException",
-                      "No conditions system object available in SimCore");
+                      "No conditions system object available in g4fire");
     }
     return processor_->getCondition<T>(condition_name);
   }

@@ -1,5 +1,5 @@
 
-#include "SimCore/BiasOperators/K0LongInelastic.h"
+#include "g4fire/BiasOperators/K0LongInelastic.h"
 
 namespace simcore {
 namespace biasoperators {

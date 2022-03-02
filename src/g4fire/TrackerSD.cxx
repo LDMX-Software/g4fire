@@ -1,4 +1,4 @@
-#include "SimCore/TrackerSD.h"
+#include "g4fire/TrackerSD.h"
 
 // STL
 #include <iostream>

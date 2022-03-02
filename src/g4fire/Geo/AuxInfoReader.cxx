@@ -1,4 +1,4 @@
-#include "SimCore/Geo/AuxInfoReader.h"
+#include "g4fire/Geo/AuxInfoReader.h"
 
 //---< C++ >---//
 #include <stdlib.h>
@@ -17,17 +17,17 @@
 //---< Framework >---//
 #include "Framework/Exception/Exception.h"
 
-//---< SimCore >---//
-#include "SimCore/CalorimeterSD.h"
-#include "SimCore/EcalSD.h"
-#include "SimCore/HcalSD.h"
-#include "SimCore/MagneticFieldMap3D.h"
-#include "SimCore/MagneticFieldStore.h"
-#include "SimCore/ScoringPlaneSD.h"
-#include "SimCore/TrackerSD.h"
-#include "SimCore/TrigScintSD.h"
-#include "SimCore/UserRegionInformation.h"
-#include "SimCore/VisAttributesStore.h"
+//---< g4fire >---//
+#include "g4fire/CalorimeterSD.h"
+#include "g4fire/EcalSD.h"
+#include "g4fire/HcalSD.h"
+#include "g4fire/MagneticFieldMap3D.h"
+#include "g4fire/MagneticFieldStore.h"
+#include "g4fire/ScoringPlaneSD.h"
+#include "g4fire/TrackerSD.h"
+#include "g4fire/TrigScintSD.h"
+#include "g4fire/UserRegionInformation.h"
+#include "g4fire/VisAttributesStore.h"
 
 namespace simcore::geo {
 

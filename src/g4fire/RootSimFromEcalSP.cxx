@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/RootSimFromEcalSP.h"
+#include "g4fire/RootSimFromEcalSP.h"
 
 //----------------//
 //   C++ StdLib   //
@@ -27,7 +27,7 @@
 //-------------//
 #include "Framework/Configure/Parameters.h"
 #include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimTrackerHit.h"
+#include "g4fire/Event/SimTrackerHit.h"
 
 namespace simcore {
 

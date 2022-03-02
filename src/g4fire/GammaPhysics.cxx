@@ -5,7 +5,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimCore/GammaPhysics.h"
+#include "g4fire/GammaPhysics.h"
 
 namespace simcore {
 

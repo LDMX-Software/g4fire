@@ -1,4 +1,4 @@
-#include "SimCore/Simulator.h"
+#include "g4fire/Simulator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -8,15 +8,15 @@
 #include "Framework/Version.h"  //for LDMX_INSTALL path
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   g4fire   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
-#include "SimCore/DetectorConstruction.h"
-#include "SimCore/G4Session.h"
-#include "SimCore/Geo/ParserFactory.h"
-#include "SimCore/Persist/RootPersistencyManager.h"
-#include "SimCore/PluginFactory.h"
-#include "SimCore/RunManager.h"
+#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/DetectorConstruction.h"
+#include "g4fire/G4Session.h"
+#include "g4fire/Geo/ParserFactory.h"
+#include "g4fire/Persist/RootPersistencyManager.h"
+#include "g4fire/PluginFactory.h"
+#include "g4fire/RunManager.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */

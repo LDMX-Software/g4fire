@@ -1,7 +1,7 @@
-#include "SimCore/XsecBiasingOperator.h"
+#include "g4fire/XsecBiasingOperator.h"
 
 #include "Framework/Exception/Exception.h"
-#include "SimCore/PluginFactory.h"
+#include "g4fire/PluginFactory.h"
 
 namespace simcore {
 

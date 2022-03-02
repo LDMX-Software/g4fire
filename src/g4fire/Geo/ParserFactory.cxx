@@ -1,12 +1,12 @@
 
-#include "SimCore/Geo/ParserFactory.h"
+#include "g4fire/Geo/ParserFactory.h"
 
 //---< Framework >---//
 #include "Framework/Exception/Exception.h"
 
-//---< SimCore >---//
-#include "SimCore/Geo/GDMLParser.h"
-#include "SimCore/Geo/Parser.h"
+//---< g4fire >---//
+#include "g4fire/Geo/GDMLParser.h"
+#include "g4fire/Geo/Parser.h"
 
 namespace simcore {
 namespace geo {

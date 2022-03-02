@@ -11,8 +11,8 @@
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 
-//---< SimCore >---//
-#include "SimCore/ConditionsInterface.h"
+//---< g4fire >---//
+#include "g4fire/ConditionsInterface.h"
 
 namespace simcore::geo {
 

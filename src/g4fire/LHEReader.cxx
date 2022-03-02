@@ -1,4 +1,4 @@
-#include "SimCore/LHEReader.h"
+#include "g4fire/LHEReader.h"
 
 // STL
 #include <iostream>
