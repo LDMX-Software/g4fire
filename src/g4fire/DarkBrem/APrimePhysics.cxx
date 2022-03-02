@@ -14,7 +14,7 @@
 #include "G4Electron.hh"
 #include "G4ProcessManager.hh"
 
-namespace simcore {
+namespace g4fire {
 namespace darkbrem {
 
 const std::string APrimePhysics::NAME = "APrime";
@@ -60,4 +60,4 @@ void APrimePhysics::ConstructProcess() {
 }
 
 }  // namespace darkbrem
-}  // namespace simcore
+}  // namespace g4fire

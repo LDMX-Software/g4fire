@@ -24,7 +24,7 @@
 // Forward Declarations
 class G4Event;
 
-namespace simcore {
+namespace g4fire {
 
 // Forward declarations
 class PrimaryGenerator;
@@ -77,7 +77,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
 
 };  // PrimaryGenerator
 
-}  // namespace simcore
+}  // namespace g4fire
 
 /**
  * @macro DECLARE_GENERATOR
@@ -87,12 +87,12 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
  * with the PrimaryGeneratorManager
  */
 #define DECLARE_GENERATOR(NS, CLASS)                                        \
-  simcore::PrimaryGenerator* CLASS##Builder(                                \
+  g4fire::PrimaryGenerator* CLASS##Builder(                                \
       const std::string& name, framework::config::Parameters& parameters) { \
     return new NS::CLASS(name, parameters);                                 \
   }                                                                         \
   __attribute((constructor(305))) static void CLASS##Declare() {            \
-    simcore::PrimaryGenerator::declare(                                     \
+    g4fire::PrimaryGenerator::declare(                                     \
         std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
   }
 

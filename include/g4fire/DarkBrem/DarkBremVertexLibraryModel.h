@@ -7,7 +7,7 @@
 // ROOT
 #include "TLorentzVector.h"
 
-namespace simcore {
+namespace g4fire {
 namespace darkbrem {
 
 /**
@@ -345,6 +345,6 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
 };
 
 }  // namespace darkbrem
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_DARKBREM_DARKBREMVERTEXLIBRARYMODLE_H_

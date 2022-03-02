@@ -32,7 +32,7 @@
 
 class G4Event;
 
-namespace simcore {
+namespace g4fire {
 
 class Parameters;
 
@@ -101,6 +101,6 @@ class RootSimFromEcalSP : public PrimaryGenerator {
   framework::Event ievent_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_ROOTSIMFROMECALSP_H

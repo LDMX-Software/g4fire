@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
   process.addParameter("only_one_per_event", false);
   process.addParameter("cache_xsec", true);
 
-  simcore::darkbrem::G4eDarkBremsstrahlung db_process(process);
+  g4fire::darkbrem::G4eDarkBremsstrahlung db_process(process);
 
   table_file << db_process.getCache();
 

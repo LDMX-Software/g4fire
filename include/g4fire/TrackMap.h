@@ -13,7 +13,7 @@
 #include "g4fire/UserTrackInformation.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class TrackMap
@@ -134,6 +134,6 @@ class TrackMap {
   std::map<int,ldmx::SimParticle> particle_map_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

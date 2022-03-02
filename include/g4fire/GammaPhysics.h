@@ -16,7 +16,7 @@
 #include "G4VPhysicsConstructor.hh"
 #include "G4VProcess.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class GammaPhysics
@@ -57,6 +57,6 @@ class GammaPhysics : public G4VPhysicsConstructor {
   G4GammaConversionToMuons gammaConvProcess;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

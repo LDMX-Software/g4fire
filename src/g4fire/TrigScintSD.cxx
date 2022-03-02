@@ -14,7 +14,7 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace simcore {
+namespace g4fire {
 
 TrigScintSD::TrigScintSD(G4String name, G4String theCollectionName,
                          int subDetID)
@@ -71,4 +71,4 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
 
   return true;
 }
-}  // namespace simcore
+}  // namespace g4fire

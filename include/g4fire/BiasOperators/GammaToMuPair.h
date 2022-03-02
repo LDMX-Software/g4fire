@@ -3,7 +3,7 @@
 
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 /**
@@ -63,6 +63,6 @@ class GammaToMuPair : public XsecBiasingOperator {
 };
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_BIASOPERATORS_GAMMATOMUPAIR_H_

@@ -32,7 +32,7 @@
 
 class G4Event;
 
-namespace simcore {
+namespace g4fire {
 
 class Parameters;
 
@@ -90,6 +90,6 @@ class RootCompleteReSim : public PrimaryGenerator {
   framework::Event ievent_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_ROOTCOMPLETERESIM_H

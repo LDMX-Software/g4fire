@@ -1,6 +1,6 @@
 #include "g4fire/UserRegionInformation.h"
 
-namespace simcore {
+namespace g4fire {
 
 UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
     : storeSecondaries_(aStoreSecondaries) {}
@@ -13,4 +13,4 @@ bool UserRegionInformation::getStoreSecondaries() const {
 
 void UserRegionInformation::Print() const {}
 
-}  // namespace simcore
+}  // namespace g4fire

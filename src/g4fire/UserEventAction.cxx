@@ -19,7 +19,7 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 
-namespace simcore {
+namespace g4fire {
 
 void UserEventAction::BeginOfEventAction(const G4Event* event) {
   // Clear the global track map.
@@ -35,4 +35,4 @@ void UserEventAction::EndOfEventAction(const G4Event* event) {
   for (auto& eventAction : eventActions_) eventAction->EndOfEventAction(event);
 }
 
-}  // namespace simcore
+}  // namespace g4fire

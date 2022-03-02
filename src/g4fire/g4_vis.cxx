@@ -34,15 +34,15 @@ int main(int argc, char* argv[]) {
 
   framework::EventProcessor* null_processor{nullptr};
   framework::config::Parameters empty_parameters;
-  simcore::ConditionsInterface empty_interface(null_processor);
+  g4fire::ConditionsInterface empty_interface(null_processor);
 
   // RunManager
   G4RunManager* runManager = new G4RunManager;
 
   // Detector components
-  auto parser{simcore::geo::ParserFactory::getInstance().createParser(
+  auto parser{g4fire::geo::ParserFactory::getInstance().createParser(
       "gdml", empty_parameters, empty_interface)};
-  runManager->SetUserInitialization(new simcore::DetectorConstruction(
+  runManager->SetUserInitialization(new g4fire::DetectorConstruction(
       parser, empty_parameters, empty_interface));
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser->read();

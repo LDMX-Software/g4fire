@@ -13,11 +13,11 @@
 #include "g4fire/Geo/Parser.h"
 
 // Forward declaration
-namespace simcore::geo {
+namespace g4fire::geo {
 class Parser;
 }
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class DetectorConstruction
@@ -39,7 +39,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
    * @param parameters The parameters used to configure this class.
    * @param ci The conditions needed to build the detector.
    */
-  DetectorConstruction(simcore::geo::Parser *parser,
+  DetectorConstruction(g4fire::geo::Parser *parser,
                        framework::config::Parameters &parameters,
                        ConditionsInterface &ci);
 
@@ -66,11 +66,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
  private:
   /// The parser used to load the detector into memory.
-  simcore::geo::Parser *parser_;
+  g4fire::geo::Parser *parser_;
 
   /// The set of parameters used to configure this class
   framework::config::Parameters parameters_;
 };  // DetectorConstruction
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_DETECTORCONSTRUCTION_H

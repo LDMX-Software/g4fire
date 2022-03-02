@@ -5,7 +5,7 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-namespace simcore {
+namespace g4fire {
 
 UserTrackInformation* UserTrackInformation::get(const G4Track* track) {
   if (!track->GetUserInformation()) {
@@ -25,4 +25,4 @@ void UserTrackInformation::Print() const {
             << "Is brem candidate: " << isBremCandidate_ << "\n"
             << std::endl;
 }
-}  // namespace simcore
+}  // namespace g4fire

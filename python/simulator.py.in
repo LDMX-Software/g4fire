@@ -62,7 +62,7 @@ class simulator(Producer):
     """
 
     def __init__(self, instance_name ) :
-        super().__init__( instance_name , "simcore::Simulator" , "g4fire" )
+        super().__init__( instance_name , "g4fire::Simulator" , "g4fire" )
 
         #######################################################################
         #Required Parameters

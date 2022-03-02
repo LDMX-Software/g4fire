@@ -4,7 +4,7 @@
 #include "g4fire/PluginFactory.h"
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace simcore {
+namespace g4fire {
 
 namespace logical_volume_tests {
 
@@ -115,7 +115,7 @@ typedef bool (*Test)(G4LogicalVolume*, const std::string&);
 }  // namespace logical_volume_tests
 
 DetectorConstruction::DetectorConstruction(
-    simcore::geo::Parser* parser, framework::config::Parameters& parameters,
+    g4fire::geo::Parser* parser, framework::config::Parameters& parameters,
     ConditionsInterface& ci)
     : parser_(parser) {
   parameters_ = parameters;
@@ -130,8 +130,8 @@ void DetectorConstruction::ConstructSDandField() {
   //  which is called before G4RunManager::Initialize
   //  which is where this method ends up being called.
 
-  auto bops{simcore::PluginFactory::getInstance().getBiasingOperators()};
-  for (simcore::XsecBiasingOperator* bop : bops) {
+  auto bops{g4fire::PluginFactory::getInstance().getBiasingOperators()};
+  for (g4fire::XsecBiasingOperator* bop : bops) {
     logical_volume_tests::Test includeVolumeTest{nullptr};
     if (bop->getVolumeToBias().compare("ecal") == 0) {
       includeVolumeTest = &logical_volume_tests::isInEcal;
@@ -162,4 +162,4 @@ void DetectorConstruction::ConstructSDandField() {
     }    // loop over volumes
   }      // loop over biasing operators
 }
-}  // namespace simcore
+}  // namespace g4fire

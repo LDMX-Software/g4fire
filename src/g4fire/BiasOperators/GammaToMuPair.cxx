@@ -1,7 +1,7 @@
 
 #include "g4fire/BiasOperators/GammaToMuPair.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 GammaToMuPair::GammaToMuPair(std::string name,
@@ -32,6 +32,6 @@ G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
 }
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, GammaToMuPair)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, GammaToMuPair)

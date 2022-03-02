@@ -9,7 +9,7 @@
 #include "g4fire/Event/SimCalorimeterHit.h"
 #include "g4fire/Event/SimParticle.h"
 
-namespace simcore {
+namespace g4fire {
 
 void EcalHitIO::configure(const framework::config::Parameters& ps) {
   enableHitContribs_ = ps.getParameter<bool>("enableHitContribs");
@@ -100,4 +100,4 @@ void EcalHitIO::writeHitsCollection(
   return;
 }
 
-}  // namespace simcore
+}  // namespace g4fire

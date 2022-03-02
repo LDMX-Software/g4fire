@@ -19,7 +19,7 @@
 #include "Framework/Exception/Exception.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 
-namespace simcore {
+namespace g4fire {
 
 LHEPrimaryGenerator::LHEPrimaryGenerator(
     const std::string& name, framework::config::Parameters& parameters)
@@ -106,6 +106,6 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   delete lheEvent;
 }
 
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_GENERATOR(simcore, LHEPrimaryGenerator)
+DECLARE_GENERATOR(g4fire, LHEPrimaryGenerator)

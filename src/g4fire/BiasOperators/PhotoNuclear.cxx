@@ -1,6 +1,6 @@
 #include "g4fire/BiasOperators/PhotoNuclear.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 const std::string PhotoNuclear::CONVERSION_PROCESS = "conv";
@@ -95,6 +95,6 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 }
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, PhotoNuclear)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, PhotoNuclear)

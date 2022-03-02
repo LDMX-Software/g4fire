@@ -10,7 +10,7 @@
 // Geant4
 #include "G4MagneticField.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class MagneticFieldStore
@@ -68,6 +68,6 @@ class MagneticFieldStore {
   MagFieldMap magFields_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

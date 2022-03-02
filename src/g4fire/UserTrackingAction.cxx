@@ -13,7 +13,7 @@
 // STL
 #include <iostream>
 
-namespace simcore {
+namespace g4fire {
 
 void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
   if (not trackMap_.contains(track)) {
@@ -83,4 +83,4 @@ void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
   }
 }
 
-}  // namespace simcore
+}  // namespace g4fire

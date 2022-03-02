@@ -23,7 +23,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "g4fire/Event/SimParticle.h"
 
-namespace simcore {
+namespace g4fire {
 
 RootCompleteReSim::RootCompleteReSim(const std::string& name,
                                      framework::config::Parameters& parameters)
@@ -97,6 +97,6 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_GENERATOR(simcore, RootCompleteReSim)
+DECLARE_GENERATOR(g4fire, RootCompleteReSim)

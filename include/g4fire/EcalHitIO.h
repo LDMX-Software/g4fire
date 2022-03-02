@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class EcalHitIO
@@ -97,6 +97,6 @@ class EcalHitIO {
   bool compressHitContribs_{true};
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

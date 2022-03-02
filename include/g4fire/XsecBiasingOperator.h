@@ -21,7 +21,7 @@
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /// Forward declaration for generic building function
 class XsecBiasingOperator;
@@ -184,7 +184,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   }
 
 };  // XsecBiasingOperator
-}  // namespace simcore
+}  // namespace g4fire
 
 /**
  * @macro DECLARE_XSECBIASINGOPERATOR
@@ -193,12 +193,12 @@ class XsecBiasingOperator : public G4VBiasingOperator {
  * and then registers the class as a biasing operator.
  */
 #define DECLARE_XSECBIASINGOPERATOR(NS, CLASS)                              \
-  simcore::XsecBiasingOperator* CLASS##Builder(                             \
+  g4fire::XsecBiasingOperator* CLASS##Builder(                             \
       const std::string& name, framework::config::Parameters& parameters) { \
     return new NS::CLASS(name, parameters);                                 \
   }                                                                         \
   __attribute((constructor(205))) static void CLASS##Declare() {            \
-    simcore::XsecBiasingOperator::declare(                                  \
+    g4fire::XsecBiasingOperator::declare(                                  \
         std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
   }
 

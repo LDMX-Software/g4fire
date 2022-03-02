@@ -14,7 +14,7 @@
 // STL
 #include <vector>
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class LHEEvent
@@ -156,6 +156,6 @@ class LHEEvent {
   std::vector<LHEParticle*> particles_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

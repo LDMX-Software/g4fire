@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class LHEParticle
@@ -137,6 +137,6 @@ class LHEParticle {
   int spinup_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

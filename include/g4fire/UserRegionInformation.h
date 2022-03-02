@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VUserRegionInformation.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class UserRegionInformation
@@ -36,6 +36,6 @@ class UserRegionInformation : public G4VUserRegionInformation {
   bool storeSecondaries_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

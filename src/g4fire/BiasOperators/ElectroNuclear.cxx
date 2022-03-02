@@ -1,7 +1,7 @@
 
 #include "g4fire/BiasOperators/ElectroNuclear.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 ElectroNuclear::ElectroNuclear(std::string name,
@@ -52,6 +52,6 @@ G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
 }
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, ElectroNuclear)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, ElectroNuclear)

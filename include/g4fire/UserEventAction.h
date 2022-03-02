@@ -25,7 +25,7 @@
 // Forward declarations
 class G4Event;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class UserEventAction
@@ -69,6 +69,6 @@ class UserEventAction : public G4UserEventAction {
 
 };  // UserEventAction
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_USEREVENTACTION_H

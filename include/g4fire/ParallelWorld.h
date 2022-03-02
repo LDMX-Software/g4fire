@@ -22,7 +22,7 @@
 //-------------//
 #include "g4fire/Geo/AuxInfoReader.h"
 
-namespace simcore {
+namespace g4fire {
 
 class ParallelWorld : public G4VUserParallelWorld {
  public:
@@ -44,9 +44,9 @@ class ParallelWorld : public G4VUserParallelWorld {
   G4GDMLParser* parser_{nullptr};
 
   /** The auxiliary GDML info reader. */
-  simcore::geo::AuxInfoReader* auxInfoReader_{nullptr};
+  g4fire::geo::AuxInfoReader* auxInfoReader_{nullptr};
 
 };  // ParallelWorld
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_PARALLELWORLD_H_

@@ -25,7 +25,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace simcore {
+namespace g4fire {
 
 // Forward declare to avoid circular dependency in headers
 class DetectorConstruction;
@@ -113,6 +113,6 @@ class RunManager : public G4RunManager {
   ConditionsInterface& conditionsIntf_;
 
 };  // RunManager
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // _SIMCORE_RUNMANAGER_H_

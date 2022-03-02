@@ -18,7 +18,7 @@
 class G4String;
 class G4ParticleDefinition;
 
-namespace simcore {
+namespace g4fire {
 namespace darkbrem {
 
 /**
@@ -364,6 +364,6 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
 };  // G4eDarkBremsstrahlung
 
 }  // namespace darkbrem
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H_

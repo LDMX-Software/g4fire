@@ -11,7 +11,7 @@
 
 using ldmx::DetectorID;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class CalorimeterSD
@@ -74,6 +74,6 @@ class CalorimeterSD : public G4VSensitiveDetector {
   int layerDepth_{2};
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

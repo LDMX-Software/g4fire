@@ -3,7 +3,7 @@
 #include "Framework/Exception/Exception.h"
 #include "g4fire/PluginFactory.h"
 
-namespace simcore {
+namespace g4fire {
 
 XsecBiasingOperator::XsecBiasingOperator(
     std::string name, const framework::config::Parameters& parameters)
@@ -64,4 +64,4 @@ void XsecBiasingOperator::declare(const std::string& className,
   PluginFactory::getInstance().registerBiasingOperator(className, builder);
 }
 
-}  // namespace simcore
+}  // namespace g4fire

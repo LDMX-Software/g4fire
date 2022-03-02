@@ -24,7 +24,7 @@
 /*~~~~~~~~~~*/
 #include "TRandom3.h"
 
-namespace simcore {
+namespace g4fire {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(
     framework::config::Parameters& parameters)
@@ -153,4 +153,4 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         "No primary vertices were produced by any of the generators.");
   }
 }
-}  // namespace simcore
+}  // namespace g4fire

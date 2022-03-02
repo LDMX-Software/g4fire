@@ -13,7 +13,7 @@
 /*~~~~~~~~~~~~~~*/
 #include "DetDescr/EcalID.h"
 
-namespace simcore {
+namespace g4fire {
 
 EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID,
                ConditionsInterface& ci)
@@ -141,4 +141,4 @@ G4ThreeVector EcalSD::getHitPosition(G4Step* aStep) {
   return position;
 }
 
-}  // namespace simcore
+}  // namespace g4fire

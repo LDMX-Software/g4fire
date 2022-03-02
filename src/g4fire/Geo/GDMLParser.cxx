@@ -1,13 +1,13 @@
 #include "g4fire/Geo/GDMLParser.h"
 
-namespace simcore {
+namespace g4fire {
 namespace geo {
 
 GDMLParser::GDMLParser(framework::config::Parameters &parameters,
-                       simcore::ConditionsInterface &ci) {
+                       g4fire::ConditionsInterface &ci) {
   parser_ = std::make_unique<G4GDMLParser>();
   info_ =
-      std::make_unique<simcore::geo::AuxInfoReader>(parser_.get(), parameters, ci);
+      std::make_unique<g4fire::geo::AuxInfoReader>(parser_.get(), parameters, ci);
   parameters_ = parameters;
 }
 
@@ -24,4 +24,4 @@ void GDMLParser::read() {
 }
 
 }  // namespace geo
-}  // namespace simcore
+}  // namespace g4fire

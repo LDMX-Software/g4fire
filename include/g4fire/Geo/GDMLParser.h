@@ -14,7 +14,7 @@
 // Forward Declarations
 class G4VPhysicalVolume;
 
-namespace simcore {
+namespace g4fire {
 namespace geo {
 
 /**
@@ -32,7 +32,7 @@ class GDMLParser : public Parser {
    * @param ci Interface that allows access to the conditions.
    */
   GDMLParser(framework::config::Parameters &parameters,
-             simcore::ConditionsInterface &ci);
+             g4fire::ConditionsInterface &ci);
 
   /// Default destructor
   ~GDMLParser() = default;
@@ -64,7 +64,7 @@ class GDMLParser : public Parser {
    * Create an instance of this parser.
    */
   static Parser *create(framework::config::Parameters &parameters,
-                        simcore::ConditionsInterface &ci) {
+                        g4fire::ConditionsInterface &ci) {
     return new GDMLParser(parameters, ci);
   }
 
@@ -73,7 +73,7 @@ class GDMLParser : public Parser {
   std::unique_ptr<G4GDMLParser> parser_;
 
   /// The auxiliary info reader
-  std::unique_ptr<simcore::geo::AuxInfoReader> info_;
+  std::unique_ptr<g4fire::geo::AuxInfoReader> info_;
 
   /// The parameters used to configure this parser
   framework::config::Parameters parameters_;
@@ -83,6 +83,6 @@ class GDMLParser : public Parser {
 
 };  // GDMLParser
 }  // namespace geo
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_GEO_GDMLPARSER_H

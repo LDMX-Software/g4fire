@@ -14,7 +14,7 @@
 //---< g4fire >---//
 #include "g4fire/ConditionsInterface.h"
 
-namespace simcore::geo {
+namespace g4fire::geo {
 
 /**
  * @class AuxInfoReader
@@ -119,6 +119,6 @@ class AuxInfoReader {
   ConditionsInterface &conditionsIntf_;
 };
 
-}  // namespace simcore::geo
+}  // namespace g4fire::geo
 
 #endif

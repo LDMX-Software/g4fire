@@ -17,7 +17,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace simcore {
+namespace g4fire {
 
 GeneralParticleSource::GeneralParticleSource(
     const std::string& name, framework::config::Parameters& parameters)
@@ -45,6 +45,6 @@ void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   return;
 }
 
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_GENERATOR(simcore, GeneralParticleSource)
+DECLARE_GENERATOR(g4fire, GeneralParticleSource)

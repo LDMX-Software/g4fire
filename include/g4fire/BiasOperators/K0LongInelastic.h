@@ -3,7 +3,7 @@
 
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace simcore {
+namespace g4fire {
 namespace biasoperators {
 
 /**
@@ -64,6 +64,6 @@ class K0LongInelastic : public XsecBiasingOperator {
 };
 
 }  // namespace biasoperators
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_BIASOPERATORS_K0LONGINELASTIC_H_

@@ -10,7 +10,7 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace simcore {
+namespace g4fire {
 
 CalorimeterSD::CalorimeterSD(G4String name, G4String theCollectionName)
     : G4VSensitiveDetector(name), hitsCollection_(0) {
@@ -46,4 +46,4 @@ void CalorimeterSD::EndOfEvent(G4HCofThisEvent*) {
   }
 }
 
-}  // namespace simcore
+}  // namespace g4fire

@@ -1,6 +1,6 @@
 #include "g4fire/UserStackingAction.h"
 
-namespace simcore {
+namespace g4fire {
 
 UserStackingAction::UserStackingAction() {}
 
@@ -33,4 +33,4 @@ void UserStackingAction::PrepareNewEvent() {
   for (auto& stackingAction : stackingActions_)
     stackingAction->PrepareNewEvent();
 }
-}  // namespace simcore
+}  // namespace g4fire

@@ -25,7 +25,7 @@
 // Forward declarations
 class G4Run;
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class UserRunAction
@@ -69,6 +69,6 @@ class UserRunAction : public G4UserRunAction {
 
 };  // UserRunAction
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif  // SIMCORE_USERRUNACTION_H

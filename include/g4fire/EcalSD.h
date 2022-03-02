@@ -19,7 +19,7 @@
 // Geant4
 #include "G4Polyhedra.hh"
 
-namespace simcore {
+namespace g4fire {
 
 /**
  * @class EcalSD
@@ -74,6 +74,6 @@ class EcalSD : public CalorimeterSD {
   ConditionsInterface& conditionsIntf_;
 };
 
-}  // namespace simcore
+}  // namespace g4fire
 
 #endif

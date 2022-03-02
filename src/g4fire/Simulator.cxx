@@ -29,7 +29,7 @@
 #include "G4UIsession.hh"
 #include "Randomize.hh"
 
-namespace simcore {
+namespace g4fire {
 
 const std::vector<std::string> Simulator::invalidCommands_ = {
     "/run/initialize",        // hard coded at the right time
@@ -77,7 +77,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
   runManager_ = std::make_unique<RunManager>(parameters, conditionsIntf_);
 
   // Instantiate the GDML parser
-  auto parser{simcore::geo::ParserFactory::getInstance().createParser(
+  auto parser{g4fire::geo::ParserFactory::getInstance().createParser(
       "gdml", parameters, conditionsIntf_)};
 
   // Instantiate the class so cascade parameters can be set.
@@ -115,7 +115,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
 void Simulator::onFileOpen(framework::EventFile& file) {
   // Initialize persistency manager and connect it to the current EventFile
   persistencyManager_ =
-      std::make_unique<simcore::persist::RootPersistencyManager>(
+      std::make_unique<g4fire::persist::RootPersistencyManager>(
           file, parameters_, this->getRunNumber(), conditionsIntf_);
   persistencyManager_->Initialize();
 }
@@ -210,7 +210,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     auto className{gen.getParameter<std::string>("class_name")};
     header.setStringParameter(genID + " Class", className);
 
-    if (className.find("simcore::ParticleGun") != std::string::npos) {
+    if (className.find("g4fire::ParticleGun") != std::string::npos) {
       header.setFloatParameter(genID + " Time [ns]",
                                gen.getParameter<double>("time"));
       header.setFloatParameter(genID + " Energy [GeV]",
@@ -221,7 +221,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       gen.getParameter<std::vector<double>>("position"));
       threeVectorDump(genID + " Direction",
                       gen.getParameter<std::vector<double>>("direction"));
-    } else if (className.find("simcore::MultiParticleGunPrimaryGenerator") !=
+    } else if (className.find("g4fire::MultiParticleGunPrimaryGenerator") !=
                std::string::npos) {
       header.setIntParameter(genID + " Poisson Enabled",
                              gen.getParameter<bool>("enablePoisson"));
@@ -232,21 +232,21 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       gen.getParameter<std::vector<double>>("vertex"));
       threeVectorDump(genID + " Momentum [MeV]",
                       gen.getParameter<std::vector<double>>("momentum"));
-    } else if (className.find("simcore::LHEPrimaryGenerator") !=
+    } else if (className.find("g4fire::LHEPrimaryGenerator") !=
                std::string::npos) {
       header.setStringParameter(genID + " LHE File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("simcore::RootCompleteReSim") !=
+    } else if (className.find("g4fire::RootCompleteReSim") !=
                std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("simcore::RootSimFromEcalSP") !=
+    } else if (className.find("g4fire::RootSimFromEcalSP") !=
                std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
       header.setFloatParameter(genID + " Time Cutoff [ns]",
                                gen.getParameter<double>("time_cutoff"));
-    } else if (className.find("simcore::GeneralParticleSource") !=
+    } else if (className.find("g4fire::GeneralParticleSource") !=
                std::string::npos) {
       stringVectorDump(
           genID + " Init Cmd",
@@ -427,6 +427,6 @@ void Simulator::setSeeds(std::vector<int> seeds) {
   G4Random::setTheSeeds(&seedVec[0]);
 }
 
-}  // namespace simcore
+}  // namespace g4fire
 
-DECLARE_PRODUCER_NS(simcore, Simulator)
+DECLARE_PRODUCER_NS(g4fire, Simulator)

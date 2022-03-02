@@ -13,7 +13,7 @@
 // LDMX
 #include "DetDescr/IDField.h"
 
-namespace simcore {
+namespace g4fire {
 
 TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subDetID)
     : G4VSensitiveDetector(name), hitsCollection_(0) {
@@ -148,4 +148,4 @@ void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
   }
 }
 
-}  // namespace simcore
+}  // namespace g4fire

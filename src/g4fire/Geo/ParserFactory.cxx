@@ -8,7 +8,7 @@
 #include "g4fire/Geo/GDMLParser.h"
 #include "g4fire/Geo/Parser.h"
 
-namespace simcore {
+namespace g4fire {
 namespace geo {
 
 ParserFactory &ParserFactory::getInstance() {
@@ -24,7 +24,7 @@ void ParserFactory::registerParser(const std::string &name, createFunc create) {
 
 Parser *ParserFactory::createParser(const std::string &name,
                                     framework::config::Parameters &parameters,
-                                    simcore::ConditionsInterface &ci) {
+                                    g4fire::ConditionsInterface &ci) {
   auto it{parser_map.find(name)};
   if (it == parser_map.end())
     EXCEPTION_RAISE("ParserNotFound", "The parser " + name + " was not found.");
@@ -33,4 +33,4 @@ Parser *ParserFactory::createParser(const std::string &name,
 }
 
 }  // namespace geo
-}  // namespace simcore
+}  // namespace g4fire
