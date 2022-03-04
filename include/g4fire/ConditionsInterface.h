@@ -1,26 +1,19 @@
-/**
- * @file ConditionsInterface
- * @brief Glue class which provides connection between EventProcessor and
- * SensitiveDetectors for conditions information
- * @author Jeremiah Mans, University of Minnesota
- */
+#ifndef G4FIRE_CONDITIONSINTERFACE_H
+#define G4FIRE_CONDITIONSINTERFACE_H
 
-#ifndef SIMCORE_CONDITIONSINTERFACE_H_
-#define SIMCORE_CONDITIONSINTERFACE_H_
+#include <string>
 
-// LDMX
-#include "Framework/EventProcessor.h"
+#include "fire/Processor.h"
 
 namespace g4fire {
 
 /**
- * @class ConditionsInterface
- * @brief Handle to the conditions system, provided at construction to classes
- * which require it
+ * Handle to the conditions system, provided at construction to classes
+ * which require it.
  */
 class ConditionsInterface {
  public:
-  ConditionsInterface(framework::EventProcessor* p) : processor_{p} {}
+  ConditionsInterface(fire::Processor *p) : processor_{p} {}
 
   /**
    * Primary request action for a conditions object If the
@@ -29,8 +22,7 @@ class ConditionsInterface {
    * or is out of date, the () method will be called to provide the
    * object.
    */
-  template <class T>
-  const T& getCondition(const std::string& condition_name) {
+  template <class T> const T &getCondition(const std::string &condition_name) {
     if (processor_ == 0) {
       EXCEPTION_RAISE("ConditionUnavailableException",
                       "No conditions system object available in g4fire");
@@ -39,12 +31,10 @@ class ConditionsInterface {
   }
 
  private:
-  /**
-   * Pointer to the owner processor object
-   */
-  framework::EventProcessor* processor_;
-};
+  /// Pointer to the owner processor object
+  fire::Processor *processor_;
 
-}  // namespace g4fire
+}; // ConditionsInterface
+} // namespace g4fire
 
-#endif  // SIMCORE_CONDITIONSINTERFACE_H_
+#endif // G4FIRE_CONDITIONSINTERFACE_H
