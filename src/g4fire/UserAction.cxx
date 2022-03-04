@@ -1,14 +1,7 @@
-
 #include "g4fire/UserAction.h"
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/PluginFactory.h"
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4Event.hh"
 #include "G4Run.hh"
 #include "G4Step.hh"
@@ -17,15 +10,13 @@
 namespace g4fire {
 
 UserAction::UserAction(const std::string& name,
-                       framework::config::Parameters& parameters) {
+                       fire::config::Parameters& params) {
   name_ = name;
-  parameters_ = parameters;
+  params_ = params;
 }
 
-UserAction::~UserAction() {}
-
-void UserAction::declare(const std::string& className,
+void UserAction::declare(const std::string& class_name,
                          UserActionBuilder* builder) {
-  PluginFactory::getInstance().registerAction(className, builder);
+  PluginFactory::getInstance().registerAction(class_name, builder);
 }
 }  // namespace g4fire
