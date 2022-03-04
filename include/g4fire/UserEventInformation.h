@@ -1,5 +1,5 @@
-#ifndef SIMCORE_USEREVENTINFORMATION_H
-#define SIMCORE_USEREVENTINFORMATION_H
+#ifndef G4FIRE_USEREVENTINFORMATION_H
+#define G4FIRE_USEREVENTINFORMATION_H
 
 #include "G4VUserEventInformation.hh"
 
@@ -9,21 +9,22 @@ namespace g4fire {
  * Encapsulates user defined information associated with a Geant4 event.
  */
 class UserEventInformation : public G4VUserEventInformation {
- public:
+public:
   /// Constructor
-  UserEventInformation();
+  UserEventInformation() = default;
 
   /// Destructor
-  ~UserEventInformation();
+  ~UserEventInformation() = default;
 
   /// Print the information associated with the track
+  // TODO(OM): Use stream operator instead
   void Print() const final override;
 
   /// Increment the number of brem candidates in an event.
-  void incBremCandidateCount() { bremCandidateCount_ += 1; }
+  void incBremCandidateCount() { brem_candidate_count_ += 1; }
 
   /// Decrease the number of brem candidates in an event.
-  void decBremCandidateCount() { bremCandidateCount_ -= 1; }
+  void decBremCandidateCount() { brem_candidate_count_ -= 1; }
 
   /**
    * Set the event weight.
@@ -49,7 +50,7 @@ class UserEventInformation : public G4VUserEventInformation {
    * @return The total number of brem candidates that this event
    *      contains.
    */
-  int bremCandidateCount() { return bremCandidateCount_; }
+  int bremCandidateCount() { return brem_candidate_count_; }
 
   /**
    * Add energy to the photonuclear running total
@@ -101,9 +102,9 @@ class UserEventInformation : public G4VUserEventInformation {
    */
   bool wasLastStepEN() const { return last_step_en_; }
 
- private:
+private:
   /// Total number of brem candidates in the event
-  int bremCandidateCount_{0};
+  int brem_candidate_count_{0};
 
   /**
    * The event weight
@@ -142,6 +143,6 @@ class UserEventInformation : public G4VUserEventInformation {
    */
   bool last_step_en_{false};
 };
-}  // namespace g4fire
+} // namespace g4fire
 
-#endif  // SIMCORE_USEREVENTINFORMATION_H
+#endif // G4FIRE_USEREVENTINFORMATION_H
