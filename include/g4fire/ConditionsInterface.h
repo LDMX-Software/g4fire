@@ -1,9 +1,9 @@
-#ifndef G4FIRE_CONDITIONSINTERFACE_H
-#define G4FIRE_CONDITIONSINTERFACE_H
+#pragma once
 
 #include <string>
 
 #include "fire/Processor.h"
+#include "fire/exception/Exception.h"
 
 namespace g4fire {
 
@@ -23,9 +23,9 @@ class ConditionsInterface {
    * object.
    */
   template <class T> const T &getCondition(const std::string &condition_name) {
-    if (processor_ == 0) {
-      EXCEPTION_RAISE("ConditionUnavailableException",
-                      "No conditions system object available in g4fire");
+    if (processor_ == nullptr) {
+      throw fire::Exception(
+          "Conditions", "Failed to find a conditions object in g4fire", false);
     }
     return processor_->getCondition<T>(condition_name);
   }
@@ -36,5 +36,3 @@ class ConditionsInterface {
 
 }; // ConditionsInterface
 } // namespace g4fire
-
-#endif // G4FIRE_CONDITIONSINTERFACE_H
