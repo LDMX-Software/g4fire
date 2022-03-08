@@ -1,39 +1,23 @@
-/**
- * @file PrimaryGenerator.h
- * @brief Header file for PrimaryGenerator
- */
+#ifndef G4FIRE_PRIMARYGENERATOR_H
+#define G4FIRE_PRIMARYGENERATOR_H
 
-#ifndef SIMCORE_PRIMARYGENERATOR_H
-#define SIMCORE_PRIMARYGENERATOR_H
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <string>
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4VPrimaryGenerator.hh"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h"
 
-// Forward Declarations
 class G4Event;
 
 namespace g4fire {
 
-// Forward declarations
 class PrimaryGenerator;
 
-typedef PrimaryGenerator* PrimaryGeneratorBuilder(
-    const std::string& name, framework::config::Parameters& parameters);
+typedef PrimaryGenerator *
+PrimaryGeneratorBuilder(const std::string &name,
+                        fire::config::Parameters &params);
 
 /**
- * @class PrimaryGenerator
  * @brief Interface that defines a simulation primary generator.
  *
  * This class inherits from the Geant4 Primary Genertor template,
@@ -45,55 +29,55 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    * Constructor.
    *
    * @param name Name given the to class instance.
+   * @param The parameter set used to configure this class.
    */
-  PrimaryGenerator(const std::string& name,
-                   framework::config::Parameters& parameters);
+  PrimaryGenerator(const std::string &name, fire::config::Parameters &params);
 
   /// Destructor
-  virtual ~PrimaryGenerator();
+  virtual ~PrimaryGenerator() = default;
 
   /**
    * Method used to register a user action with the manager.
    *
-   * @param className Name of the class instance
-   * @param builder The builder used to create and instance of this class.
+   * @param class_name Name of the class instance
+   * @param builder The builder used to create an instance of this class.
    */
-  static void declare(const std::string& className,
-                      PrimaryGeneratorBuilder* builder);
+  static void declare(const std::string &class_name,
+                      PrimaryGeneratorBuilder *builder);
 
   /**
-   * Generate a Primary Vertex
+   * Generate a primary vertex.
    *
-   * This function must be defined by any other LDMX generators.
+   * This is a pure virtual method and must be defined by a deriving class.
+   *
+   * @param event The Geant4 event to which the primary vertex will be added.
    */
-  virtual void GeneratePrimaryVertex(G4Event*) = 0;
+  virtual void GeneratePrimaryVertex(G4Event *event) = 0;
 
  protected:
   /// Name of the PrimaryGenerator
   std::string name_{""};
 
   /// The set of parameters used to configure this class
-  framework::config::Parameters parameters_;
+  fire::config::Parameters params_;
 
-};  // PrimaryGenerator
-
-}  // namespace g4fire
+}; // PrimaryGenerator
+} // namespace g4fire
 
 /**
  * @macro DECLARE_GENERATOR
  *
- * Defines a builder for the declared class
- * and then registers the class as a generator
- * with the PrimaryGeneratorManager
+ * Defines a builder for the declared class and then registers the class as a
+ * generator with the PrimaryGeneratorManager.
  */
-#define DECLARE_GENERATOR(NS, CLASS)                                        \
-  g4fire::PrimaryGenerator* CLASS##Builder(                                \
-      const std::string& name, framework::config::Parameters& parameters) { \
-    return new NS::CLASS(name, parameters);                                 \
-  }                                                                         \
-  __attribute((constructor(305))) static void CLASS##Declare() {            \
-    g4fire::PrimaryGenerator::declare(                                     \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
+#define DECLARE_GENERATOR(NS, CLASS)                                           \
+  g4fire::PrimaryGenerator *CLASS##Builder(                                    \
+      const std::string &name, fire::config::Parameters &parameters) {         \
+    return new NS::CLASS(name, parameters);                                    \
+  }                                                                            \
+  __attribute((constructor(305))) static void CLASS##Declare() {               \
+    g4fire::PrimaryGenerator::declare(                                         \
+        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);       \
   }
 
-#endif  // SIMCORE_PRIMARYGENERATOR_H
+#endif // G4FIRE_PRIMARYGENERATOR_H

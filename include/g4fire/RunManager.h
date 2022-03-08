@@ -1,54 +1,30 @@
-/**
- * @file RunManager.h
- * @brief Class providing a Geant4 run manager implementation.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_RUNMANAGER_H
+#define G4FIRE_RUNMANAGER_H
 
-#ifndef SIMCORE_RUNMANAGER_H
-#define SIMCORE_RUNMANAGER_H
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <any>
 #include <map>
 #include <string>
 
-//------------//
-//   Geant4   //
-//------------//
 #include "G4PhysListFactory.hh"
 #include "G4RunManager.hh"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h" 
 
 namespace g4fire {
 
-// Forward declare to avoid circular dependency in headers
-class DetectorConstruction;
-class UserActionManager;
-class APrimeMessenger;
 class ConditionsInterface;
+class DetectorConstruction;
+//class UserActionManager;
+//class APrimeMessenger;
 
-/**
- * @class RunManager
- * @brief Extension of Geant4 run manager
- */
 class RunManager : public G4RunManager {
  public:
   /**
-   * Class constructor.
    */
-  RunManager(framework::config::Parameters& parameters,
-             ConditionsInterface& ci);
+  RunManager(const fire::config::Parameters& params, ConditionsInterface& ci);
 
-  /**
-   * Class destructor.
-   */
-  virtual ~RunManager();
+  /// Destructor
+  ~RunManager() = default;
 
   /**
    * Initialize physics.
@@ -78,41 +54,41 @@ class RunManager : public G4RunManager {
   /**
    * Tell RunManager to use the seed from the root file.
    */
-  void setUseRootSeed(bool useIt = true) { useRootSeed_ = useIt; }
+  //void setUseRootSeed(bool useIt = true) { useRootSeed_ = useIt; }
 
   /**
    * Should we use the seed from the root file?
    */
-  bool useRootSeed() { return useRootSeed_; }
+  //bool useRootSeed() { return useRootSeed_; }
 
  private:
   /// The set of parameters used to configure the RunManager
-  framework::config::Parameters parameters_;
+  fire::config::Parameters params_;
 
   /**
    * Factory class for instantiating the physics list.
    */
-  G4PhysListFactory physicsListFactory_;
+  G4PhysListFactory physics_list_factory_;
 
   /**
    * Flag indicating whether a parallel world should be
    * registered
    */
-  bool isPWEnabled_{false};
+  bool pw_enabled_{false};
 
   /** Path to GDML description of parallel world. */
-  std::string parallelWorldPath_{""};
+  std::string parallel_world_path_{""};
 
   /**
    * Should we use random seed from root file?
    */
-  bool useRootSeed_{false};
+  //bool useRootSeed_{false};
 
   /** ConditionsInterface
    */
-  ConditionsInterface& conditionsIntf_;
+  ConditionsInterface& conditions_intf_;
 
-};  // RunManager
+}; // RunManager
 }  // namespace g4fire
 
-#endif  // _SIMCORE_RUNMANAGER_H_
+#endif  // G4FIRE_RUNMANAGER_H

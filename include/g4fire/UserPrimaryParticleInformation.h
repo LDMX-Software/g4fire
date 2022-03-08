@@ -1,45 +1,33 @@
-/**
- * @file UserPrimaryParticleInformation.h
- * @brief Class that provides extra information for Geant4 primary particles
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_USERPRIMARYPARTICLEINFORMATION_H_
+#define G4FIRE_USERPRIMARYPARTICLEINFORMATION_H_
 
-#ifndef SIMCORE_USERPRIMARYPARTICLEINFORMATION_H_
-#define SIMCORE_USERPRIMARYPARTICLEINFORMATION_H_
-
-// Geant4
 #include "G4VUserPrimaryParticleInformation.hh"
 
 namespace g4fire {
 
 /**
- * @class UserPrimaryParticleInformation
  * @brief Defines extra information attached to a Geant4 primary particle
  */
 class UserPrimaryParticleInformation
     : public G4VUserPrimaryParticleInformation {
  public:
-  /**
-   * Class Constructor.
-   */
+  /// Class Constructor.
   UserPrimaryParticleInformation() { ; }
 
-  /**
-   * Class destructor.
-   */
+  /// Class destructor.
   virtual ~UserPrimaryParticleInformation() { ; }
 
   /**
    * Set the HEP event status (generator status) e.g. from an LHE particle.
-   * @param hepEvtStatus The HEP event status.
+   * @param hep_event_status The HEP event status.
    */
-  void setHepEvtStatus(int hepEvtStatus) { hepEvtStatus_ = hepEvtStatus; }
+  void setHepEvtStatus(int hep_event_status) { hep_event_status_ = hep_event_status; }
 
   /**
    * Get the HEP event status.
    * @return The HEP event status.
    */
-  int getHepEvtStatus() { return hepEvtStatus_; }
+  int getHepEvtStatus() { return hep_event_status_; }
 
   /**
    * Implement virtual method (no-op).
@@ -50,7 +38,7 @@ class UserPrimaryParticleInformation
   /**
    * The HEP event status.
    */
-  int hepEvtStatus_{-1};
+  int hep_event_status_{-1};
 };
 
 }  // namespace g4fire

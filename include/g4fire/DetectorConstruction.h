@@ -1,18 +1,14 @@
-#ifndef SIMCORE_DETECTORCONSTRUCTION_H
-#define SIMCORE_DETECTORCONSTRUCTION_H
+#ifndef G4FIRE_DETECTORCONSTRUCTION_H
+#define G4FIRE_DETECTORCONSTRUCTION_H
 
-//---< Geant4 >---//
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4VUserDetectorConstruction.hh"
 
-//---< Framework >---//
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h"
 
-//---< g4fire >---//
 #include "g4fire/Geo/Parser.h"
 
-// Forward declaration
 namespace g4fire::geo {
 class Parser;
 }
@@ -20,7 +16,6 @@ class Parser;
 namespace g4fire {
 
 /**
- * @class DetectorConstruction
  * @brief Implements the Geant4 detector construction
  *
  * @note
@@ -36,11 +31,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
    * Constructor.
    *
    * @param parser Parser used to parse the geometry into memory.
-   * @param parameters The parameters used to configure this class.
+   * @param params The parameters used to configure this class.
    * @param ci The conditions needed to build the detector.
    */
   DetectorConstruction(g4fire::geo::Parser *parser,
-                       framework::config::Parameters &parameters,
+                       fire::config::Parameters &params,
                        ConditionsInterface &ci);
 
   /**
@@ -69,8 +64,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   g4fire::geo::Parser *parser_;
 
   /// The set of parameters used to configure this class
-  framework::config::Parameters parameters_;
+  fire::config::Parameters params_;
 };  // DetectorConstruction
 }  // namespace g4fire
 
-#endif  // SIMCORE_DETECTORCONSTRUCTION_H
+#endif  // G4FIRE_DETECTORCONSTRUCTION_H

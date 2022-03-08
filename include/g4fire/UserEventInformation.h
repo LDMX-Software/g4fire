@@ -9,7 +9,7 @@ namespace g4fire {
  * Encapsulates user defined information associated with a Geant4 event.
  */
 class UserEventInformation : public G4VUserEventInformation {
-public:
+ public:
   /// Constructor
   UserEventInformation() = default;
 
@@ -102,7 +102,7 @@ public:
    */
   bool wasLastStepEN() const { return last_step_en_; }
 
-private:
+ private:
   /// Total number of brem candidates in the event
   int brem_candidate_count_{0};
 

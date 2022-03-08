@@ -2,13 +2,13 @@
 
 namespace g4fire {
 
-UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
-    : storeSecondaries_(aStoreSecondaries) {}
+UserRegionInformation::UserRegionInformation(bool store_secondaries)
+    : store_secondaries_(store_secondaries) {}
 
 UserRegionInformation::~UserRegionInformation() {}
 
 bool UserRegionInformation::getStoreSecondaries() const {
-  return storeSecondaries_;
+  return store_secondaries_;
 }
 
 void UserRegionInformation::Print() const {}

@@ -1,23 +1,17 @@
+#ifndef G4FIRE_GEO_AUXINFOREADER_H
+#define G4FIRE_GEO_AUXINFOREADER_H
 
-#ifndef SIMCORE_GEO_AUXINFOREADER_H
-#define SIMCORE_GEO_AUXINFOREADER_H
-
-//---< Geant4 >---//
 #include "G4GDMLParser.hh"
 
-//---< DetDescr >---//
 #include "DetDescr/DetectorHeader.h"
 
-//---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 
-//---< g4fire >---//
 #include "g4fire/ConditionsInterface.h"
 
 namespace g4fire::geo {
 
 /**
- * @class AuxInfoReader
  * @brief Reads auxiliary information from GDML userinfo block
  *
  * @note
@@ -34,7 +28,7 @@ class AuxInfoReader {
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, framework::config::Parameters ps,
+  AuxInfoReader(G4GDMLParser *parser, fire::config::Parameters ps,
                 ConditionsInterface &ci);
 
   /**
@@ -56,45 +50,45 @@ class AuxInfoReader {
    * Get the detector header that was created from the userinfo block.
    * @return The detector header.
    */
-  ldmx::DetectorHeader *getDetectorHeader() { return detectorHeader_; }
+  ldmx::DetectorHeader *getDetectorHeader() { return detector_header_; }
 
  private:
   /**
    * Create a sensitive detector from GDML data.
-   * @param sdType The type of the sensitive detector.
-   * @param auxInfoList The aux info defining the sensitive detector.
+   * @param sd_type The type of the sensitive detector.
+   * @param aux_info_list The aux info defining the sensitive detector.
    */
-  void createSensitiveDetector(G4String sdType,
-                               const G4GDMLAuxListType *auxInfoList);
+  void createSensitiveDetector(G4String sd_type,
+                               const G4GDMLAuxListType *aux_info_list);
 
   /**
    * Create a magnetic field from GDML data.
    * @param name The name of the magnetic field.
-   * @param auxInfoList The aux info defining the magnetic field.
+   * @param aux_info_list The aux info defining the magnetic field.
    */
-  void createMagneticField(G4String name, const G4GDMLAuxListType *auxInfoList);
+  void createMagneticField(G4String name, const G4GDMLAuxListType *aux_info_list);
 
   /**
    * Create a detector region from GDML data.
    * @param name The name of the detector region.
-   * @param auxInfoList The aux info defining the detector region.
+   * @param aux_info_list The aux info defining the detector region.
    */
-  void createRegion(G4String name, const G4GDMLAuxListType *auxInfoList);
+  void createRegion(G4String name, const G4GDMLAuxListType *aux_info_list);
 
   /**
    * Create visualization attributes from GDML data.
    * @param name The name of the visualization attributes.
-   * @param auxInfoList The aux info defining the visualization attributes.
+   * @param aux_info_list The aux info defining the visualization attributes.
    */
-  void createVisAttributes(G4String name, const G4GDMLAuxListType *auxInfoList);
+  void createVisAttributes(G4String name, const G4GDMLAuxListType *aux_info_list);
 
   /**
    * Create the detector header from the global auxinfo.
-   * @param detectorVersion The aux value with the detector version.
-   * @param auxInfoList The aux info with the detector header information.
+   * @param detector_version The aux value with the detector version.
+   * @param aux_info_list The aux info with the detector header information.
    */
-  void createDetectorHeader(G4String detectorVersion,
-                            const G4GDMLAuxListType *auxInfoList);
+  void createDetectorHeader(G4String detector_version,
+                            const G4GDMLAuxListType *aux_info_list);
 
  private:
   /**
@@ -110,13 +104,13 @@ class AuxInfoReader {
   /**
    * Detector header with name and version.
    */
-  ldmx::DetectorHeader *detectorHeader_{nullptr};
+  ldmx::DetectorHeader *detector_header_{nullptr};
 
-  /// Configuration parameters
-  framework::config::Parameters parameters_;
+  /// Configuration params
+  fire::config::Parameters params_;
 
   /// ConditionsInterface
-  ConditionsInterface &conditionsIntf_;
+  ConditionsInterface &conditions_intf_;
 };
 
 }  // namespace g4fire::geo

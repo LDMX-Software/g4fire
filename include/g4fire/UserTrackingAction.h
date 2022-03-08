@@ -1,33 +1,18 @@
-/**
- * @file UserTrackingAction.h
- * @brief Class which implements the user tracking action
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_USERTRACKINGACTION_H_
+#define G4FIRE_USERTRACKINGACTION_H_
 
-#ifndef SIMCORE_USERTRACKINGACTION_H_
-#define SIMCORE_USERTRACKINGACTION_H_
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <vector>
 
-// LDMX
 #include "g4fire/TrackMap.h"
 
-// Geant4
 #include "G4RunManager.hh"
 #include "G4UserTrackingAction.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
 namespace g4fire {
 
 /**
- * @class UserTrackingAction
  * @brief Implementation of user tracking action
  *
  * Here, we manage the interaction between our track storage machinery
@@ -35,15 +20,11 @@ namespace g4fire {
  */
 class UserTrackingAction : public G4UserTrackingAction {
  public:
-  /**
-   * Class constructor.
-   */
-  UserTrackingAction() {}
+  /// Class constructor.
+  UserTrackingAction() = default;
 
-  /**
-   * Class destructor.
-   */
-  virtual ~UserTrackingAction() {}
+  /// Class destructor.
+  virtual ~UserTrackingAction() = default;
 
   /**
    * Implementation of pre-tracking action.
@@ -80,9 +61,9 @@ class UserTrackingAction : public G4UserTrackingAction {
    * Finally, before we wrap up, we call any other tracking actions'
    * 'PreUserTrackingAction' methods.
    *
-   * @param aTrack The Geant4 track.
+   * @param track The Geant4 track.
    */
-  void PreUserTrackingAction(const G4Track* aTrack);
+  void PreUserTrackingAction(const G4Track* track);
 
   /**
    * Implementation of post-tracking action.
@@ -99,15 +80,15 @@ class UserTrackingAction : public G4UserTrackingAction {
    * @see TrackMap::save for how a G4Track is translated
    * into our output SimParticle object.
    *
-   * @param aTrack The Geant4 track.
+   * @param track The Geant4 track.
    */
-  void PostUserTrackingAction(const G4Track* aTrack);
+  void PostUserTrackingAction(const G4Track* track);
 
   /**
    * Get a pointer to the current TrackMap for the event.
    * @return A pointer to the current TrackMap for the event.
    */
-  TrackMap* getTrackMap() { return &trackMap_; }
+  TrackMap* getTrackMap() { return &track_map_; }
 
   /**
    * Get a pointer to the current UserTrackingAction from the G4RunManager.
@@ -123,18 +104,17 @@ class UserTrackingAction : public G4UserTrackingAction {
    *
    * @param action  User action of type RunAction
    */
-  void registerAction(UserAction* trackingAction) {
-    trackingActions_.push_back(trackingAction);
+  void registerAction(UserAction* tracking_action) {
+    tracking_actions_.push_back(tracking_action);
   }
 
  private:
   /// custom user actions to be called before and after processing a track
-  std::vector<UserAction*> trackingActions_;
+  std::vector<UserAction*> tracking_actions_;
 
-  /** Stores parentage information for all tracks in the event. */
-  TrackMap trackMap_;
+  /// Stores parentage information for all tracks in the event. 
+  TrackMap track_map_;
 };  // UserTrackingAction
-
 }  // namespace g4fire
 
 #endif

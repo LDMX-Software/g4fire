@@ -1,26 +1,17 @@
-/**
- * @file PrimaryGenerator.cxx
- * @brief Implementation file for PrimaryGenerator
- *
- * @author Tom Eichlersmith, University of Minnesota
- */
-
 #include "g4fire/PrimaryGenerator.h"
 
 #include "g4fire/PluginFactory.h"
 
 namespace g4fire {
 
-PrimaryGenerator::PrimaryGenerator(const std::string& name,
-                                   framework::config::Parameters& parameters) {
+PrimaryGenerator::PrimaryGenerator(const std::string &name,
+                                   fire::config::Parameters &params) {
   name_ = name;
-  parameters_ = parameters;
+  params_ = params;
 }
 
-PrimaryGenerator::~PrimaryGenerator() {}
-
-void PrimaryGenerator::declare(const std::string& className,
-                               PrimaryGeneratorBuilder* builder) {
-  PluginFactory::getInstance().registerGenerator(className, builder);
+void PrimaryGenerator::declare(const std::string &name,
+                               PrimaryGeneratorBuilder *builder) {
+  PluginFactory::getInstance().registerGenerator(name, builder);
 }
-}  // namespace g4fire
+} // namespace g4fire

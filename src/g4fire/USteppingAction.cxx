@@ -1,14 +1,9 @@
-/**
- * @file USteppingAction.cxx
- * @author Omar Moreno, SLAC National Accelerator Laboraty
- */
-
 #include "g4fire/USteppingAction.h"
 
 namespace g4fire {
 
-void USteppingAction::UserSteppingAction(const G4Step* step) {
-  auto event_info{static_cast<UserEventInformation*>(
+void USteppingAction::UserSteppingAction(const G4Step *step) {
+  auto event_info{static_cast<UserEventInformation *>(
       G4EventManager::GetEventManager()->GetUserInformation())};
 
   // get the track weights before this step and after this step
@@ -22,7 +17,7 @@ void USteppingAction::UserSteppingAction(const G4Step* step) {
 
   event_info->incWeight(weight_of_this_step_alone);
 
-  const std::vector<const G4Track*>* secondaries{
+  const std::vector<const G4Track *> *secondaries{
       step->GetSecondaryInCurrentStep()};
 
   /**
@@ -38,25 +33,25 @@ void USteppingAction::UserSteppingAction(const G4Step* step) {
   if (secondaries) {
     double delta_energy = step->GetPreStepPoint()->GetKineticEnergy() -
                           step->GetPostStepPoint()->GetKineticEnergy();
-    for (const G4Track* secondary : *secondaries) {
-      const G4VProcess* creator{secondary->GetCreatorProcess()};
+    for (const G4Track *secondary : *secondaries) {
+      const G4VProcess *creator{secondary->GetCreatorProcess()};
       if (creator) {
-        const G4String& creator_name{creator->GetProcessName()};
+        const G4String &creator_name{creator->GetProcessName()};
         if (creator_name.contains("photonNuclear")) {
           event_info->addPNEnergy(delta_energy);
           event_info->lastStepWasPN(true);
-          break;  // done <- assumes first match determines step process
+          break; // done <- assumes first match determines step process
         } else if (creator_name.contains("electronNuclear")) {
           event_info->addENEnergy(delta_energy);
           event_info->lastStepWasEN(true);
-          break;  // done <- assumes first match determines step process
-        }         // creator name matches PN or EN
-      }           // creator exists
-    }             // loop over secondaries
-  }               // secondaries list was created
+          break; // done <- assumes first match determines step process
+        }        // creator name matches PN or EN
+      }          // creator exists
+    }            // loop over secondaries
+  }              // secondaries list was created
   // now stepping actions can use getEventInfo()->wasLastStep{P,E}N()
   //  to determine if last step was PN or EN
-  for (auto& steppingAction : steppingActions_) steppingAction->stepping(step);
+  for (auto &stepping_action : stepping_actions_)
+    stepping_action->stepping(step);
 }
-
-}  // namespace g4fire
+} // namespace g4fire

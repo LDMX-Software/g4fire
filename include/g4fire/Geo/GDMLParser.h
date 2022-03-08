@@ -1,17 +1,13 @@
-#ifndef SIMCORE_GEO_GDMLPARSER_H
-#define SIMCORE_GEO_GDMLPARSER_H
+#ifndef G4FIRE_GEO_GDMLPARSER_H
+#define G4FIRE_GEO_GDMLPARSER_H
 
-//---< Geant4 >---//
 #include "G4GDMLParser.hh"
 
-//---< Framework >---//
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h"
 
-//---< g4fire >---//
 #include "g4fire/Geo/AuxInfoReader.h"
 #include "g4fire/Geo/Parser.h"
 
-// Forward Declarations
 class G4VPhysicalVolume;
 
 namespace g4fire {
@@ -85,4 +81,4 @@ class GDMLParser : public Parser {
 }  // namespace geo
 }  // namespace g4fire
 
-#endif  // SIMCORE_GEO_GDMLPARSER_H
+#endif  // G4FIRE_GEO_GDMLPARSER_H

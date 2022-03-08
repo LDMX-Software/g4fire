@@ -1,31 +1,15 @@
-/**
- * @file UserStackingAction.h
- * @brief Class which implements the Geant4 user stacking action
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_USERSTACKINGACTION_H
+#define G4FIRE_USERSTACKINGACTION_H
 
-#ifndef SIMCORE_USERSTACKINGACTION_H
-#define SIMCORE_USERSTACKINGACTION_H
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <vector>
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4UserStackingAction.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
 namespace g4fire {
 
 /**
- * @class UserStackingAction
  * @brief Class implementing a user stacking action.
  */
 class UserStackingAction : public G4UserStackingAction {
@@ -58,16 +42,16 @@ class UserStackingAction : public G4UserStackingAction {
    *
    * @param action  User action of type StackingAction
    */
-  void registerAction(UserAction* stackingAction) {
-    stackingActions_.push_back(stackingAction);
+  void registerAction(UserAction* stacking_action) {
+    stacking_actions_.push_back(stacking_action);
   }
 
  private:
   /// Collection of user stacking actions
-  std::vector<UserAction*> stackingActions_;
+  std::vector<UserAction*> stacking_actions_;
 
 };  // UserStackingAction
 
 }  // namespace g4fire
 
-#endif  // SIMCORE_USERSTACKINGACTION_H
+#endif  // G4FIRE_USERSTACKINGACTION_H

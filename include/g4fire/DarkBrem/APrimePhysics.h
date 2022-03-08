@@ -1,18 +1,9 @@
-/**
- * @file APrimePhysics.h
- * @brief Class which defines basic APrime physics
- * @author Michael Revering, University of Minnesota
- * @author Tom Eichlersmith, University of Minnesota
- */
+#ifndef G4FIRE_DARKBREM_APRIMEPHYSICS_H
+#define G4FIRE_DARKBREM_APRIMEPHYSICS_H
 
-#ifndef SIMCORE_DARKBREM_APRIMEPHYSICS_H_
-#define SIMCORE_DARKBREM_APRIMEPHYSICS_H_
-
-// Geant4
 #include "G4VPhysicsConstructor.hh"
 
-// LDMX
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h"
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
 namespace g4fire {
@@ -58,7 +49,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
    *
    * @param params Parameters to configure the dark brem process
    */
-  APrimePhysics(const framework::config::Parameters &params);
+  APrimePhysics(const fire::config::Parameters &params);
 
   /**
    * Class destructor.
@@ -102,13 +93,13 @@ class APrimePhysics : public G4VPhysicsConstructor {
   bool enable_;
 
   /**
-   * Dark brem parameters to pass to the process (if enabled)
+   * Dark brem params to pass to the process (if enabled)
    *
    * @note This can't be a reference because we pass it to
    * the process _after_ the configuration step from our POV
    * is done. Thus we need our own copy that won't be destroyed.
    */
-  framework::config::Parameters parameters_;
+  fire::config::Parameters params_;
 };
 
 }  // namespace darkbrem

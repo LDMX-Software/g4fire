@@ -1,18 +1,13 @@
-/**
- * @file G4eDarkBremsstrahlung.cxx
- * @brief Class providing the Dark Bremsstrahlung process class.
- * @author Michael Revering, University of Minnesota
- * @author Tom Eichlersmith, University of Minnesota
- */
-
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
-#include "Framework/RunHeader.h"
+#include "fire/RunHeader.h"
+
 #include "G4Electron.hh"      //for electron definition
 #include "G4EventManager.hh"  //for EventID number
 #include "G4ProcessTable.hh"  //for deactivating dark brem process
 #include "G4ProcessType.hh"   //for type of process
 #include "G4RunManager.hh"    //for VerboseLevel
+
 #include "g4fire/DarkBrem/DarkBremVertexLibraryModel.h"
 #include "g4fire/DarkBrem/G4APrime.h"
 
@@ -23,9 +18,9 @@ G4double ElementXsecCache::get(G4double energy, G4double A, G4double Z) {
   key_t key = computeKey(energy, A, Z);
   if (the_cache_.find(key) == the_cache_.end()) {
     if (model_.get() == nullptr) {
-      EXCEPTION_RAISE("BadCache",
-                      "ElementXsecCache not given a model to calculate cross "
-                      "sections with.");
+      //EXCEPTION_RAISE("BadCache",
+      //                "ElementXsecCache not given a model to calculate cross "
+      //                "sections with.");
     }
     the_cache_[key] = model_->ComputeCrossSectionPerAtom(energy, A, Z);
   }
@@ -57,7 +52,7 @@ ElementXsecCache::key_t ElementXsecCache::computeKey(G4double energy,
 const std::string G4eDarkBremsstrahlung::PROCESS_NAME = "eDarkBrem";
 
 G4eDarkBremsstrahlung::G4eDarkBremsstrahlung(
-    const framework::config::Parameters& params)
+    const fire::config::Parameters& params)
     : G4VDiscreteProcess(G4eDarkBremsstrahlung::PROCESS_NAME,
                          fElectromagnetic) {
   // we need to pretend to be an EM process so the biasing framework recognizes
@@ -68,13 +63,13 @@ G4eDarkBremsstrahlung::G4eDarkBremsstrahlung(
   cache_xsec_ = params.getParameter<bool>("cache_xsec");
   ap_mass_ = params.getParameter<double>("ap_mass");
 
-  auto model{params.getParameter<framework::config::Parameters>("model")};
+  auto model{params.getParameter<fire::config::Parameters>("model")};
   auto model_name{model.getParameter<std::string>("name")};
   if (model_name == "vertex_library") {
     model_ = std::make_shared<DarkBremVertexLibraryModel>(model);
   } else {
-    EXCEPTION_RAISE("DarkBremModel",
-                    "Model named '" + model_name + "' is not known.");
+    //EXCEPTION_RAISE("DarkBremModel",
+    //                "Model named '" + model_name + "' is not known.");
   }
 
   // now that the model is set, calculate common xsec and put them into the
@@ -107,15 +102,15 @@ G4VParticleChange* G4eDarkBremsstrahlung::PostStepDoIt(const G4Track& track,
                                                        const G4Step& step) {
   // Debugging Purposes: Check if track we get is an electron
   if (not IsApplicable(*track.GetParticleDefinition()))
-    EXCEPTION_RAISE(
-        "DBBadTrack",
-        "Dark brem process receieved a track that isn't applicable.");
+    //EXCEPTION_RAISE(
+    //    "DBBadTrack",
+    //    "Dark brem process receieved a track that isn't applicable.");
 
   /*
    * Geant4 has decided that it is our time to interact,
    * so we are going to change the particle
    */
-  ldmx_log(debug) << "A dark brem occurred!";
+  //ldmx_log(debug) << "A dark brem occurred!";
 
   if (only_one_per_event_) {
     // Deactivate the process after one dark brem if we restrict ourselves to

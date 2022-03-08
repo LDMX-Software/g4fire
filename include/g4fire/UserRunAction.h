@@ -1,47 +1,26 @@
-/**
- * @file UserRunAction.h
- * @brief Class which implements user run action
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_USERRUNACTION_H
+#define G4FIRE_USERRUNACTION_H
 
-#ifndef SIMCORE_USERRUNACTION_H
-#define SIMCORE_USERRUNACTION_H
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <vector>
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4UserRunAction.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
-// Forward declarations
 class G4Run;
 
 namespace g4fire {
 
 /**
- * @class UserRunAction
  * @brief Implementation of user run action hook
  */
 class UserRunAction : public G4UserRunAction {
  public:
-  /**
-   * Class constructor.
-   */
-  UserRunAction();
+  /// Class constructor.
+  UserRunAction() = default;
 
-  /**
-   * Class destructor.
-   */
-  virtual ~UserRunAction();
+  /// Class destructor.
+  virtual ~UserRunAction() = default;
 
   /**
    * Implementation of begin run hook.
@@ -60,15 +39,14 @@ class UserRunAction : public G4UserRunAction {
    *
    * @param action  User action of type RunAction
    */
-  void registerAction(UserAction* runAction) {
-    runActions_.push_back(runAction);
+  void registerAction(UserAction* run_action) {
+    run_actions_.push_back(run_action);
   }
 
  private:
-  std::vector<UserAction*> runActions_;
+  std::vector<UserAction*> run_actions_;
 
 };  // UserRunAction
-
 }  // namespace g4fire
 
-#endif  // SIMCORE_USERRUNACTION_H
+#endif  // G4FIRE_USERRUNACTION_H

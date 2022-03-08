@@ -1,30 +1,15 @@
-/**
- * @file USteppingAction.h
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_USTEPPINGACTION_H
+#define G4FIRE_USTEPPINGACTION_H
 
-#ifndef SIMCORE_USTEPPINGACTION_H
-#define SIMCORE_USTEPPINGACTION_H
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <vector>
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4UserSteppingAction.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
 namespace g4fire {
 
 /**
- * @class USteppingAction
  * @brief Implements the Geant4 user stepping action.
  */
 class USteppingAction : public G4UserSteppingAction {
@@ -37,23 +22,22 @@ class USteppingAction : public G4UserSteppingAction {
    *
    * @param step The Geant4 step.
    */
-  void UserSteppingAction(const G4Step* step) final override;
+  void UserSteppingAction(const G4Step *step) final override;
 
   /**
    * Register a user action of type SteppingAction with this class.
    *
    * @param action  User action of type SteppingAction
    */
-  void registerAction(UserAction* steppingAction) {
-    steppingActions_.push_back(steppingAction);
+  void registerAction(UserAction *stepping_action) {
+    stepping_actions_.push_back(stepping_action);
   }
 
  private:
   /// Collection of user stepping actions
-  std::vector<UserAction*> steppingActions_;
+  std::vector<UserAction *> stepping_actions_;
 
-};  // USteppingAction
+}; // USteppingAction
+} // namespace g4fire
 
-}  // namespace g4fire
-
-#endif  // SIMCORE_USTEPPINGACTION_H
+#endif // G4FIRE_USTEPPINGACTION_H

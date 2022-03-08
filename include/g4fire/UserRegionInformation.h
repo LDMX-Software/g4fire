@@ -1,19 +1,11 @@
-/**
- * @file UserRegionInformation.h
- * @brief Class which provides extra information for a detector region
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_USERREGIONINFORMATION_H_
+#define G4FIRE_USERREGIONINFORMATION_H_
 
-#ifndef SIMCORE_USERREGIONINFORMATION_H_
-#define SIMCORE_USERREGIONINFORMATION_H_
-
-// Geant4
 #include "G4VUserRegionInformation.hh"
 
 namespace g4fire {
 
 /**
- * @class UserRegionInformation
  * @brief Defines extra information for a detector region
  *
  * @note
@@ -24,7 +16,7 @@ namespace g4fire {
  */
 class UserRegionInformation : public G4VUserRegionInformation {
  public:
-  UserRegionInformation(bool storeSecondaries);
+  UserRegionInformation(bool store_secondaries);
 
   virtual ~UserRegionInformation();
 
@@ -33,7 +25,7 @@ class UserRegionInformation : public G4VUserRegionInformation {
   bool getStoreSecondaries() const;
 
  private:
-  bool storeSecondaries_;
+  bool store_secondaries_;
 };
 
 }  // namespace g4fire

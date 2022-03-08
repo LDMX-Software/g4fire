@@ -1,5 +1,5 @@
-#ifndef SIMCORE_USERTRACKINFORMATION_H
-#define SIMCORE_USERTRACKINFORMATION_H
+#ifndef G4FIRE_USERTRACKINFORMATION_H
+#define G4FIRE_USERTRACKINFORMATION_H
 
 #include "G4ThreeVector.hh"
 #include "G4VUserTrackInformation.hh"
@@ -27,7 +27,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
    *
    * @note The return value of this pointer is never NULL.
    *
-   * @param[in] track G4Track to get information from
+   * @param track G4Track to get information from
    */
   static UserTrackInformation* get(const G4Track* track);
 
@@ -55,31 +55,31 @@ class UserTrackInformation : public G4VUserTrackInformation {
    *
    * @return The save flag.
    */
-  bool getSaveFlag() const { return saveFlag_; }
+  bool getSaveFlag() const { return save_flag_; }
 
   /**
    * Set the save flag so the associated track will be persisted
    * as a Trajectory.
    *
-   * @param[in] saveFlag True to save the associated track.
+   * @param save_flag True to save the associated track.
    */
-  void setSaveFlag(bool saveFlag) { saveFlag_ = saveFlag; }
+  void setSaveFlag(bool save_flag) { save_flag_ = save_flag; }
 
   /**
    * Check whether this track is a brem candidate.
    *
    * @return True if this track is a brem candidate, false otherwise.
    */
-  bool isBremCandidate() const { return isBremCandidate_; }
+  bool isBremCandidate() const { return is_brem_candidate_; }
 
   /**
    * Tag this track as a brem candidate by the biasing filters.
    *
-   * @param[in] isBremCandidate flag indicating whether this track is
+   * @param is_brem_candidate flag indicating whether this track is
    *      a candidate or not.
    */
-  void tagBremCandidate(bool isBremCandidate = true) {
-    isBremCandidate_ = isBremCandidate;
+  void tagBremCandidate(bool is_brem_candidate = true) {
+    is_brem_candidate_ = is_brem_candidate;
   }
 
   /**
@@ -89,28 +89,28 @@ class UserTrackInformation : public G4VUserTrackInformation {
    * @return True if this track is a photon that has undergone a
    * photo-nuclear reaction, false otherwise.
    */
-  bool isPNGamma() const { return isPNGamma_; }
+  bool isPNGamma() const { return is_pn_gamma_; }
 
   /**
    * Tag this track as a photon that has undergone a photo-nuclear
    * reaction.
    *
-   * @param[in] isPNGamma flag indicating whether this track has
+   * @param is_pn_gamma flag indicating whether this track has
    *      undergone a photo-nuclear reaction or not.
    */
-  void tagPNGamma(bool isPNGamma = true) { isPNGamma_ = isPNGamma; }
+  void tagPNGamma(bool is_pn_gamma = true) { is_pn_gamma_ = is_pn_gamma; }
 
   /**
    * Get the initial momentum 3-vector of the track [MeV].
    *
    * @return The initial momentum of the track.
    */
-  const G4ThreeVector& getInitialMomentum() const { return initialMomentum_; }
+  const G4ThreeVector& getInitialMomentum() const { return initial_momentum_; }
 
   /**
    * Get the name of the volume that this track was created in.
    */
-  std::string getVertexVolume() const { return vertexVolume_; }
+  std::string getVertexVolume() const { return vertex_volume_; }
 
   /**
    * Get the global time at which this track was created.
@@ -125,25 +125,25 @@ class UserTrackInformation : public G4VUserTrackInformation {
    * in the output file. We assume everywhere else that
    * the save flag is false unless some other part changes it.
    */
-  bool saveFlag_{false};
+  bool save_flag_{false};
 
   /// Flag indicating whether this track is a brem candidate
-  bool isBremCandidate_{false};
+  bool is_brem_candidate_{false};
 
   /**
    * Flag indicating whether this track has undergone a photo-nuclear
    * reaction.
    */
-  bool isPNGamma_{false};
+  bool is_pn_gamma_{false};
 
   /// Volume the track was created in.
-  std::string vertexVolume_{""};
+  std::string vertex_volume_{""};
 
   /// Global Time of Creation
   double vertex_time_{0.};
 
   /// The initial momentum of the track.
-  G4ThreeVector initialMomentum_;
+  G4ThreeVector initial_momentum_;
 };
 }  // namespace g4fire
 

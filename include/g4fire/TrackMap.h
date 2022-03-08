@@ -1,5 +1,5 @@
-#ifndef SIMCORE_TRACKMAP_H_
-#define SIMCORE_TRACKMAP_H_
+#ifndef G4FIRE_TRACKMAP_H_
+#define G4FIRE_TRACKMAP_H_
 
 // STL
 #include <unordered_map>
@@ -9,14 +9,13 @@
 #include "G4Track.hh"
 
 // LDMX
-#include "g4fire/Event/SimParticle.h"
+//#include "g4fire/Event/SimParticle.h"
 #include "g4fire/UserTrackInformation.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 
 namespace g4fire {
 
 /**
- * @class TrackMap
  * @brief Defines a map of particle ancestry and particles to be saved
  *
  * This class keeps track of the ancestry (child -> parent)
@@ -29,6 +28,7 @@ class TrackMap {
  public:
   /**
    * Add a record in the map for the input track.
+   *
    * @param track G4Track to insert
    */
   void insert(const G4Track* track);
@@ -48,19 +48,19 @@ class TrackMap {
    * If this track ID does not have such a trajectory, then the
    * track ID of the primary in its parentage is returned.
    *
-   * @param trackID The track ID to search its parentage for the incident
+   * @param track_id The track ID to search its parentage for the incident
    */
-  int findIncident(int trackID) const;
+  int findIncident(int track_id) const;
 
   /**
    * Return true if the given track ID  is saved
    * i.e. will be stored in output file
    *
-   * @param trackID The track ID.
+   * @param track_id The track ID.
    * @return True if the track ID has been inserted in output particle map
    */
-  inline bool isSaved(int trackID) const {
-    return particle_map_.find(trackID) != particle_map_.end();
+  inline bool isSaved(int track_id) const {
+    return particle_map_.find(track_id) != particle_map_.end();
   }
 
   /**
@@ -92,9 +92,9 @@ class TrackMap {
   /**
    * Get the map of particles to be stored in output event.
    */
-  std::map<int,ldmx::SimParticle> &getParticleMap() {
-    return particle_map_;
-  }
+  //std::map<int,ldmx::SimParticle> &getParticleMap() {
+  //  return particle_map_;
+  //}
 
  private:
   /**
@@ -131,7 +131,7 @@ class TrackMap {
   std::unordered_map<int,std::vector<int>> descendents_;
 
   /// map of SimParticles that will be stored
-  std::map<int,ldmx::SimParticle> particle_map_;
+  //std::map<int,ldmx::SimParticle> particle_map_;
 };
 
 }  // namespace g4fire

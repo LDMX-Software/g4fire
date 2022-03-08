@@ -1,23 +1,14 @@
-/**
- * @file G4Session.h
- * @brief Classes which redirect the output of G4cout and G4cerr
- * @author Tom Eichlersmith, University of Minnesota
- */
-
-#ifndef SIMCORE_G4SESSION_H_
-#define SIMCORE_G4SESSION_H_
+#ifndef G4FIRE_G4SESSION_H
+#define G4FIRE_G4SESSION_H
 
 #include <fstream>
 #include <iostream>
 
-// Geant4
 #include "G4UIsession.hh"
 
 namespace g4fire {
 
 /**
- * @class LoggedSession
- *
  * Log the output of Geant4 to files in current directory.
  */
 class LoggedSession : public G4UIsession {
@@ -27,8 +18,8 @@ class LoggedSession : public G4UIsession {
    *
    * Sets up output file streams for the cout and cerr paths.
    */
-  LoggedSession(const std::string& coutFileName = "G4cout.log",
-                const std::string& cerrFileName = "G4cerr.log");
+  LoggedSession(const std::string& cout_file_name = "G4cout.log",
+                const std::string& cerr_file_name = "G4cerr.log");
 
   /**
    * Destructor
@@ -56,10 +47,10 @@ class LoggedSession : public G4UIsession {
 
  private:
   /** cout log file */
-  std::ofstream coutFile_;
+  std::ofstream cout_file_;
 
   /** cerr log file */
-  std::ofstream cerrFile_;
+  std::ofstream cerr_file_;
 
 };  // LoggedSession
 

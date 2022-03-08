@@ -1,16 +1,12 @@
-#ifndef SIMCORE_GEO_GEOPARSER_H_
-#define SIMCORE_GEO_GEOPARSER_H_
+#ifndef G4FIRE_GEO_GEOPARSER_H_
+#define G4FIRE_GEO_GEOPARSER_H_
 
-//---< C++ >---//
 #include <functional>
 
-//---< Framework >---//
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h"
 
-//---< g4fire >---//
 #include "g4fire/ConditionsInterface.h"
 
-//---< Geant4 >---//
 #include "G4VPhysicalVolume.hh"
 
 namespace g4fire {
@@ -56,4 +52,4 @@ using createFunc =
 }  // namespace geo
 }  // namespace g4fire
 
-#endif  // SIMCORE_GEO_GEOPARSER_H_
+#endif  // G4FIRE_GEO_GEOPARSER_H_

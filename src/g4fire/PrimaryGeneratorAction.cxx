@@ -1,51 +1,35 @@
-/**
- * @file PrimaryGeneratorAction.cxx
- * @brief Class implementing the Geant4 primary generator action
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #include "g4fire/PrimaryGeneratorAction.h"
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4Event.hh"
 #include "G4RunManager.hh"  // Needed for CLHEP
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/PluginFactory.h"
 #include "g4fire/UserEventInformation.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 
-/*~~~~~~~~~~*/
-/*   ROOT   */
-/*~~~~~~~~~~*/
-#include "TRandom3.h"
-
 namespace g4fire {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(
-    framework::config::Parameters& parameters)
+    fire::config::Parameters& params)
     : G4VUserPrimaryGeneratorAction(), manager_(PluginFactory::getInstance()) {
   // The parameters used to configure the primary generator action
-  parameters_ = parameters;
+  params_ = params;
 
   // Check whether a beamspot should be used or not.
-  auto beamSpot{
-      parameters.getParameter<std::vector<double> >("beamSpotSmear", {})};
-  if (!beamSpot.empty()) {
-    useBeamspot_ = true;
-    beamspotXSize_ = beamSpot[0];
-    beamspotYSize_ = beamSpot[1];
-    beamspotZSize_ = beamSpot[2];
+  // TODO(OM): Change individual beam spot variables to a vector
+  auto beam_spot_{
+      params.get<std::vector<double> >("beam_spot_delta", {})};
+  if (!beam_spot_.empty()) {
+    smear_beamspot_ = true;
+    beamspot_delta_x_ = beam_spot_[0];
+    beamspot_delta_y_ = beam_spot_[1];
+    beamspot_delta_z_ = beam_spot_[2];
   }
 
-  time_shift_primaries_ = parameters.getParameter<bool>("time_shift_primaries");
+  time_shift_primaries_ = params.get<bool>("time_shift_primaries", true);
 
   auto generators{
-      parameters_.getParameter<std::vector<framework::config::Parameters> >(
+      params_.get<std::vector<fire::config::Parameters> >(
           "generators", {})};
   if (generators.empty()) {
     EXCEPTION_RAISE("MissingGenerator",
@@ -54,12 +38,10 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
 
   for (auto& generator : generators) {
     manager_.createGenerator(
-        generator.getParameter<std::string>("class_name"),
-        generator.getParameter<std::string>("instance_name"), generator);
+        generator.get<std::string>("class_name"),
+        generator.get<std::string>("instance_name"), generator);
   }
 }
-
-PrimaryGeneratorAction::~PrimaryGeneratorAction() {}
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   /*
@@ -76,7 +58,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
 
   // Make our information container and give it to geant4
   //    G4Event owns the event information and will delete it
-  auto event_info = new UserEventInformation;
+  auto event_info{new UserEventInformation};
   event->SetUserInformation(event_info);
 
   /// Get the list of generators that will be used for this event
@@ -89,10 +71,10 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
                 });
 
   // smear all primary vertices (if activated)
-  int nPV = event->GetNumberOfPrimaryVertex();
-  if (nPV > 0) {
+  int pv_count{event->GetNumberOfPrimaryVertex()};
+  if (pv_count > 0) {
     // loop over all vertices generated
-    for (int iPV = 0; iPV < nPV; ++iPV) {
+    for (int iPV = 0; iPV < pv_count; ++iPV) {
       G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(iPV);
 
       // Loop over all particle associated with the primary vertex and
@@ -122,7 +104,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
       event_info->incWeight(primary_vertex->GetWeight());
 
       // smear beamspot if it is turned on
-      if (useBeamspot_) {
+      if (smear_beamspot_) {
         double x0_i = primary_vertex->GetX0();
         double y0_i = primary_vertex->GetY0();
         double z0_i = primary_vertex->GetZ0();
@@ -133,9 +115,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
          *  - add the initial point (in case its off center) to get
          *    [init-0.5*size, init+0.5*size]
          */
-        double x0_f = beamspotXSize_ * (G4UniformRand() - 0.5) + x0_i;
-        double y0_f = beamspotYSize_ * (G4UniformRand() - 0.5) + y0_i;
-        double z0_f = beamspotZSize_ * (G4UniformRand() - 0.5) + z0_i;
+        double x0_f = beamspot_delta_x_ * (G4UniformRand() - 0.5) + x0_i;
+        double y0_f = beamspot_delta_y_ * (G4UniformRand() - 0.5) + y0_i;
+        double z0_f = beamspot_delta_z_ * (G4UniformRand() - 0.5) + z0_i;
         primary_vertex->SetPosition(x0_f, y0_f, z0_f);
       }
 

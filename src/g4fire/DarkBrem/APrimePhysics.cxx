@@ -1,16 +1,7 @@
-/**
- * @file APrimePhysics.cxx
- * @brief Class which defines basic APrime physics
- * @author Michael Revering, University of Minnesota
- * @author Tom Eichlersmith, University of Minnesota
- */
-
 #include "g4fire/DarkBrem/APrimePhysics.h"
 
-// LDMX
 #include "g4fire/DarkBrem/G4APrime.h"
 
-// Geant4
 #include "G4Electron.hh"
 #include "G4ProcessManager.hh"
 
@@ -19,10 +10,10 @@ namespace darkbrem {
 
 const std::string APrimePhysics::NAME = "APrime";
 
-APrimePhysics::APrimePhysics(const framework::config::Parameters &params)
+APrimePhysics::APrimePhysics(const fire::config::Parameters &params)
     : G4VPhysicsConstructor(APrimePhysics::NAME), parameters_{params} {
-  ap_mass_ = parameters_.getParameter<double>("ap_mass", 0.) * MeV;
-  enable_ = parameters_.getParameter<bool>("enable", false);
+  ap_mass_ = parameters_.get<double>("ap_mass", 0.) * MeV;
+  enable_ = parameters_.get<bool>("enable", false);
 }
 
 void APrimePhysics::ConstructParticle() {
@@ -59,5 +50,5 @@ void APrimePhysics::ConstructProcess() {
   }
 }
 
-}  // namespace darkbrem
-}  // namespace g4fire
+} // namespace darkbrem
+} // namespace g4fire

@@ -2,35 +2,33 @@
 
 namespace g4fire {
 
-UserStackingAction::UserStackingAction() {}
-
-UserStackingAction::~UserStackingAction() {}
-
-G4ClassificationOfNewTrack UserStackingAction::ClassifyNewTrack(
-    const G4Track* track) {
+G4ClassificationOfNewTrack
+UserStackingAction::ClassifyNewTrack(const G4Track *track) {
   // Default value of a track is fUrgent.
-  G4ClassificationOfNewTrack currentTrackClass =
+  G4ClassificationOfNewTrack current_track_class =
       G4ClassificationOfNewTrack::fUrgent;
 
   // Get proposed new track classification from this plugin.
-  for (auto& stackingAction : stackingActions_) {
+  for (auto &stacking_action : stacking_actions_) {
     // Get proposed new track classification from this plugin.
     G4ClassificationOfNewTrack newTrackClass =
-        stackingAction->ClassifyNewTrack(track, currentTrackClass);
+        stacking_action->ClassifyNewTrack(track, current_track_class);
 
     // Only set the current classification if the plugin changed it.
-    if (newTrackClass != currentTrackClass) currentTrackClass = newTrackClass;
+    if (newTrackClass != current_track_class)
+      current_track_class = newTrackClass;
   }
 
-  return currentTrackClass;
+  return current_track_class;
 }
 
 void UserStackingAction::NewStage() {
-  for (auto& stackingAction : stackingActions_) stackingAction->NewStage();
+  for (auto &stacking_action : stacking_actions_)
+    stacking_action->NewStage();
 }
 
 void UserStackingAction::PrepareNewEvent() {
-  for (auto& stackingAction : stackingActions_)
-    stackingAction->PrepareNewEvent();
+  for (auto &stacking_action : stacking_actions_)
+    stacking_action->PrepareNewEvent();
 }
-}  // namespace g4fire
+} // namespace g4fire

@@ -1,17 +1,11 @@
-#ifndef SIMCORE_GEO_PARSERFACTORY_H_
-#define SIMCORE_GEO_PARSERFACTORY_H_
+#ifndef G4FIRE_GEO_PARSERFACTORY_H_
+#define G4FIRE_GEO_PARSERFACTORY_H_
 
 #include "g4fire/Geo/Parser.h"
 
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <map>
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h"
 
 namespace g4fire {
 namespace geo {
@@ -59,4 +53,4 @@ class ParserFactory {
 }  // namespace geo
 }  // namespace g4fire
 
-#endif  // SIMCORE_GEO_PARSERFACTORY_H_
+#endif  // G4FIRE_GEO_PARSERFACTORY_H_

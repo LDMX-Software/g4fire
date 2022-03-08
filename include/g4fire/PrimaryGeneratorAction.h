@@ -1,56 +1,36 @@
-/**
- * @file PrimaryGeneratorAction.h
- * @brief Class implementing the Geant4 primary generator action
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_PRIMARYGENERATORACTION_H
+#define G4FIRE_PRIMARYGENERATORACTION_H
 
-#ifndef SIMCORE_PRIMARYGENERATORACTION_H
-#define SIMCORE_PRIMARYGENERATORACTION_H
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <algorithm>
 #include <memory>
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4VUserPrimaryGeneratorAction.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/PluginFactory.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h" 
 
-// Forward declarations
 class G4Event;
 
 namespace g4fire {
 
 /**
- * @class PrimaryGeneratorAction
- * @brief Implementation of Geant4 primary generator action
+ * Implementation of Geant4 primary generator action.
  */
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
  public:
   /*
    * Constructor
    *
-   * @param parameters The parameters used to configure the primary
+   * @param params The parameters used to configure the primary
    *                   generator action.
    */
-  PrimaryGeneratorAction(framework::config::Parameters& parameters);
+  PrimaryGeneratorAction(fire::config::Parameters& params);
 
   /**
    * Class destructor.
    */
-  virtual ~PrimaryGeneratorAction();
+  virtual ~PrimaryGeneratorAction() = default;
 
   /**
    * Generate primaries for the event.
@@ -90,22 +70,22 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   PluginFactory& manager_;
 
   /// The parameters used to configure the primary generator of choice
-  framework::config::Parameters parameters_;
+  fire::config::Parameters params_;
 
   /**
    * Flag denoting whether the vertex position of a particle
    * should be smeared.
    */
-  bool useBeamspot_{false};
+  bool smear_beamspot_{false};
 
-  /** Extent of the beamspot in x. */
-  double beamspotXSize_{0};
+  /// Extent of the beamspot in x.
+  double beamspot_delta_x_{0};
 
-  /** Extent of the beamspot in y. */
-  double beamspotYSize_{0};
+  /// Extent of the beamspot in y. 
+  double beamspot_delta_y_{0};
 
-  /** Extent of the beamspot in y. */
-  double beamspotZSize_{0.};
+  /// Extent of the beamspot in y. 
+  double beamspot_delta_z_{0.};
 
   /**
    * Should we time-shift so that the primary vertices arrive (or originate)
@@ -119,4 +99,4 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
 }  // namespace g4fire
 
-#endif  // SIMCORE_PRIMARYGENERATORACTION_H
+#endif  // G4FIRE_PRIMARYGENERATORACTION_H

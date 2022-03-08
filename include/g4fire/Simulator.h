@@ -1,86 +1,43 @@
-/**
- * @file Simulator.h
- * @brief Run the G4 simulation inside of ldmx-app
- * @author Tom Eichlersmith, University of Minnesota
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_SIMULATOR_H
+#define G4FIRE_SIMULATOR_H
 
-#ifndef _SIMCORE_SIMULATOR_H_
-#define _SIMCORE_SIMULATOR_H_
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <any>
 #include <map>
 #include <memory>
 #include <string>
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
-#include "Framework/EventDef.h"
-#include "Framework/EventProcessor.h"
+#include "fire/Processor.h"
+#include "fire/config/Parameters.h"
+#include "fire/config/Parameters.h"
+//#include "Framework/EventDef.h"
+#include "fire/Processor.h"
 
 #include "g4fire/ConditionsInterface.h"
 
 class G4UImanager;
 class G4UIsession;
-class G4RunManager;
 class G4GDMLParser;
 class G4GDMLMessenger;
 class G4CascadeParameters;
 
 namespace g4fire {
-namespace persist {
-class RootPersistencyManager;
-}
-}  // namespace g4fire
 
-namespace g4fire {
-
+class RunManager;
 class EventFile;
 class ParameterSet;
-class RunManager;
 class DetectorConstruction;
 
 /**
- * @class Simulator
- * @brief Producer that runs Geant4 simulation inside of ldmx-app
- *
- * Most (if not all) of the heavy lifting is done in the classes in the
- * Sim* modules.  This producer is mainly focused on calling appropriate
- * functions at the right time in the processing chain.
+ * Geant4 simulation wrapped within a fire producer.
  */
-class Simulator : public framework::Producer {
- public:
-  /**
-   * Constructor.
-   *
-   * Blank Producer constructor
-   * Constructs object that are non-configurable.
-   *
-   * @param name Name for this instance of the class.
-   * @param process The Process class assocaited with EventProcessor,
-   *                provided by the Framework.
-   */
-  Simulator(const std::string& name, framework::Process& process);
+class Simulator : public fire::Processor {
+public:
+  Simulator(const fire::config::Parameters &params);
 
-  /**
-   * Destructor.
-   *
-   * Deletes hanging pointers
-   */
-  ~Simulator();
+  /// Default destructor
+  ~Simulator() = default;
 
-  /**
-   * Callback for the processor to configure itself from the given set
-   * of parameters.
-   *
-   * @param parameters ParameterSet for configuration.
-   */
-  void configure(framework::config::Parameters& parameters) final override;
+  void process(fire::Event &event) final override;
 
   /**
    * Given a non-const reference to the new RunHeader,
@@ -89,7 +46,7 @@ class Simulator : public framework::Producer {
    *
    * @param header of new run
    */
-  void beforeNewRun(ldmx::RunHeader& header) final override;
+  void beforeNewRun(fire::RunHeader &header) final override;
 
   /**
    * Before the run starts (but after the conditions are configured)
@@ -97,14 +54,7 @@ class Simulator : public framework::Producer {
    *
    * @param[in] header RunHeader for this run, unused
    */
-  void onNewRun(const ldmx::RunHeader& header) final override;
-
-  /**
-   * Run simulation and export results to output event.
-   *
-   * @param event The event to process.
-   */
-  virtual void produce(framework::Event& event) final override;
+  void onNewRun(const fire::RunHeader &header) final override;
 
   /**
    *  Callback for the EventProcessor to take any necessary action
@@ -112,7 +62,7 @@ class Simulator : public framework::Producer {
    *
    *  @param eventFile  The input/output file.
    */
-  void onFileOpen(framework::EventFile& eventFile) final override;
+  //void onFileOpen(fire::EventFile &eventFile) final override;
 
   /**
    * Callback for the EventProcessor to take any necessary action
@@ -120,7 +70,7 @@ class Simulator : public framework::Producer {
    *
    * @param eventFile The intput/output file.
    */
-  void onFileClose(framework::EventFile& eventFile) final override;
+  // void onFileClose(fire::EventFile &eventFile) final override;
 
   /**
    * Initialization of simulation
@@ -135,7 +85,21 @@ class Simulator : public framework::Producer {
   /// Callback called once processing is complete.
   void onProcessEnd() final override;
 
- private:
+private:
+  /**
+   * Configure the simulation given the set of parameters passed by the user
+   * at runtime.
+   *
+   * This method is used to organize the configuration of this class using
+   * the parameters specified in the python configuration passed to fire.
+   * This method will only be called within the constructor and is not
+   * exposed publicly.
+   *
+   * @param[in] params The parameters passed to this class via the python
+   *  config.
+   */
+  void configure(const fire::config::Parameters &params);
+
   /**
    * Check if the input command is allowed to be run.
    *
@@ -143,7 +107,7 @@ class Simulator : public framework::Producer {
    * These invalid commands are mostly commands where control has been handed
    * over to Simulator.
    */
-  bool allowed(const std::string& command) const;
+  bool allowed(const std::string &command) const;
 
   /**
    * Set the seeds to be used by the Geant4 random engine.
@@ -154,42 +118,42 @@ class Simulator : public framework::Producer {
    */
   void setSeeds(std::vector<int> seeds);
 
- private:
   /// Manager controlling G4 simulation run
-  std::unique_ptr<RunManager> runManager_;
+  std::unique_ptr<RunManager> run_manager_;
 
   /// User interface handle
-  G4UImanager* uiManager_{nullptr};
+  G4UImanager *ui_manager_{nullptr};
 
   /// PersistencyManager
-  std::unique_ptr<g4fire::persist::RootPersistencyManager> persistencyManager_;
+  // std::unique_ptr<g4fire::persist::RootPersistencyManager>
+  // persistencyManager_;
 
   /// Handle to the G4Session -> how to deal with G4cout and G4cerr
-  std::unique_ptr<G4UIsession> sessionHandle_;
+  std::unique_ptr<G4UIsession> session_handle_;
 
   /// Commands not allowed to be passed from python config file
   ///     This is because Simulator already runs them.
-  static const std::vector<std::string> invalidCommands_;
+  static const std::vector<std::string> invalid_cmds;
 
   /// Number of events started
-  int numEventsBegan_{0};
+  int n_events_began_{0};
 
   /// Number of events completed
-  int numEventsCompleted_{0};
+  int n_events_completed_{0};
 
   ///  Conditions interface
-  ConditionsInterface conditionsIntf_;
+  ConditionsInterface conditions_intf_;
 
   /*********************************************************
    * Python Configuration Parameters
    *********************************************************/
 
   /// The parameters used to configure the simulation
-  framework::config::Parameters parameters_;
+  fire::config::Parameters params_;
 
   /// Vebosity for the simulation
   int verbosity_{1};
-};
-}  // namespace g4fire
 
-#endif /* SIMCORE_SIMULATOR_H */
+}; // Simulator
+} // namespace g4fire
+#endif // G4FIRE_SIMULATOR_H

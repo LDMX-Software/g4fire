@@ -1,18 +1,10 @@
-/**
- * @file G4eDarkBremsstrahlung.h
- * @brief Class providing the Dark Bremsstrahlung process class.
- * @author Michael Revering, University of Minnesota
- * @author Tom Eichlersmith, University of Minnesota
- */
+#ifndef G4FIRE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H
+#define G4FIRE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H
 
-#ifndef SIMCORE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H_
-#define SIMCORE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H_
+#include "fire/config/Parameters.h"
+//#include "Framework/Logger.h"
+#include "fire/RunHeader.h"
 
-#include "Framework/Configure/Parameters.h"
-#include "Framework/Logger.h"
-#include "Framework/RunHeader.h"
-
-// Geant
 #include "G4VDiscreteProcess.hh"
 
 class G4String;
@@ -22,7 +14,6 @@ namespace g4fire {
 namespace darkbrem {
 
 /**
- * @class G4eDarkBremmsstrahlungModel
  * Abstract class representing a model for dark brem.
  *
  * The model is what actually determines two important things:
@@ -41,9 +32,9 @@ class G4eDarkBremsstrahlungModel {
    *
    * Names the logger after the name for this model.
    */
-  G4eDarkBremsstrahlungModel(const framework::config::Parameters& p) {
-    theLog_ =
-        framework::logging::makeLogger(p.getParameter<std::string>("name"));
+  G4eDarkBremsstrahlungModel(const fire::config::Parameters& p) {
+    //theLog_ =
+    //    fire::logging::makeLogger(p.getParameter<std::string>("name"));
   }
 
   /// Destructor, nothing on purpose
@@ -62,39 +53,39 @@ class G4eDarkBremsstrahlungModel {
    *
    * Helpful for persisting run data for later viewing.
    */
-  virtual void RecordConfig(ldmx::RunHeader& h) const = 0;
+  virtual void RecordConfig(fire::RunHeader& h) const = 0;
 
   /**
    * Calculate the cross section given the input parameters
    *
    * @see G4eDarkBremmstrahlung::GetMeanFreePath
-   * @param[in] electronKE current electron kinetic energy
-   * @param[in] atomicA atomic-mass number for the element the electron is in
-   * @param[in] atomicZ atomic-number for the element the electron is in
+   * @param[in] electron_ke current electron kinetic energy
+   * @param[in] atomic_a atomic-mass number for the element the electron is in
+   * @param[in] atomic_z atomic-number for the element the electron is in
    * @returns cross section with units incorporated as a G4double
    */
-  virtual G4double ComputeCrossSectionPerAtom(G4double electronKE,
-                                              G4double atomicA,
-                                              G4double atomicZ) = 0;
+  virtual G4double ComputeCrossSectionPerAtom(G4double electron_ke,
+                                              G4double atomic_a,
+                                              G4double atomic_z) = 0;
 
   /**
    * Generate the change in the particle now that we can assume the interaction
    * is occuring
    *
-   * @note The input particleChange has already been cleared and then
+   * @note The input particle_change has already been cleared and then
    * initialized, so there is no need for the model to do those steps.
    *
    * @see G4eDarkBremmstrahlung::PostStepDoIt
-   * @param[in,out] particleChange particle change class that stores information
+   * @param[in,out] particle_change particle change class that stores information
    * @param[in] track current track that needs the change
    * @param[in] step current step of the track
    */
-  virtual void GenerateChange(G4ParticleChange& particleChange,
+  virtual void GenerateChange(G4ParticleChange& particle_change,
                               const G4Track& track, const G4Step& step) = 0;
 
  protected:
   /// The logging apparatus for this model
-  framework::logging::logger theLog_;
+  //fire::logging::logger theLog_;
 
 };  // G4eDarkBremsstrahlungModel
 
@@ -228,7 +219,7 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
    * it takes to simulate events.
    * @see CalculateCommonXsec
    */
-  G4eDarkBremsstrahlung(const framework::config::Parameters& params);
+  G4eDarkBremsstrahlung(const fire::config::Parameters& params);
 
   /**
    * Destructor
@@ -255,7 +246,7 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
    * @see G4eDarkBremsstrahlungModel::RecordConfig
    * @param[in,out] h RunHeader to write to
    */
-  void RecordConfig(ldmx::RunHeader& h) const;
+  void RecordConfig(fire::RunHeader& h) const;
 
   /**
    * This is the function actually called by Geant4 that does the dark brem
@@ -358,12 +349,12 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
   ElementXsecCache element_xsec_cache_;
 
   /// Enable logging for this process
-  framework::logging::logger theLog_ =
-      framework::logging::makeLogger("DarkBremProcess");
+  //fire::logging::logger theLog_ =
+  //    fire::logging::makeLogger("DarkBremProcess");
 
 };  // G4eDarkBremsstrahlung
 
 }  // namespace darkbrem
 }  // namespace g4fire
 
-#endif  // SIMCORE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H_
+#endif  // G4FIRE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H

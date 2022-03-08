@@ -1,16 +1,6 @@
-/**
- * @file GammaPhysics.h
- * @brief Class used to enhanced the gamma physics list.
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_GAMMAPHYSICS_H
+#define G4FIRE_GAMMAPHYSICS_H 
 
-#ifndef SIMCORE_GAMMAPHYSICS_H_
-#define SIMCORE_GAMMAPHYSICS_H 1_
-
-//------------//
-//   Geant4   //
-//------------//
 #include "G4GammaConversionToMuons.hh"
 #include "G4ProcessManager.hh"
 #include "G4VPhysicsConstructor.hh"
@@ -19,8 +9,6 @@
 namespace g4fire {
 
 /**
- * @class GammaPhysics
- * @brief Adds extra gamma particle physics for simulation
  *
  * @note
  * Currently adds gamma -> mumu reaction using the
@@ -38,7 +26,7 @@ class GammaPhysics : public G4VPhysicsConstructor {
   /**
    * Class destructor.
    */
-  virtual ~GammaPhysics();
+  ~GammaPhysics() = default;
 
   /**
    * Construct particles (no-op).
@@ -54,7 +42,7 @@ class GammaPhysics : public G4VPhysicsConstructor {
   /**
    * The gamma to muons process.
    */
-  G4GammaConversionToMuons gammaConvProcess;
+  G4GammaConversionToMuons gamma_conv_process;
 };
 
 }  // namespace g4fire

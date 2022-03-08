@@ -1,56 +1,37 @@
-/**
- * @file UserEventAction.h
- * @brief Class which implements the Geant4 user event action
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef G4FIRE_USEREVENTACTION_H
+#define G4FIRE_USEREVENTACTION_H
 
-#ifndef SIMCORE_USEREVENTACTION_H
-#define SIMCORE_USEREVENTACTION_H
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <vector>
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4UserEventAction.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   g4fire   */
-/*~~~~~~~~~~~~~*/
 #include "g4fire/UserAction.h"
 
-// Forward declarations
 class G4Event;
 
 namespace g4fire {
 
 /**
- * @class UserEventAction
  * @brief Implementation of user event action hook
  */
 class UserEventAction : public G4UserEventAction {
  public:
-  /**
-   * Class constructor.
-   */
-  UserEventAction() {}
+  /// Class constructor.
+  UserEventAction() = default;
 
-  /**
-   * Class destructor.
-   */
-  virtual ~UserEventAction() {}
+  /// Class destructor.
+  virtual ~UserEventAction() = default;
 
   /**
    * Implementation of begin of event hook.
+   *
    * @param event The Geant4 event.
    */
   void BeginOfEventAction(const G4Event* event);
 
   /**
    * Implementation of end of event hook.
+   *
    * @param event The Geant4 event.
    */
   void EndOfEventAction(const G4Event* event);
@@ -60,15 +41,15 @@ class UserEventAction : public G4UserEventAction {
    *
    * @param action  User action of type EventAction
    */
-  void registerAction(UserAction* eventAction) {
-    eventActions_.push_back(eventAction);
+  void registerAction(UserAction* event_action) {
+    event_actions_.push_back(event_action);
   }
 
  private:
-  std::vector<UserAction*> eventActions_;
+  std::vector<UserAction*> event_actions_;
 
 };  // UserEventAction
 
 }  // namespace g4fire
 
-#endif  // SIMCORE_USEREVENTACTION_H
+#endif  // G4FIRE_USEREVENTACTION_H

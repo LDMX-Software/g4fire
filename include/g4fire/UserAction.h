@@ -1,4 +1,3 @@
-
 #ifndef G4FIRE_USERACTION_H
 #define G4FIRE_USERACTION_H
 

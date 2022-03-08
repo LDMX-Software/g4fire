@@ -1,18 +1,9 @@
-/**
- * @file GammaPhysics.cxx
- * @brief Class used to enhanced the gamma physics list.
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #include "g4fire/GammaPhysics.h"
 
 namespace g4fire {
 
 GammaPhysics::GammaPhysics(const G4String& name)
     : G4VPhysicsConstructor(name) {}
-
-GammaPhysics::~GammaPhysics() {}
 
 // needed for GEANT4 10.3.0 and later
 #ifndef aParticleIterator
@@ -27,27 +18,27 @@ void GammaPhysics::ConstructProcess() {
   while ((*aParticleIterator)()) {
     G4ParticleDefinition* particle = aParticleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
-    G4String particleName = particle->GetParticleName();
+    G4String particle_name = particle->GetParticleName();
 
-    if (particleName == "gamma") {
+    if (particle_name == "gamma") {
       // Get the process list associated with the gamma.
-      G4ProcessVector* vProcess = pmanager->GetProcessList();
+      G4ProcessVector* v_process = pmanager->GetProcessList();
 
       // Search the list for the process "photoNuclear".  When found,
       // change the calling order so photonNuclear is called before
       // EM processes. The biasing operator needs the photonNuclear
       // process to be called first because the cross-section is
       // needed to bias down other process.
-      for (int iProcess = 0; iProcess < vProcess->size(); ++iProcess) {
-        G4String processName = (*vProcess)[iProcess]->GetProcessName();
-        if (processName == "photonNuclear") {
-          pmanager->SetProcessOrderingToFirst((*vProcess)[iProcess],
+      for (int ip = 0; ip < v_process->size(); ++ip) {
+        G4String process_name = (*v_process)[ip]->GetProcessName();
+        if (process_name == "photonNuclear") {
+          pmanager->SetProcessOrderingToFirst((*v_process)[ip],
                                               G4ProcessVectorDoItIndex::idxAll);
         }
       }
 
       // Add the gamma -> mumu to the physics list.
-      pmanager->AddDiscreteProcess(&gammaConvProcess);
+      pmanager->AddDiscreteProcess(&gamma_conv_process);
     }
   }
 }

@@ -1,6 +1,5 @@
 #include "g4fire/DetectorConstruction.h"
 
-#include "Framework/Exception/Exception.h"
 #include "g4fire/PluginFactory.h"
 #include "g4fire/XsecBiasingOperator.h"
 
@@ -17,15 +16,15 @@ namespace logical_volume_tests {
  * can we get an 'ecal' and 'hcal' region instead
  * of just a 'CalorimeterRegion' region?
  *
- * @param[in] vol G4LogicalVolume to check
- * @param[in] vol_to_bias UNUSED name of volume to bias
+ * @param vol G4LogicalVolume to check
+ * @param vol_to_bias UNUSED name of volume to bias
  */
 static bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  G4String volumeName = vol->GetName();
-  return ((volumeName.contains("Si") || volumeName.contains("W") ||
-           volumeName.contains("PCB") || volumeName.contains("CFMix") ||
-           volumeName.contains("Al")) &&
-          volumeName.contains("volume"));
+  G4String vol_name = vol->GetName();
+  return ((vol_name.contains("Si") || vol_name.contains("W") ||
+           vol_name.contains("PCB") || vol_name.contains("CFMix") ||
+           vol_name.contains("Al")) &&
+          vol_name.contains("volume"));
 }
 
 /**
@@ -33,14 +32,14 @@ static bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  *
  * Check that the passed volume is inside the HCal
  *
- * @param[in] vol G4LogicalVolume to check
- * @param[in] vol_to_bias UNUSED name of volume to bias
+ * @param vol G4LogicalVolume to check
+ * @param vol_to_bias UNUSED name of volume to bias
  */
 static bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  G4String volumeName = vol->GetName();
-  return ((volumeName.contains("abso2") || volumeName.contains("abso3") ||
-           volumeName.contains("ScintBox") || volumeName.contains("absoBox")) &&
-          volumeName.contains("volume"));
+  G4String vol_name = vol->GetName();
+  return ((vol_name.contains("abso2") || vol_name.contains("abso3") ||
+           vol_name.contains("ScintBox") || vol_name.contains("absoBox")) &&
+          vol_name.contains("volume"));
 }
 
 /**
@@ -51,13 +50,13 @@ static bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  *
  * @note Deprecating soon (hopefully).
  *
- * @param[in] vol G4LogicalVolume to check
- * @param[in] vol_to_bias UNUSED name of volume to bias
+ * @param vol G4LogicalVolume to check
+ * @param vol_to_bias UNUSED name of volume to bias
  */
 static bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  G4String volumeName = vol->GetName();
-  return ((volumeName.contains("Si") || volumeName.contains("W")) &&
-          volumeName.contains("volume"));
+  G4String vol_name = vol->GetName();
+  return ((vol_name.contains("Si") || vol_name.contains("W")) &&
+          vol_name.contains("volume"));
 }
 
 /**
@@ -65,8 +64,8 @@ static bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  *
  * Check if the passed volume is inside the target region.
  *
- * @param[in] vol G4LogicalVolume to check
- * @param[in] vol_to_bias UNUSED name of volume to bias
+ * @param vol G4LogicalVolume to check
+ * @param vol_to_bias UNUSED name of volume to bias
  */
 static bool isInTargetRegion(G4LogicalVolume* vol,
                              const std::string& vol_to_bias) {
@@ -81,8 +80,8 @@ static bool isInTargetRegion(G4LogicalVolume* vol,
  *
  * @note This leaves out the trig scint modules inside the target region.
  *
- * @param[in] vol G4LogicalVolume to check
- * @param[in] vol_to_bias UNUSED name of volume to bias
+ * @param vol G4LogicalVolume to check
+ * @param vol_to_bias UNUSED name of volume to bias
  */
 static bool isInTargetOnly(G4LogicalVolume* vol,
                            const std::string& vol_to_bias) {
@@ -98,8 +97,8 @@ static bool isInTargetOnly(G4LogicalVolume* vol,
  * @note This is the default if we don't recognize
  * the volume to bias that is requested.
  *
- * @param[in] vol G4LogicalVolume to check
- * @param[in] vol_to_bias name of volume to bias
+ * @param vol G4LogicalVolume to check
+ * @param vol_to_bias name of volume to bias
  */
 static bool nameContains(G4LogicalVolume* vol, const std::string& vol_to_bias) {
   return vol->GetName().contains(vol_to_bias);
@@ -115,10 +114,10 @@ typedef bool (*Test)(G4LogicalVolume*, const std::string&);
 }  // namespace logical_volume_tests
 
 DetectorConstruction::DetectorConstruction(
-    g4fire::geo::Parser* parser, framework::config::Parameters& parameters,
+    g4fire::geo::Parser* parser, fire::config::Parameters& params,
     ConditionsInterface& ci)
     : parser_(parser) {
-  parameters_ = parameters;
+  params_ = params;
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
@@ -132,28 +131,28 @@ void DetectorConstruction::ConstructSDandField() {
 
   auto bops{g4fire::PluginFactory::getInstance().getBiasingOperators()};
   for (g4fire::XsecBiasingOperator* bop : bops) {
-    logical_volume_tests::Test includeVolumeTest{nullptr};
+    logical_volume_tests::Test include_vol_test{nullptr};
     if (bop->getVolumeToBias().compare("ecal") == 0) {
-      includeVolumeTest = &logical_volume_tests::isInEcal;
+      include_vol_test = &logical_volume_tests::isInEcal;
     } else if (bop->getVolumeToBias().compare("old_ecal") == 0) {
-      includeVolumeTest = &logical_volume_tests::isInEcalOld;
+      include_vol_test = &logical_volume_tests::isInEcalOld;
     } else if (bop->getVolumeToBias().compare("target") == 0) {
-      includeVolumeTest = &logical_volume_tests::isInTargetOnly;
+      include_vol_test = &logical_volume_tests::isInTargetOnly;
     } else if (bop->getVolumeToBias().compare("target_region") == 0) {
-      includeVolumeTest = &logical_volume_tests::isInTargetRegion;
+      include_vol_test = &logical_volume_tests::isInTargetRegion;
     } else if (bop->getVolumeToBias().compare("hcal") == 0) {
-      includeVolumeTest = &logical_volume_tests::isInHcal;
+      include_vol_test = &logical_volume_tests::isInHcal;
     } else {
       std::cerr << "[ DetectorConstruction ] : "
                 << "WARN - Requested volume to bias '" << bop->getVolumeToBias()
                 << "' is not recognized. Will attach volumes based on if their"
                 << " name contains the volume to bias." << std::endl;
-      includeVolumeTest = &logical_volume_tests::nameContains;
+      include_vol_test = &logical_volume_tests::nameContains;
     }
 
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
       auto volume_name = volume->GetName();
-      if (includeVolumeTest(volume, bop->getVolumeToBias())) {
+      if (include_vol_test(volume, bop->getVolumeToBias())) {
         bop->AttachTo(volume);
         std::cout << "[ DetectorConstruction ]: "
                   << "Attaching biasing operator " << bop->GetName()

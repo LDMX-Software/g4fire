@@ -1,30 +1,5 @@
-/**
- * @file RunManager.cxx
- * @brief Class providing a Geant4 run manager implementation.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #include "g4fire/RunManager.h"
 
-//-------------//
-//   ldmx-sw   //
-//-------------//
-#include "g4fire/DarkBrem/APrimePhysics.h"
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"  //for process name
-#include "g4fire/DetectorConstruction.h"
-#include "g4fire/GammaPhysics.h"
-#include "g4fire/ParallelWorld.h"
-#include "g4fire/PluginFactory.h"
-#include "g4fire/PrimaryGeneratorAction.h"
-#include "g4fire/USteppingAction.h"
-#include "g4fire/UserEventAction.h"
-#include "g4fire/UserRunAction.h"
-#include "g4fire/UserStackingAction.h"
-#include "g4fire/UserTrackingAction.h"
-
-//------------//
-//   Geant4   //
-//------------//
 #include "FTFP_BERT.hh"
 #include "G4GDMLParser.hh"
 #include "G4GenericBiasingPhysics.hh"
@@ -32,71 +7,84 @@
 #include "G4ProcessTable.hh"
 #include "G4VModularPhysicsList.hh"
 
+#include "g4fire/ConditionsInterface.h"
+#include "g4fire/DarkBrem/APrimePhysics.h"
+#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h" //for process name
+#include "g4fire/DetectorConstruction.h"
+#include "g4fire/GammaPhysics.h"
+#include "g4fire/ParallelWorld.h"
+#include "g4fire/PluginFactory.h"
+#include "g4fire/USteppingAction.h"
+#include "g4fire/UserRunAction.h"
+#include "g4fire/UserStackingAction.h"
+#include "g4fire/UserTrackingAction.h"
+/*
+#include "g4fire/PrimaryGeneratorAction.h"
+#include "g4fire/UserEventAction.h"
+*/
+
 namespace g4fire {
 
-RunManager::RunManager(framework::config::Parameters& parameters,
-                       ConditionsInterface& ci)
-    : conditionsIntf_(ci) {
-  parameters_ = parameters;
+RunManager::RunManager(const fire::config::Parameters &params,
+                       ConditionsInterface &ci)
+    : conditions_intf_(ci) {
+  params_ = params;
 
   // Set whether the ROOT primary generator should use the persisted seed.
-  auto rootPrimaryGenUseSeed{
-      parameters.getParameter<bool>("rootPrimaryGenUseSeed")};
+  // auto rootPrimaryGenUseSeed{
+  //    parameters.getParameter<bool>("rootPrimaryGenUseSeed")};
 
   // Validate the geometry if specified.
-  setUseRootSeed(rootPrimaryGenUseSeed);
+  // setUseRootSeed(rootPrimaryGenUseSeed);
 }
 
-RunManager::~RunManager() {}
-
 void RunManager::setupPhysics() {
-  auto pList{physicsListFactory_.GetReferencePhysList("FTFP_BERT")};
 
-  parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
-  isPWEnabled_ = !parallelWorldPath_.empty();
-  if (isPWEnabled_) {
+  auto physics_list{physics_list_factory_.GetReferencePhysList("FTFP_BERT")};
+  physics_list->RegisterPhysics(new GammaPhysics);
+  physics_list->RegisterPhysics(new darkbrem::APrimePhysics(
+      params.get<fire::config::Parameters>("dark_brem")));
+
+  parallel_world_path_ = params.get<std::string>("scoringPlanes");
+  pw_enabled_ = !parallel_world_path_.empty();
+  if (pw_enabled_) {
     std::cout
         << "[ RunManager ]: Parallel worlds physics list has been registered."
         << std::endl;
-    pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
+    physics_list->RegisterPhysics(
+        new G4ParallelWorldPhysics("ldmxParallelWorld"));
   }
 
-  pList->RegisterPhysics(new GammaPhysics);
-  pList->RegisterPhysics(new darkbrem::APrimePhysics(
-      parameters_.getParameter<framework::config::Parameters>("dark_brem")));
-
-  auto biasing_operators{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>(
-          "biasing_operators", {})};
+  auto biasing_operators{params.get<std::vector<fire::config::Parameters>>(
+      "biasing_operators", {})};
   if (!biasing_operators.empty()) {
     std::cout << "[ RunManager ]: Biasing enabled with "
               << biasing_operators.size() << " operator(s)." << std::endl;
 
     // create all the biasing operators that will be used
-    for (framework::config::Parameters& bop : biasing_operators) {
+    for (fire::config::Parameters &bop : biasing_operators) {
       g4fire::PluginFactory::getInstance().createBiasingOperator(
-          bop.getParameter<std::string>("class_name"),
-          bop.getParameter<std::string>("instance_name"), bop);
+          bop.get<std::string>("class_name"),
+          bop.get<std::string>("instance_name"), bop);
     }
 
     // Instantiate the constructor used when biasing
-    G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
+    G4GenericBiasingPhysics *biasing_physics = new G4GenericBiasingPhysics();
 
     // specify which particles are going to be biased
     //  this will put a biasing interface wrapper around *all* processes
     //  associated with these particles
-    for (const g4fire::XsecBiasingOperator* bop :
+    for (const g4fire::XsecBiasingOperator *bop :
          g4fire::PluginFactory::getInstance().getBiasingOperators()) {
       std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
                 << "' set to bias " << bop->getParticleToBias() << std::endl;
-      biasingPhysics->Bias(bop->getParticleToBias());
+      biasing_physics->Bias(bop->getParticleToBias());
     }
 
     // Register the physics constructor to the physics list:
-    pList->RegisterPhysics(biasingPhysics);
+    physics_list->RegisterPhysics(biasing_physics);
   }
-
-  this->SetUserInitialization(pList);
+  this->SetUserInitialization(physics_list);
 }
 
 void RunManager::Initialize() {
@@ -104,15 +92,15 @@ void RunManager::Initialize() {
 
   // The parallel world needs to be registered before the mass world is
   // constructed i.e. before G4RunManager::Initialize() is called.
-  if (isPWEnabled_) {
+  (pw_enabled_) {
     std::cout << "[ RunManager ]: Parallel worlds have been enabled."
               << std::endl;
 
-    auto validateGeometry_{parameters_.getParameter<bool>("validate_detector")};
-    G4GDMLParser* pwParser = new G4GDMLParser();
-    pwParser->Read(parallelWorldPath_, validateGeometry_);
+    auto validate_geometry_{params.get<bool>("validate_detector")};
+    G4GDMLParser *pw_parser = new G4GDMLParser();
+    pw_parser->Read(parallel_world_path_, validate_geometry_);
     this->getDetectorConstruction()->RegisterParallelWorld(
-        new ParallelWorld(pwParser, "ldmxParallelWorld", conditionsIntf_));
+        new ParallelWorld(pw_parser, "ldmxParallelWorld", conditions_intf_));
   }
 
   // This is where the physics lists are told to construct their particles and
@@ -122,7 +110,7 @@ void RunManager::Initialize() {
   G4RunManager::Initialize();
 
   // Instantiate the primary generator action
-  auto primaryGeneratorAction{new PrimaryGeneratorAction(parameters_)};
+  auto primaryGeneratorAction{new PrimaryGeneratorAction(params)};
   SetUserAction(primaryGeneratorAction);
 
   // Get instances of all G4 actions
@@ -131,17 +119,16 @@ void RunManager::Initialize() {
 
   // Create all user actions
   auto userActions{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>(
-          "actions", {})};
-  for (auto& userAction : userActions) {
+      params.get<std::vector<g4fire::config::Parameters>>("actions", {})};
+  for (auto &userAction : userActions) {
     PluginFactory::getInstance().createAction(
-        userAction.getParameter<std::string>("class_name"),
-        userAction.getParameter<std::string>("instance_name"), userAction);
+        userAction.get<std::string>("class_name"),
+        userAction.get<std::string>("instance_name"), userAction);
   }
 
   // Register all actions with the G4 engine
-  for (const auto& [key, act] : actions) {
-    std::visit([this](auto&& arg) { this->SetUserAction(arg); }, act);
+  for (const auto &[key, act] : actions) {
+    std::visit([this](auto &&arg) { this->SetUserAction(arg); }, act);
   }
 }
 
@@ -150,7 +137,7 @@ void RunManager::TerminateOneEvent() {
   G4RunManager::TerminateOneEvent();
 
   // reset dark brem process (if needed)
-  G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
+  G4ProcessTable *ptable = G4ProcessTable::GetProcessTable();
   G4int verbosity = ptable->GetVerboseLevel();
 
   // Only one of these processes should be in the table
@@ -165,8 +152,8 @@ void RunManager::TerminateOneEvent() {
       darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME,
       "biasWrapper(" + darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME + ")"};
   ptable->SetVerboseLevel(
-      0);  // silent ptable while searching for process that may/may not exist
-  for (auto const& name : dark_brem_processes)
+      0); // silent ptable while searching for process that may/may not exist
+  for (auto const &name : dark_brem_processes)
     ptable->SetProcessActivation(name, true);
   ptable->SetVerboseLevel(verbosity);
 
@@ -178,8 +165,8 @@ void RunManager::TerminateOneEvent() {
   ptable->SetVerboseLevel(verbosity);
 }
 
-DetectorConstruction* RunManager::getDetectorConstruction() {
-  return static_cast<DetectorConstruction*>(this->userDetector);
+DetectorConstruction *RunManager::getDetectorConstruction() {
+  return static_cast<DetectorConstruction *>(this->userDetector);
 }
 
-}  // namespace g4fire
+} // namespace g4fire

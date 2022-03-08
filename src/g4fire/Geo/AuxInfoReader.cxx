@@ -1,10 +1,8 @@
 #include "g4fire/Geo/AuxInfoReader.h"
 
-//---< C++ >---//
 #include <stdlib.h>
 #include <string>
 
-//---< Geant4 >---//
 #include "G4FieldManager.hh"
 #include "G4GDMLEvaluator.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -14,10 +12,8 @@
 #include "G4SystemOfUnits.hh"
 #include "G4UniformMagField.hh"
 
-//---< Framework >---//
-#include "Framework/Exception/Exception.h"
+//#include "Framework/Exception/Exception.h"
 
-//---< g4fire >---//
 #include "g4fire/CalorimeterSD.h"
 #include "g4fire/EcalSD.h"
 #include "g4fire/HcalSD.h"
@@ -31,13 +27,10 @@
 
 namespace g4fire::geo {
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser,
-                             framework::config::Parameters ps,
-                             ConditionsInterface& ci)
-    : parser_(theParser),
-      eval_(new G4GDMLEvaluator),
-      parameters_(ps),
-      conditionsIntf_(ci) {}
+AuxInfoReader::AuxInfoReader(G4GDMLParser *parser, fire::config::Parameters ps,
+                             ConditionsInterface &ci)
+    : parser_(parser), eval_(new G4GDMLEvaluator), parameters_(ps),
+      conditions_intf_(ci) {}
 
 AuxInfoReader::~AuxInfoReader() {
   delete eval_;
@@ -45,179 +38,179 @@ AuxInfoReader::~AuxInfoReader() {
 }
 
 void AuxInfoReader::readGlobalAuxInfo() {
-  const G4GDMLAuxListType* auxInfoList = parser_->GetAuxList();
+  const G4GDMLAuxListType *aux_info_list = parser_->GetAuxList();
   for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+           aux_info_list->begin();
+       iaux != aux_info_list->end(); iaux++) {
+    G4String aux_type = iaux->type;
+    G4String aux_val = iaux->value;
+    G4String aux_unit = iaux->unit;
 
-    if (auxType == "SensDet") {
-      createSensitiveDetector(auxVal, iaux->auxList);
-    } else if (auxType == "MagneticField") {
-      createMagneticField(auxVal, iaux->auxList);
-    } else if (auxType == "Region") {
-      createRegion(auxVal, iaux->auxList);
-    } else if (auxType == "VisAttributes") {
-      createVisAttributes(auxVal, iaux->auxList);
-    } else if (auxType == "DetectorVersion") {
-      createDetectorHeader(auxVal, iaux->auxList);
+    if (aux_type == "SensDet") {
+      createSensitiveDetector(aux_val, iaux->auxList);
+    } else if (aux_type == "MagneticField") {
+      createMagneticField(aux_val, iaux->auxList);
+    } else if (aux_type == "Region") {
+      createRegion(aux_val, iaux->auxList);
+    } else if (aux_type == "VisAttributes") {
+      createVisAttributes(aux_val, iaux->auxList);
+    } else if (aux_type == "DetectorVersion") {
+      createDetectorHeader(aux_val, iaux->auxList);
     }
   }
   return;
 }
 
 void AuxInfoReader::createSensitiveDetector(
-    G4String theSensDetName, const G4GDMLAuxListType* auxInfoList) {
-  // G4cout << "Creating SensitiveDetector " << theSensDetName << G4endl;
+    G4String sd_name, const G4GDMLAuxListType *aux_info_list) {
+  // G4cout << "Creating SensitiveDetector " << sd_name << G4endl;
 
-  G4String sdType("");
-  G4String hcName("");
-  G4String idName("");
-  int subdetID = -1;
-  int layerDepth = -1;
+  G4String sd_type("");
+  G4String hc_name("");
+  G4String id_name("");
+  int subdet_id = -1;
+  int layer_depth = -1;
   int verbose = 0;
   for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+           aux_info_list->begin();
+       iaux != aux_info_list->end(); iaux++) {
+    G4String aux_type = iaux->type;
+    G4String aux_val = iaux->value;
+    G4String aux_unit = iaux->unit;
 
-    // G4cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit:
-    // " << auxUnit << G4endl;
+    // G4cout << "aux_type: " << aux_type << ", aux_val: " << aux_val << ", aux_unit:
+    // " << aux_unit << G4endl;
 
-    if (auxType == "SensDetType") {
-      sdType = auxVal;
-    } else if (auxType == "HitsCollection") {
-      hcName = auxVal;
-    } else if (auxType == "Verbose") {
-      verbose = atoi(auxVal.c_str());
-    } else if (auxType == "SubdetID") {
-      subdetID = atoi(auxVal.c_str());
-    } else if (auxType == "DetectorID") {
-      idName = auxVal;
-    } else if (auxType == "LayerDepth") {
-      layerDepth = atoi(auxVal.c_str());
+    if (aux_type == "SensDetType") {
+      sd_type = aux_val;
+    } else if (aux_type == "HitsCollection") {
+      hc_name = aux_val;
+    } else if (aux_type == "Verbose") {
+      verbose = atoi(aux_val.c_str());
+    } else if (aux_type == "SubdetID") {
+      subdet_id = atoi(aux_val.c_str());
+    } else if (aux_type == "DetectorID") {
+      id_name = aux_val;
+    } else if (aux_type == "LayerDepth") {
+      layer_depth = atoi(aux_val.c_str());
     }
   }
 
-  if (sdType == "") {
-    EXCEPTION_RAISE("MissingInfo", "The SensDet is missing the SensDetType.");
+  if (sd_type == "") {
+    //EXCEPTION_RAISE("MissingInfo", "The SensDet is missing the SensDetType.");
   }
 
-  if (hcName == "") {
-    EXCEPTION_RAISE("MissingInfo",
-                    "The SensDet is missing the HitsCollection.");
+  if (hc_name == "") {
+    //EXCEPTION_RAISE("MissingInfo",
+    //                "The SensDet is missing the HitsCollection.");
   }
 
-  if (subdetID <= 0) {
-    EXCEPTION_RAISE("BadID", "The SubdetID '" + std::to_string(subdetID) +
-                                 "' is missing or invalid.");
+  if (subdet_id <= 0) {
+    //EXCEPTION_RAISE("BadID", "The SubdetID '" + std::to_string(subdet_id) +
+    //                             "' is missing or invalid.");
   }
 
   /*
    * Build the Sensitive Detector, and re-assign the detID if applicable
    */
-  G4VSensitiveDetector* sd = 0;
+  G4VSensitiveDetector *sd = 0;
 
-  if (sdType == "TrackerSD") {
-    sd = new TrackerSD(theSensDetName, hcName, subdetID);
-  } else if (sdType == "EcalSD") {
-    sd = new EcalSD(theSensDetName, hcName, subdetID, conditionsIntf_);
-  } else if (sdType == "HcalSD") {
-    sd = new HcalSD(theSensDetName, hcName, subdetID);
-  } else if (sdType == "ScoringPlaneSD") {
-    sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID);
-  } else if (sdType == "TrigScintSD") {
-    sd = new TrigScintSD(theSensDetName, hcName, subdetID);
+  if (sd_type == "TrackerSD") {
+    sd = new TrackerSD(sd_name, hc_name, subdet_id);
+  } else if (sd_type == "EcalSD") {
+    sd = new EcalSD(sd_name, hc_name, subdet_id, conditions_intf_);
+  } else if (sd_type == "HcalSD") {
+    sd = new HcalSD(sd_name, hc_name, subdet_id);
+  } else if (sd_type == "ScoringPlaneSD") {
+    sd = new ScoringPlaneSD(sd_name, hc_name, subdet_id);
+  } else if (sd_type == "TrigScintSD") {
+    sd = new TrigScintSD(sd_name, hc_name, subdet_id);
   } else {
-    EXCEPTION_RAISE("DetType", "Unknown SensitiveDetector type: " + sdType);
+    //EXCEPTION_RAISE("DetType", "Unknown SensitiveDetector type: " + sd_type);
   }
 
   /*
    * Fix  layer depth if the Sensitive Detector is not the Tracker
    */
-  if (sdType != "TrackerSD" && layerDepth != -1) {
-    ((CalorimeterSD*)sd)->setLayerDepth(layerDepth);
+  if (sd_type != "TrackerSD" && layer_depth != -1) {
+    ((CalorimeterSD *)sd)->setLayerDepth(layer_depth);
   }
   sd->SetVerboseLevel(verbose);
 
-  // G4cout << "Created " << sdType << " " << theSensDetName << " with hits
-  // collection " << hcName << " and verbose level " << verbose << G4endl <<
+  // G4cout << "Created " << sd_type << " " << sd_name << " with hits
+  // collection " << hc_name << " and verbose level " << verbose << G4endl <<
   // G4endl;
 }
 
 void AuxInfoReader::assignAuxInfoToVolumes() {
-  const G4LogicalVolumeStore* lvs = G4LogicalVolumeStore::GetInstance();
-  std::vector<G4LogicalVolume*>::const_iterator lvciter;
+  const G4LogicalVolumeStore *lvs = G4LogicalVolumeStore::GetInstance();
+  std::vector<G4LogicalVolume *>::const_iterator lvciter;
   for (lvciter = lvs->begin(); lvciter != lvs->end(); lvciter++) {
-    G4GDMLAuxListType auxInfo =
+    G4GDMLAuxListType aux_info =
         parser_->GetVolumeAuxiliaryInformation(*lvciter);
-    if (auxInfo.size() > 0) {
+    if (aux_info.size() > 0) {
       for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-               auxInfo.begin();
-           iaux != auxInfo.end(); iaux++) {
-        G4String auxType = iaux->type;
-        G4String auxVal = iaux->value;
-        G4String auxUnit = iaux->unit;
+               aux_info.begin();
+           iaux != aux_info.end(); iaux++) {
+        G4String aux_type = iaux->type;
+        G4String aux_val = iaux->value;
+        G4String aux_unit = iaux->unit;
 
-        G4LogicalVolume* lv = (*lvciter);
+        G4LogicalVolume *lv = (*lvciter);
 
-        if (auxType == "SensDet") {
-          G4String sdName = auxVal;
-          G4VSensitiveDetector* sd =
-              G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdName);
+        if (aux_type == "SensDet") {
+          G4String sd_name = aux_val;
+          G4VSensitiveDetector *sd =
+              G4SDManager::GetSDMpointer()->FindSensitiveDetector(sd_name);
           if (sd != NULL) {
             lv->SetSensitiveDetector(sd);
             // G4cout << "Assigned SD " << sd->GetName() << " to " <<
             // lv->GetName() << G4endl;
           } else {
-            EXCEPTION_RAISE("MissingInfo",
-                            "Unknown SensDet in volume's auxiliary info: " +
-                                std::string(sdName.data()));
+            //EXCEPTION_RAISE("MissingInfo",
+            //                "Unknown SensDet in volume's auxiliary info: " +
+            //                    std::string(sd_name.data()));
           }
-        } else if (auxType == "MagneticField") {
-          G4String magFieldName = auxVal;
-          G4MagneticField* magField =
-              MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
-          if (magField != NULL) {
-            G4FieldManager* mgr = new G4FieldManager(magField);
+        } else if (aux_type == "MagneticField") {
+          G4String mag_field_name = aux_val;
+          G4MagneticField *mag_field =
+              MagneticFieldStore::getInstance()->getMagneticField(mag_field_name);
+          if (mag_field != NULL) {
+            G4FieldManager *mgr = new G4FieldManager(mag_field);
             lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
-            // G4cout << "Assigned magnetic field " << magFieldName << " to
+            // G4cout << "Assigned magnetic field " << mag_field_name << " to
             // volume " << lv->GetName() << G4endl;
           } else {
-            EXCEPTION_RAISE(
-                "MissingInfo",
-                "Unknown MagneticField ref in volume's auxiliary info: " +
-                    std::string(magFieldName.data()));
+            //EXCEPTION_RAISE(
+            //    "MissingInfo",
+            //    "Unknown MagneticField ref in volume's auxiliary info: " +
+            //        std::string(mag_field_name.data()));
           }
-        } else if (auxType == "Region") {
-          G4String regionName = auxVal;
-          G4Region* region =
-              G4RegionStore::GetInstance()->GetRegion(regionName);
+        } else if (aux_type == "Region") {
+          G4String region_name = aux_val;
+          G4Region *region =
+              G4RegionStore::GetInstance()->GetRegion(region_name);
           if (region != NULL) {
             region->AddRootLogicalVolume(lv);
             // G4cout << "Added volume " << lv->GetName() << " to region " <<
-            // regionName << G4endl;
+            // region_name << G4endl;
           } else {
-            EXCEPTION_RAISE("MissingInfo", "Reference region '" +
-                                               std::string(regionName.data()) +
-                                               "' was not found!");
+            //EXCEPTION_RAISE("MissingInfo", "Reference region '" +
+            //                                   std::string(region_name.data()) +
+              //                                 "' was not found!");
           }
-        } else if (auxType == "VisAttributes") {
-          G4String visName = auxVal;
-          G4VisAttributes* visAttributes =
-              VisAttributesStore::getInstance()->getVisAttributes(visName);
+        } else if (aux_type == "VisAttributes") {
+          G4String vis_name = aux_val;
+          G4VisAttributes *visAttributes =
+              VisAttributesStore::getInstance()->getVisAttributes(vis_name);
           if (visAttributes != NULL) {
             lv->SetVisAttributes(visAttributes);
-            // G4cout << "Assigned VisAttributes " << visName << " to volume "
+            // G4cout << "Assigned VisAttributes " << vis_name << " to volume "
             // << lv->GetName() << G4endl;
           } else {
-            EXCEPTION_RAISE("MissingInfo", "Referenced VisAttributes '" +
-                                               std::string(visName.data()) +
-                                               "' was not found!");
+            //EXCEPTION_RAISE("MissingInfo", "Referenced VisAttributes '" +
+            //                                   std::string(vis_name.data()) +
+            //                                   "' was not found!");
           }
         }
       }
@@ -225,231 +218,231 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
   }
 }
 
-void AuxInfoReader::createMagneticField(G4String magFieldName,
-                                        const G4GDMLAuxListType* auxInfoList) {
+void AuxInfoReader::createMagneticField(
+    G4String mag_field_name, const G4GDMLAuxListType *aux_info_list) {
   // Find type of the mag field.
-  G4String magFieldType("");
+  G4String mag_field_type("");
   for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
+           aux_info_list->begin();
+       iaux != aux_info_list->end(); iaux++) {
+    G4String aux_type = iaux->type;
+    G4String aux_val = iaux->value;
 
-    if (auxType == "MagneticFieldType") {
-      magFieldType = auxVal;
+    if (aux_type == "MagneticFieldType") {
+      mag_field_type = aux_val;
       break;
     }
   }
 
-  if (magFieldType == "") {
-    EXCEPTION_RAISE("MissingInfo",
-                    "Missing MagFieldType for magnetic field definition.");
+  if (mag_field_type == "") {
+    //EXCEPTION_RAISE("MissingInfo",
+    //                "Missing MagFieldType for magnetic field definition.");
   }
 
-  G4MagneticField* magField = NULL;
+  G4MagneticField *mag_field = NULL;
 
   // Create a uniform mag field using the built-in Geant4 type.
-  if (magFieldType == "G4UniformMagField") {
-	  std::string::size_type sz;
+  if (mag_field_type == "G4UniformMagField") {
+    std::string::size_type sz;
     double bx, by, bz;
     bx = by = bz = 0.;
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-             auxInfoList->begin();
-         iaux != auxInfoList->end(); iaux++) {
-      G4String auxType = iaux->type;
-      G4String auxVal = iaux->value;
-      G4String auxUnit = iaux->unit;
+             aux_info_list->begin();
+         iaux != aux_info_list->end(); iaux++) {
+      G4String aux_type = iaux->type;
+      G4String aux_val = iaux->value;
+      G4String aux_unit = iaux->unit;
 
-      G4String expr = auxVal + "*" + auxUnit;
-      if (auxType == "bx") {
+      G4String expr = aux_val + "*" + aux_unit;
+      if (aux_type == "bx") {
         bx = eval_->Evaluate(expr);
-      } else if (auxType == "by") {
+      } else if (aux_type == "by") {
         by = eval_->Evaluate(expr);
-      } else if (auxType == "bz") {
+      } else if (aux_type == "bz") {
         bz = eval_->Evaluate(expr);
       }
     }
     G4ThreeVector fieldComponents(bx, by, bz);
-    magField = new G4UniformMagField(fieldComponents);
+    mag_field = new G4UniformMagField(fieldComponents);
 
-    // G4cout << "Created G4UniformMagField " << magFieldName << " with field
+    // G4cout << "Created G4UniformMagField " << mag_field_name << " with field
     // components " << fieldComponents << G4endl << G4endl;
 
     // Create a global 3D field map by reading from a data file.
-  } else if (magFieldType == "MagneticFieldMap3D") {
-	  std::string fileName;
-    double offsetX, offsetY, offsetZ;
+  } else if (mag_field_type == "MagneticFieldMap3D") {
+    std::string file_name;
+    double offset_x, offset_y, offset_z;
 
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-             auxInfoList->begin();
-         iaux != auxInfoList->end(); iaux++) {
-      G4String auxType = iaux->type;
-      G4String auxVal = iaux->value;
-      G4String auxUnit = iaux->unit;
+             aux_info_list->begin();
+         iaux != aux_info_list->end(); iaux++) {
+      G4String aux_type = iaux->type;
+      G4String aux_val = iaux->value;
+      G4String aux_unit = iaux->unit;
 
-      G4String expr = auxVal + "*" + auxUnit;
+      G4String expr = aux_val + "*" + aux_unit;
 
-      if (auxType == "File") {
-        fileName = auxVal;
-      } else if (auxType == "OffsetX") {
-        offsetX = eval_->Evaluate(expr);
-      } else if (auxType == "OffsetY") {
-        offsetY = eval_->Evaluate(expr);
-      } else if (auxType == "OffsetZ") {
-        offsetZ = eval_->Evaluate(expr);
+      if (aux_type == "File") {
+        file_name = aux_val;
+      } else if (aux_type == "OffsetX") {
+        offset_x = eval_->Evaluate(expr);
+      } else if (aux_type == "OffsetY") {
+        offset_y = eval_->Evaluate(expr);
+      } else if (aux_type == "OffsetZ") {
+        offset_z = eval_->Evaluate(expr);
       }
     }
 
-    if (fileName.size() == 0) {
-      EXCEPTION_RAISE("MissingInfo",
-                      "File info with field data was not provided.");
+    if (file_name.size() == 0) {
+      //EXCEPTION_RAISE("MissingInfo",
+      //                "File info with field data was not provided.");
     }
 
     // Create new 3D field map.
-    magField =
-        new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
+    mag_field =
+        new MagneticFieldMap3D(file_name.c_str(), offset_x, offset_y, offset_z);
 
     // Assign field map as global field.
-    G4FieldManager* fieldMgr =
+    G4FieldManager *field_mgr =
         G4TransportationManager::GetTransportationManager()->GetFieldManager();
-    if (fieldMgr->GetDetectorField() != nullptr) {
+    if (field_mgr->GetDetectorField() != nullptr) {
       EXCEPTION_RAISE("MisAssign", "Global mag field was already assigned.");
     }
-    fieldMgr->SetDetectorField(magField);
-    fieldMgr->CreateChordFinder(magField);
+    field_mgr->SetDetectorField(mag_field);
+    field_mgr->CreateChordFinder(mag_field);
 
   } else {
-    EXCEPTION_RAISE("UnknownType", "Unknown MagFieldType '" +
-                                       std::string(magFieldType.data()) +
-                                       "' in auxiliary info.");
+    //EXCEPTION_RAISE("UnknownType", "Unknown MagFieldType '" +
+    //                                   std::string(mag_field_type.data()) +
+    //                                   "' in auxiliary info.");
   }
 
-  MagneticFieldStore::getInstance()->addMagneticField(magFieldName, magField);
+  MagneticFieldStore::getInstance()->addMagneticField(mag_field_name, mag_field);
 }
 
 void AuxInfoReader::createRegion(G4String name,
-                                 const G4GDMLAuxListType* auxInfoList) {
-  bool storeTrajectories = true;
+                                 const G4GDMLAuxListType *aux_info_list) {
+  bool store_trajectories = true;
   for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+           aux_info_list->begin();
+       iaux != aux_info_list->end(); iaux++) {
+    G4String aux_type = iaux->type;
+    G4String aux_val = iaux->value;
+    G4String aux_unit = iaux->unit;
 
-    if (auxType == "StoreTrajectories") {
-      if (auxVal == "false") {
-        storeTrajectories = false;
-      } else if (auxVal == "true") {
-        storeTrajectories = true;
+    if (aux_type == "StoreTrajectories") {
+      if (aux_val == "false") {
+        store_trajectories = false;
+      } else if (aux_val == "true") {
+        store_trajectories = true;
       }
     }
   }
 
-  G4VUserRegionInformation* regionInfo =
-      new UserRegionInformation(storeTrajectories);
-  G4Region* region = new G4Region(name);
-  region->SetUserInformation(regionInfo);
+  G4VUserRegionInformation *region_info =
+      new UserRegionInformation(store_trajectories);
+  G4Region *region = new G4Region(name);
+  region->SetUserInformation(region_info);
 
   // G4cout << "Created new detector region " << region->GetName() << G4endl <<
   // G4endl;
 }
 
-void AuxInfoReader::createVisAttributes(G4String name,
-                                        const G4GDMLAuxListType* auxInfoList) {
+void AuxInfoReader::createVisAttributes(
+    G4String name, const G4GDMLAuxListType *aux_info_list) {
   G4double rgba[4] = {1., 1., 1., 1.};
   G4bool visible = true;
-  G4bool dauInvisible = false;
-  G4bool forceWireframe = false;
-  G4bool forceSolid = false;
-  G4double lineWidth = 1.0;
-  G4VisAttributes::LineStyle lineStyle = G4VisAttributes::unbroken;
+  G4bool dau_invisible = false;
+  G4bool force_wireframe = false;
+  G4bool force_solid = false;
+  G4double line_width = 1.0;
+  G4VisAttributes::LineStyle line_style = G4VisAttributes::unbroken;
 
   for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+           aux_info_list->begin();
+       iaux != aux_info_list->end(); iaux++) {
+    G4String aux_type = iaux->type;
+    G4String aux_val = iaux->value;
+    G4String aux_unit = iaux->unit;
 
-    if (auxType == "R") {
-      rgba[0] = atof(auxVal.c_str());
-    } else if (auxType == "G") {
-      rgba[1] = atof(auxVal.c_str());
-    } else if (auxType == "B") {
-      rgba[2] = atof(auxVal.c_str());
-    } else if (auxType == "A") {
-      rgba[3] = atof(auxVal.c_str());
-    } else if (auxType == "Style") {
-      if (auxVal == "wireframe") {
-        forceWireframe = true;
-      } else if (auxVal == "solid") {
-        forceSolid = true;
+    if (aux_type == "R") {
+      rgba[0] = atof(aux_val.c_str());
+    } else if (aux_type == "G") {
+      rgba[1] = atof(aux_val.c_str());
+    } else if (aux_type == "B") {
+      rgba[2] = atof(aux_val.c_str());
+    } else if (aux_type == "A") {
+      rgba[3] = atof(aux_val.c_str());
+    } else if (aux_type == "Style") {
+      if (aux_val == "wireframe") {
+        force_wireframe = true;
+      } else if (aux_val == "solid") {
+        force_solid = true;
       }
-    } else if (auxType == "DaughtersInvisible") {
-      if (auxVal == "true") {
-        dauInvisible = true;
-      } else if (auxVal == "false") {
-        dauInvisible = false;
+    } else if (aux_type == "DaughtersInvisible") {
+      if (aux_val == "true") {
+        dau_invisible = true;
+      } else if (aux_val == "false") {
+        dau_invisible = false;
       }
-    } else if (auxType == "Visible") {
-      if (auxVal == "true") {
+    } else if (aux_type == "Visible") {
+      if (aux_val == "true") {
         visible = true;
-      } else if (auxVal == "false") {
+      } else if (aux_val == "false") {
         visible = false;
       }
-    } else if (auxType == "LineStyle") {
-      if (auxVal == "unbroken") {
-        lineStyle = G4VisAttributes::unbroken;
-      } else if (auxVal == "dashed") {
-        lineStyle = G4VisAttributes::dashed;
-      } else if (auxVal == "dotted") {
-        lineStyle = G4VisAttributes::dotted;
+    } else if (aux_type == "LineStyle") {
+      if (aux_val == "unbroken") {
+        line_style = G4VisAttributes::unbroken;
+      } else if (aux_val == "dashed") {
+        line_style = G4VisAttributes::dashed;
+      } else if (aux_val == "dotted") {
+        line_style = G4VisAttributes::dotted;
       }
-    } else if (auxType == "LineWidth") {
-      lineWidth = atof(auxVal.c_str());
+    } else if (aux_type == "LineWidth") {
+      line_width = atof(aux_val.c_str());
     }
   }
 
-  G4VisAttributes* visAttributes = new G4VisAttributes();
+  G4VisAttributes *visAttributes = new G4VisAttributes();
   visAttributes->SetColor(rgba[0], rgba[1], rgba[2], rgba[3]);
   visAttributes->SetVisibility(visible);
-  visAttributes->SetDaughtersInvisible(dauInvisible);
-  visAttributes->SetForceWireframe(forceWireframe);
-  visAttributes->SetForceSolid(forceSolid);
-  visAttributes->SetLineWidth(lineWidth);
-  visAttributes->SetLineStyle(lineStyle);
+  visAttributes->SetDaughtersInvisible(dau_invisible);
+  visAttributes->SetForceWireframe(force_wireframe);
+  visAttributes->SetForceSolid(force_solid);
+  visAttributes->SetLineWidth(line_width);
+  visAttributes->SetLineStyle(line_style);
   VisAttributesStore::getInstance()->addVisAttributes(name, visAttributes);
 
   // G4cout << "Created VisAttributes " << name << G4endl << (*visAttributes) <<
   // G4endl << G4endl;
 }
 
-void AuxInfoReader::createDetectorHeader(G4String auxValue,
-                                         const G4GDMLAuxListType* auxInfoList) {
-  int detectorVersion = atoi(auxValue.c_str());
+void AuxInfoReader::createDetectorHeader(
+    G4String aux_value, const G4GDMLAuxListType *aux_info_list) {
+  int det_version = atoi(aux_value.c_str());
 
-  std::string detectorName("");
+  std::string det_name("");
   std::string author("");
   std::string description("");
 
   for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+           aux_info_list->begin();
+       iaux != aux_info_list->end(); iaux++) {
+    G4String aux_type = iaux->type;
+    G4String aux_val = iaux->value;
+    G4String aux_unit = iaux->unit;
 
-    if (auxType == "DetectorName") {
-      detectorName = auxVal;
-    } else if (auxType == "Author") {
-      author = auxVal;
-    } else if (auxType == "Description") {
-      description = auxVal;
+    if (aux_type == "DetectorName") {
+      det_name = aux_val;
+    } else if (aux_type == "Author") {
+      author = aux_val;
+    } else if (aux_type == "Description") {
+      description = aux_val;
     }
   }
 
-  detectorHeader_ = new ldmx::DetectorHeader(detectorName, detectorVersion,
+  detectorHeader_ = new ldmx::DetectorHeader(det_name, det_version,
                                              description, author);
 
   /*G4cout << G4endl;
@@ -461,4 +454,4 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   G4cout << G4endl;*/
 }
 
-}  // namespace g4fire::geo
+} // namespace g4fire::geo
