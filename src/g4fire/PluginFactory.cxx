@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-//#include "Framework/Exception/Exception.h"
+#include "fire/exception/Exception.h"
 
 namespace g4fire {
 
@@ -21,10 +21,10 @@ void PluginFactory::registerGenerator(const std::string &class_name,
                                       PrimaryGeneratorBuilder *builder) {
   auto it{registered_generators_.find(class_name)};
   if (it != registered_generators_.end()) {
-    // EXCEPTION_RAISE(
-    //    "ExistingGeneratorDefinition",
-    //    "The primary generator " + class_name + " has already been
-    //    registered.");
+    throw fire::Exception("ExistingGeneratorDefinition",
+                          "The primary generator " + class_name +
+                              " has already been registered.",
+                          false);
   }
 
   registered_generators_[class_name] = builder;
@@ -35,8 +35,9 @@ void PluginFactory::createGenerator(const std::string &class_name,
                                     fire::config::Parameters &params) {
   auto it{registered_generators_.find(class_name)};
   if (it == registered_generators_.end()) {
-    // EXCEPTION_RAISE("CreateGenerator",
-    //                "Failed to create generator '" + class_name + "'.");
+    throw fire::Exception("CreateGenerator",
+                          "Failed to create generator '" + class_name + "'.",
+                          false);
   }
 
   auto generator{it->second(instance_name, params)};
@@ -64,9 +65,10 @@ void PluginFactory::registerAction(const std::string &class_name,
                                    UserActionBuilder *builder) {
   auto it{registered_actions_.find(class_name)};
   if (it != registered_actions_.end()) {
-    // EXCEPTION_RAISE(
-    //    "ExistingActionDefinition",
-    //    "The user action " + class_name + " has already been registered.");
+    throw fire::Exception("ExistingActionDefinition",
+                          "The user action " + class_name +
+                              " has already been registered.",
+                          false);
   }
 
   registered_actions_[class_name] = builder;
@@ -77,7 +79,8 @@ void PluginFactory::createAction(const std::string &class_name,
                                  fire::config::Parameters &params) {
   auto it{registered_actions_.find(class_name)};
   if (it == registered_actions_.end()) {
-    // EXCEPTION_RAISE("PluginFactory", "Failed to create " + class_name);
+    throw fire::Exception("PluginFactory", "Failed to create " + class_name,
+                          false);
   }
 
   auto act{it->second(instance_name, params)};
@@ -98,7 +101,8 @@ void PluginFactory::createAction(const std::string &class_name,
       std::get<UserStackingAction *>(actions_[TYPE::STACKING])
           ->registerAction(act);
     else
-    // EXCEPTION_RAISE("PluginFactory", "User action type doesn't exist.");
+      throw fire::Exception("PluginFactory", "User action type doesn't exist.",
+                            false);
   }
 
   // now that the biasing is built --> put it on active list
@@ -110,10 +114,8 @@ void PluginFactory::registerBiasingOperator(
     const std::string &class_name, XsecBiasingOperatorBuilder *builder) {
   auto it{registered_operators_.find(class_name)};
   if (it != registered_operators_.end()) {
-    // EXCEPTION_RAISE(
-    //    "ExistingOperatorDefinition",
-    //    "The biasing operator " + class_name + " has already been
-    //    registered.");
+    throw fire::Exception("ExistingOperatorDefinition",
+      "The biasing operator " + class_name + " has already been registered.", false);
   }
 
   registered_operators_[class_name] = builder;
@@ -124,8 +126,9 @@ void PluginFactory::createBiasingOperator(const std::string &class_name,
                                           fire::config::Parameters &params) {
   auto it{registered_operators_.find(class_name)};
   if (it == registered_operators_.end()) {
-    // EXCEPTION_RAISE("CreateBiasingOperator",
-    //                "Failed to create biasing '" + class_name + "'.");
+    throw fire::Exception("CreateBiasingOperator",
+                          "Failed to create biasing '" + class_name + "'.",
+                          false);
   }
 
   auto bop{it->second(instance_name, params)};
