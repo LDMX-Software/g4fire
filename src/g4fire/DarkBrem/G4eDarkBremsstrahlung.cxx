@@ -59,12 +59,12 @@ G4eDarkBremsstrahlung::G4eDarkBremsstrahlung(
   // us
   SetProcessSubType(63);  // needs to be different from the other Em Subtypes
 
-  only_one_per_event_ = params.getParameter<bool>("only_one_per_event");
-  cache_xsec_ = params.getParameter<bool>("cache_xsec");
-  ap_mass_ = params.getParameter<double>("ap_mass");
+  only_one_per_event_ = params.get<bool>("only_one_per_event");
+  cache_xsec_ = params.get<bool>("cache_xsec");
+  ap_mass_ = params.get<double>("ap_mass");
 
-  auto model{params.getParameter<fire::config::Parameters>("model")};
-  auto model_name{model.getParameter<std::string>("name")};
+  auto model{params.get<fire::config::Parameters>("model")};
+  auto model_name{model.get<std::string>("name")};
   if (model_name == "vertex_library") {
     model_ = std::make_shared<DarkBremVertexLibraryModel>(model);
   } else {
@@ -92,9 +92,9 @@ void G4eDarkBremsstrahlung::PrintInfo() {
   model_->PrintInfo();
 }
 
-void G4eDarkBremsstrahlung::RecordConfig(ldmx::RunHeader& h) const {
-  h.setIntParameter("Only One DB Per Event", only_one_per_event_);
-  h.setFloatParameter("A' Mass [MeV]", ap_mass_);
+void G4eDarkBremsstrahlung::RecordConfig(fire::RunHeader& h) const {
+  h.set<int>("Only One DB Per Event", only_one_per_event_);
+  h.set<float>("A' Mass [MeV]", ap_mass_);
   model_->RecordConfig(h);
 }
 
