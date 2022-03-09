@@ -1,5 +1,4 @@
-#ifndef G4FIRE_DARKBREM_APRIMEPHYSICS_H
-#define G4FIRE_DARKBREM_APRIMEPHYSICS_H
+#pragma once 
 
 #include "G4VPhysicsConstructor.hh"
 
@@ -56,7 +55,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
    *
    * Nothing right now.
    */
-  virtual ~APrimePhysics() {}
+  ~APrimePhysics() = default;
 
   /**
    * Construct particle.
@@ -105,4 +104,3 @@ class APrimePhysics : public G4VPhysicsConstructor {
 }  // namespace darkbrem
 }  // namespace g4fire
 
-#endif
