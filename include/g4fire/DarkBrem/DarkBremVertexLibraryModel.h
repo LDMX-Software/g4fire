@@ -1,13 +1,14 @@
-#ifndef SIMCORE_DARKBREM_DARKBREMVERTEXLIBRARYMODLE_H_
-#define SIMCORE_DARKBREM_DARKBREMVERTEXLIBRARYMODLE_H_
+#pragma once
 
-#include "Framework/Configure/Parameters.h"
+#include <Eigen/Dense>
+
+#include "fire/config/Parameters.h"
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 
-// ROOT
-#include "TLorentzVector.h"
-
 namespace g4fire {
+
+static const double pi = 3.14159265358979323846;
+
 namespace darkbrem {
 
 /**
@@ -35,7 +36,7 @@ namespace darkbrem {
  * installed with g4fire and is compressed as stored in the data directory.
  */
 class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
- public:
+public:
   /**
    * Constructor
    * Set the parameters for this model.
@@ -48,7 +49,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    *
    * The library path is immediately passed to SetMadGraphDataLibrary.
    */
-  DarkBremVertexLibraryModel(framework::config::Parameters& params);
+  DarkBremVertexLibraryModel(fire::config::Parameters &params);
 
   /**
    * Destructor
@@ -63,7 +64,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
   /**
    * Record the configuration of this model into the RunHeader
    */
-  virtual void RecordConfig(ldmx::RunHeader& h) const;
+  virtual void RecordConfig(fire::RunHeader &h) const;
 
   /**
    * Calculates the cross section per atom in GEANT4 internal units.
@@ -86,9 +87,9 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    * @param cut minimum energy cut to calculate cross section
    * @return cross section (0. if outside energy cuts)
    */
-  virtual G4double ComputeCrossSectionPerAtom(G4double electronKE,
-                                              G4double atomicA,
-                                              G4double atomicZ);
+  virtual G4double ComputeCrossSectionPerAtom(G4double electron_ke,
+                                              G4double atomic_a,
+                                              G4double atomic_z);
 
   /**
    * Simulates the emission of a dark photon + electron.
@@ -110,15 +111,15 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    * ## Undefined
    * Don't scale the MadGraph vertex to the actual energy of the electron.
    *
-   * @param[in,out] particleChange structure holding changes to make to particle
-   * track
+   * @param[in,out] particle_change structure holding changes to make to
+   * particle track
    * @param[in] track current track being processesed
    * @param[in] step current step of the track
    */
-  virtual void GenerateChange(G4ParticleChange& particleChange,
-                              const G4Track& track, const G4Step& step);
+  virtual void GenerateChange(G4ParticleChange &particle_change,
+                              const G4Track &track, const G4Step &step);
 
- private:
+private:
   /**
    * Set the library of dark brem events to be scaled.
    * @param file path to directory of LHE files
@@ -170,7 +171,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
      *
      * Calculates dxdt from t and other paramters.
      */
-    void operator()(const StateType&, StateType& dxdt, double t);
+    void operator()(const StateType &, StateType &dxdt, double t);
   };
 
   /**
@@ -201,9 +202,9 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
     /**
      * Access function in style required by boost::numeric::odeint
      *
-     * Calculates DsigmaDx from x and other paramters.
+     * Calculates dsigma_dx from x and other paramters.
      */
-    void operator()(const StateType&, StateType& DsigmaDx, double x);
+    void operator()(const StateType &, StateType &dsigma_dx, double x);
   };
 
   /**
@@ -214,9 +215,11 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
   struct OutgoingKinematics {
     /// 4-momentum of electron in center of momentum frame for electron-A'
     /// system
-    TLorentzVector electron;
+    // TLorentzVector electron;
+    Eigen::Vector4f electron;
     /// 4-vector pointing to center of momentum frame
-    TLorentzVector centerMomentum;
+    // TLorentzVector center_momentum;
+    Eigen::Vector4f center_momentum;
     /// energy of electron before brem (used as key in mad graph data map)
     G4double E;
   };
@@ -236,7 +239,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
   void ParseLHE(std::string fname);
 
   /**
-   * Fill vector of currentDataPoints_ with the same number of items as the
+   * Fill vector of current_data_points_ with the same number of items as the
    * madgraph data.
    *
    * Randomly choose a starting point so that the simulation run isn't dependent
@@ -257,13 +260,64 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    */
   OutgoingKinematics GetMadgraphData(double E0);
 
- private:
+private:
+  // TODO(OM) Move these methods to utility classes.
+  /**
+   * @param vec The eigen four vector to use
+   * @return pt = sqrt( x*x + y*y )
+   */
+  double Pt(const Eigen::Vector4f &vec) {
+    return sqrt((vec.x() * vec.x()) + (vec.y() * vec.y()));
+  }
+
+  /**
+   * @param vec The eigen four vector to use
+   * @return The azimuthual angle
+   */
+  double Phi(const Eigen::Vector4f &vec) {
+    if ((vec.x() == 0) && (vec.y() == 0))
+      return 0;
+    if (vec.x() != 0)
+      return atan2(vec.y(), vec.x());
+    if (vec.y() == 0)
+      return 0;
+    if (vec.y() > 0)
+      return g4fire::pi / 2;
+    else
+      return -g4fire::pi / 2;
+  }
+
+  /**
+   */
+  Eigen::Vector3f BoostVector(const Eigen::Vector4f &vec) {
+    return Eigen::Vector3f(vec.x() / vec.w(), vec.y() / vec.w(),
+                           vec.z() / vec.w());
+  }
+
+  /**
+   */
+  Eigen::Vector4f Boost(const Eigen::Vector4f &vec,
+                        const Eigen::Vector3f &boost_vec) {
+    double boost2{boost_vec.dot(boost_vec)};
+    double gamma{1.0 / sqrt(1.0 - boost2)};
+    double boost_p{boost_vec.x() * vec.x() + boost_vec.y() * vec.y() +
+                   boost_vec.z() * vec.z()};
+    double gamma2{boost2 > 0 ? (gamma - 1.0)/boost2 : 0.0};
+
+    return Eigen::Vector4f(
+        vec.x() + gamma2*boost_p*boost_vec.x() + gamma*boost_vec.x()*vec.w(), 
+        vec.y() + gamma2*boost_p*boost_vec.y() + gamma*boost_vec.y()*vec.w(), 
+        vec.z() + gamma2*boost_p*boost_vec.z() + gamma*boost_vec.z()*vec.w(), 
+        gamma*(vec.w() + boost_p)); 
+
+  }
+
   /**
    * maximum number of iterations to check before giving up on an event
    *
    * @TODO make configurable and/or optimize somehow
    */
-  unsigned int maxIterations_{10000};
+  unsigned int max_iterations_{10000};
 
   /** Threshold for non-zero xsec [GeV]
    *
@@ -288,18 +342,18 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
   enum DarkBremMethod {
     /// Use actual electron energy and get pT from LHE (such that pT^2+me^2 <
     /// Eacc^2)
-    ForwardOnly = 1,
+    forward_only = 1,
     /// Boost LHE vertex momenta to the actual electron energy
-    CMScaling = 2,
+    cm_scaling = 2,
     /// Use LHE vertex as is
-    Undefined = 3
+    undefined = 3
   };
 
   /** method for this model
    *
    * Configurable with 'method'
    */
-  DarkBremMethod method_{DarkBremMethod::Undefined};
+  DarkBremMethod method_{DarkBremMethod::undefined};
 
   /**
    * Name of method for persisting into the RunHeader
@@ -319,7 +373,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    * particle by checking if the resulting kinetic energy is below some
    * threshold.
    */
-  bool alwaysCreateNewElectron_{true};
+  bool always_create_new_electron_{true};
 
   /**
    * Storage of data from mad graph
@@ -330,7 +384,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    *
    * Library is read in from configuration parameter 'darkbrem.madgraphlibrary'
    */
-  std::map<double, std::vector<OutgoingKinematics> > madGraphData_;
+  std::map<double, std::vector<OutgoingKinematics>> mad_graph_data_;
 
   /**
    * Stores a map of current access points to mad graph data.
@@ -341,10 +395,8 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    * Also sorts the incoming electron energy so that we can find
    * the sampling energy that is closest above the actual incoming energy.
    */
-  std::map<double, unsigned int> currentDataPoints_;
+  std::map<double, unsigned int> current_data_points_;
 };
 
-}  // namespace darkbrem
-}  // namespace g4fire
-
-#endif  // SIMCORE_DARKBREM_DARKBREMVERTEXLIBRARYMODLE_H_
+} // namespace darkbrem
+} // namespace g4fire
