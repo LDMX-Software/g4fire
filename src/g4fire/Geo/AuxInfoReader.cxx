@@ -13,15 +13,16 @@
 #include "G4UniformMagField.hh"
 
 //#include "Framework/Exception/Exception.h"
+#include "fire/exception/Exception.h"
 
-#include "g4fire/CalorimeterSD.h"
+/*#include "g4fire/CalorimeterSD.h"
 #include "g4fire/EcalSD.h"
-#include "g4fire/HcalSD.h"
+#include "g4fire/HcalSD.h"*/
 #include "g4fire/MagneticFieldMap3D.h"
 #include "g4fire/MagneticFieldStore.h"
-#include "g4fire/ScoringPlaneSD.h"
+/*#include "g4fire/ScoringPlaneSD.h"
 #include "g4fire/TrackerSD.h"
-#include "g4fire/TrigScintSD.h"
+#include "g4fire/TrigScintSD.h"*/
 #include "g4fire/UserRegionInformation.h"
 #include "g4fire/VisAttributesStore.h"
 
@@ -29,13 +30,14 @@ namespace g4fire::geo {
 
 AuxInfoReader::AuxInfoReader(G4GDMLParser *parser, fire::config::Parameters ps,
                              ConditionsInterface &ci)
-    : parser_(parser), eval_(new G4GDMLEvaluator), parameters_(ps),
-      conditions_intf_(ci) {}
+    : parser_(parser), params_(ps), conditions_intf_(ci) {
 
-AuxInfoReader::~AuxInfoReader() {
-  delete eval_;
-  delete detectorHeader_;
+  eval_ = std::make_unique<G4GDMLEvaluator>();
 }
+
+// AuxInfoReader::~AuxInfoReader() {
+// delete detectorHeader_;
+//}
 
 void AuxInfoReader::readGlobalAuxInfo() {
   const G4GDMLAuxListType *aux_info_list = parser_->GetAuxList();
@@ -78,8 +80,8 @@ void AuxInfoReader::createSensitiveDetector(
     G4String aux_val = iaux->value;
     G4String aux_unit = iaux->unit;
 
-    // G4cout << "aux_type: " << aux_type << ", aux_val: " << aux_val << ", aux_unit:
-    // " << aux_unit << G4endl;
+    // G4cout << "aux_type: " << aux_type << ", aux_val: " << aux_val << ",
+    // aux_unit: " << aux_unit << G4endl;
 
     if (aux_type == "SensDetType") {
       sd_type = aux_val;
@@ -97,24 +99,26 @@ void AuxInfoReader::createSensitiveDetector(
   }
 
   if (sd_type == "") {
-    //EXCEPTION_RAISE("MissingInfo", "The SensDet is missing the SensDetType.");
+    // EXCEPTION_RAISE("MissingInfo", "The SensDet is missing the
+    // SensDetType.");
   }
 
   if (hc_name == "") {
-    //EXCEPTION_RAISE("MissingInfo",
+    // EXCEPTION_RAISE("MissingInfo",
     //                "The SensDet is missing the HitsCollection.");
   }
 
   if (subdet_id <= 0) {
-    //EXCEPTION_RAISE("BadID", "The SubdetID '" + std::to_string(subdet_id) +
+    // EXCEPTION_RAISE("BadID", "The SubdetID '" + std::to_string(subdet_id) +
     //                             "' is missing or invalid.");
   }
 
   /*
    * Build the Sensitive Detector, and re-assign the detID if applicable
    */
-  G4VSensitiveDetector *sd = 0;
+  // G4VSensitiveDetector *sd = 0;
 
+  /*
   if (sd_type == "TrackerSD") {
     sd = new TrackerSD(sd_name, hc_name, subdet_id);
   } else if (sd_type == "EcalSD") {
@@ -126,16 +130,16 @@ void AuxInfoReader::createSensitiveDetector(
   } else if (sd_type == "TrigScintSD") {
     sd = new TrigScintSD(sd_name, hc_name, subdet_id);
   } else {
-    //EXCEPTION_RAISE("DetType", "Unknown SensitiveDetector type: " + sd_type);
-  }
+    // EXCEPTION_RAISE("DetType", "Unknown SensitiveDetector type: " + sd_type);
+  }*/
 
   /*
    * Fix  layer depth if the Sensitive Detector is not the Tracker
    */
-  if (sd_type != "TrackerSD" && layer_depth != -1) {
+  /*if (sd_type != "TrackerSD" && layer_depth != -1) {
     ((CalorimeterSD *)sd)->setLayerDepth(layer_depth);
   }
-  sd->SetVerboseLevel(verbose);
+  sd->SetVerboseLevel(verbose);*/
 
   // G4cout << "Created " << sd_type << " " << sd_name << " with hits
   // collection " << hc_name << " and verbose level " << verbose << G4endl <<
@@ -167,24 +171,28 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
             // G4cout << "Assigned SD " << sd->GetName() << " to " <<
             // lv->GetName() << G4endl;
           } else {
-            //EXCEPTION_RAISE("MissingInfo",
-            //                "Unknown SensDet in volume's auxiliary info: " +
-            //                    std::string(sd_name.data()));
+            throw fire::Exception(
+                "MissingInfo",
+                "Unknown SensDet in volume's auxiliary info: " +
+                    std::string(sd_name.data()),
+                false);
           }
         } else if (aux_type == "MagneticField") {
           G4String mag_field_name = aux_val;
           G4MagneticField *mag_field =
-              MagneticFieldStore::getInstance()->getMagneticField(mag_field_name);
+              MagneticFieldStore::getInstance()->getMagneticField(
+                  mag_field_name);
           if (mag_field != NULL) {
             G4FieldManager *mgr = new G4FieldManager(mag_field);
             lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
             // G4cout << "Assigned magnetic field " << mag_field_name << " to
             // volume " << lv->GetName() << G4endl;
           } else {
-            //EXCEPTION_RAISE(
-            //    "MissingInfo",
-            //    "Unknown MagneticField ref in volume's auxiliary info: " +
-            //        std::string(mag_field_name.data()));
+            throw fire::Exception(
+                "MissingInfo",
+                "Unknown MagneticField ref in volume's auxiliary info: " +
+                    std::string(mag_field_name.data()),
+                false);
           }
         } else if (aux_type == "Region") {
           G4String region_name = aux_val;
@@ -195,9 +203,11 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
             // G4cout << "Added volume " << lv->GetName() << " to region " <<
             // region_name << G4endl;
           } else {
-            //EXCEPTION_RAISE("MissingInfo", "Reference region '" +
-            //                                   std::string(region_name.data()) +
-              //                                 "' was not found!");
+            throw fire::Exception("MissingInfo",
+                                  "Reference region '" +
+                                      std::string(region_name.data()) +
+                                      "' was not found!",
+                                  false);
           }
         } else if (aux_type == "VisAttributes") {
           G4String vis_name = aux_val;
@@ -208,9 +218,11 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
             // G4cout << "Assigned VisAttributes " << vis_name << " to volume "
             // << lv->GetName() << G4endl;
           } else {
-            //EXCEPTION_RAISE("MissingInfo", "Referenced VisAttributes '" +
-            //                                   std::string(vis_name.data()) +
-            //                                   "' was not found!");
+            throw fire::Exception("MissingInfo",
+                                  "Referenced VisAttributes '" +
+                                      std::string(vis_name.data()) +
+                                      "' was not found!",
+                                  false);
           }
         }
       }
@@ -235,8 +247,9 @@ void AuxInfoReader::createMagneticField(
   }
 
   if (mag_field_type == "") {
-    //EXCEPTION_RAISE("MissingInfo",
-    //                "Missing MagFieldType for magnetic field definition.");
+    throw fire::Exception("MissingInfo",
+                          "Missing MagFieldType for magnetic field definition.",
+                          false);
   }
 
   G4MagneticField *mag_field = NULL;
@@ -294,8 +307,8 @@ void AuxInfoReader::createMagneticField(
     }
 
     if (file_name.size() == 0) {
-      //EXCEPTION_RAISE("MissingInfo",
-      //                "File info with field data was not provided.");
+      throw fire::Exception(
+          "MissingInfo", "File info with field data was not provided.", false);
     }
 
     // Create new 3D field map.
@@ -306,18 +319,22 @@ void AuxInfoReader::createMagneticField(
     G4FieldManager *field_mgr =
         G4TransportationManager::GetTransportationManager()->GetFieldManager();
     if (field_mgr->GetDetectorField() != nullptr) {
-      EXCEPTION_RAISE("MisAssign", "Global mag field was already assigned.");
+      throw fire::Exception("MisAssign",
+                            "Global mag field was already assigned.", false);
     }
     field_mgr->SetDetectorField(mag_field);
     field_mgr->CreateChordFinder(mag_field);
 
   } else {
-    //EXCEPTION_RAISE("UnknownType", "Unknown MagFieldType '" +
-    //                                   std::string(mag_field_type.data()) +
-    //                                   "' in auxiliary info.");
+    throw fire::Exception("UnknownType",
+                          "Unknown MagFieldType '" +
+                              std::string(mag_field_type.data()) +
+                              "' in auxiliary info.",
+                          false);
   }
 
-  MagneticFieldStore::getInstance()->addMagneticField(mag_field_name, mag_field);
+  MagneticFieldStore::getInstance()->addMagneticField(mag_field_name,
+                                                      mag_field);
 }
 
 void AuxInfoReader::createRegion(G4String name,
@@ -442,8 +459,8 @@ void AuxInfoReader::createDetectorHeader(
     }
   }
 
-  detectorHeader_ = new ldmx::DetectorHeader(det_name, det_version,
-                                             description, author);
+  // detectorHeader_ =
+  //    new ldmx::DetectorHeader(det_name, det_version, description, author);
 
   /*G4cout << G4endl;
   G4cout << "Read detector header from userinfo: " << G4endl;
