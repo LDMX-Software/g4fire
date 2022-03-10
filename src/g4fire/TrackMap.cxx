@@ -96,13 +96,13 @@ void TrackMap::traceAncestry() {
   //  for (auto &child : descendents_[id]) {
   //    particle.addDaughter(child);
   //  }
-  }
+  //}
 }
 
 void TrackMap::clear() {
   ancestry_.clear();
   descendents_.clear();
-  particle_map_.clear();
+  //particle_map_.clear();
 }
 
 bool TrackMap::isInCalorimeterRegion(const G4Track *track) const {

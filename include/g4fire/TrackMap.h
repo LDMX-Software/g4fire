@@ -1,14 +1,10 @@
-#ifndef G4FIRE_TRACKMAP_H_
-#define G4FIRE_TRACKMAP_H_
+#pragma once
 
-// STL
 #include <unordered_map>
 
-// Geant4
 #include "G4Event.hh"
 #include "G4Track.hh"
 
-// LDMX
 //#include "g4fire/Event/SimParticle.h"
 #include "g4fire/UserTrackInformation.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
@@ -59,9 +55,9 @@ class TrackMap {
    * @param track_id The track ID.
    * @return True if the track ID has been inserted in output particle map
    */
-  inline bool isSaved(int track_id) const {
-    return particle_map_.find(track_id) != particle_map_.end();
-  }
+  //inline bool isSaved(int track_id) const {
+  //  return particle_map_.find(track_id) != particle_map_.end();
+  //}
 
   /**
    * Add a track to be stored into output map
@@ -133,7 +129,4 @@ class TrackMap {
   /// map of SimParticles that will be stored
   //std::map<int,ldmx::SimParticle> particle_map_;
 };
-
 }  // namespace g4fire
-
-#endif
