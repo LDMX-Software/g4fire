@@ -1,23 +1,12 @@
-/**
- * @file LHEEvent.h
- * @brief Class defining an LHE event with a list of particles and information
- * from the header block
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#pragma once
 
-#ifndef SIMCORE_LHEEVENT_H_
-#define SIMCORE_LHEEVENT_H_
-
-// LDMX
-#include "g4fire/LHEParticle.h"
-
-// STL
 #include <vector>
+
+#include "g4fire/LHEParticle.h"
 
 namespace g4fire {
 
 /**
- * @class LHEEvent
  * @brief LHE event with a list of particles and information from the header
  * block
  *
@@ -32,7 +21,7 @@ class LHEEvent {
    * Class constructor.
    * @param data The string data of the event header.
    */
-  LHEEvent(std::string& data);
+  LHEEvent(std::string &data);
 
   /**
    * Class destructor.
@@ -83,13 +72,13 @@ class LHEEvent {
   /**
    * Parse the vertex from a line of the form "#vertex [x] [y] [z]"
    */
-  void setVertex(const std::string& line);
+  void setVertex(const std::string &line);
 
   /**
    * Get the vertex location (careful to match units as expected!)
    * @return Array double[3] with x,y,z ordering
    */
-  const double* getVertex() const;
+  const double *getVertex() const;
 
   /**
    * Get the vertex time
@@ -101,13 +90,13 @@ class LHEEvent {
    * Add a particle to the event.
    * @particle The particle to add.
    */
-  void addParticle(LHEParticle* particle);
+  void addParticle(LHEParticle *particle);
 
   /**
    * Get the list of particles in the event.
    * @return The list of particles in the event.
    */
-  const std::vector<LHEParticle*>& getParticles();
+  const std::vector<LHEParticle *> &getParticles();
 
  private:
   /**
@@ -153,9 +142,7 @@ class LHEEvent {
   /**
    * The list of particles.
    */
-  std::vector<LHEParticle*> particles_;
+  std::vector<LHEParticle *> particles_;
 };
 
-}  // namespace g4fire
-
-#endif
+} // namespace g4fire

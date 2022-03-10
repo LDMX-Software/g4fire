@@ -1,18 +1,9 @@
-/**
- * @file MagneticFieldMap3D.h
- * @brief Class for defining a global 3D magnetic field
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Norman Graf, SLAC National Accelerator Laboratory
- */
+#pragma once
 
-#ifndef SIMCORE_MAGNETICFIELDMAP3D_H_
-#define SIMCORE_MAGNETICFIELDMAP3D_H_
-
-// Geant4
 #include "G4MagneticField.hh"
 
-// STL
 #include <vector>
+
 using std::vector;
 
 namespace g4fire {
@@ -67,7 +58,7 @@ class MagneticFieldMap3D : public G4MagneticField {
    * @param[in] xOffset, yOffset, zOffset The offset of the grid's coordinate
    * system.
    */
-  MagneticFieldMap3D(const char* filename, double xOffset, double yOffset,
+  MagneticFieldMap3D(const char *filename, double xOffset, double yOffset,
                      double zOffset);
 
   /**
@@ -75,7 +66,7 @@ class MagneticFieldMap3D : public G4MagneticField {
    * @param[in]  point  The point in 3D space.
    * @param[out] bfield The output B-field data at the point.
    */
-  void GetFieldValue(const double point[4], double* bfield) const;
+  void GetFieldValue(const double point[4], double *bfield) const;
 
  private:
   /*
@@ -113,7 +104,4 @@ class MagneticFieldMap3D : public G4MagneticField {
   bool invertX_, invertY_, invertZ_;
 };
 
-}  // namespace g4fire
-// namespace
-
-#endif
+} // namespace g4fire

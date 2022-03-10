@@ -1,16 +1,15 @@
 #include "g4fire/LHEEvent.h"
-#include "Framework/Exception/Exception.h"
 
-// Geant4
+#include "fire/exception/Exception.h"
+
 #include "globals.hh"
 
-// STL
 #include <iostream>
 #include <sstream>
 
 namespace g4fire {
 
-LHEEvent::LHEEvent(std::string& line) {
+LHEEvent::LHEEvent(std::string &line) {
   std::istringstream iss(line);
   std::vector<std::string> tokens;
   do {
@@ -22,8 +21,9 @@ LHEEvent::LHEEvent(std::string& line) {
   } while (iss);
 
   if (tokens.size() != 6) {
-    EXCEPTION_RAISE("TokenNum",
-                    "Wrong number of tokens in LHE event information record.");
+    throw fire::Exception(
+        "TokenNum", "Wrong number of tokens in LHE event information record.",
+        false);
   }
 
   nup_ = atoi(tokens[0].c_str());
@@ -39,7 +39,7 @@ LHEEvent::LHEEvent(std::string& line) {
 }
 
 LHEEvent::~LHEEvent() {
-  for (std::vector<LHEParticle*>::iterator it = particles_.begin();
+  for (std::vector<LHEParticle *>::iterator it = particles_.begin();
        it != particles_.end(); it++) {
     delete (*it);
   }
@@ -58,15 +58,17 @@ double LHEEvent::getAQEDUP() const { return aqedup_; }
 
 double LHEEvent::getAQCDUP() const { return aqcdup_; }
 
-const double* LHEEvent::getVertex() const { return vtx_; }
+const double *LHEEvent::getVertex() const { return vtx_; }
 
 const double LHEEvent::getVertexTime() const { return vtxt_; }
 
-void LHEEvent::addParticle(LHEParticle* particle) {
+void LHEEvent::addParticle(LHEParticle *particle) {
   particles_.push_back(particle);
 }
 
-const std::vector<LHEParticle*>& LHEEvent::getParticles() { return particles_; }
+const std::vector<LHEParticle *> &LHEEvent::getParticles() {
+  return particles_;
+}
 
 void LHEEvent::setVertex(double x, double y, double z) {
   vtx_[0] = x;
@@ -78,7 +80,7 @@ void LHEEvent::setVertex(double x, double y, double z) {
  * Parse the vertex from a line of the form "#vertex [x] [y] [z] [t]"
  * Where [t] is assumed zero if not specified
  */
-void LHEEvent::setVertex(const std::string& line) {
+void LHEEvent::setVertex(const std::string &line) {
   std::istringstream iss(line);
   std::vector<std::string> tokens;
   do {
@@ -90,9 +92,11 @@ void LHEEvent::setVertex(const std::string& line) {
   } while (iss);
 
   if (tokens.size() != 4 && tokens.size() != 5) {
-    EXCEPTION_RAISE("TokenNum",
-                    "Wrong number of tokens or format in LHE event vertex "
-                    "information record.");
+    throw fire::Exception(
+        "TokenNum",
+        "Wrong number of tokens or format in LHE event vertex "
+        "information record.",
+        false);
   }
   vtx_[0] = atof(tokens[1].c_str());
   vtx_[1] = atof(tokens[2].c_str());
@@ -102,4 +106,4 @@ void LHEEvent::setVertex(const std::string& line) {
   }
 }
 
-}  // namespace g4fire
+} // namespace g4fire

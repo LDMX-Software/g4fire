@@ -3,12 +3,12 @@
 namespace g4fire {
 namespace geo {
 
-GDMLParser::GDMLParser(framework::config::Parameters &parameters,
+GDMLParser::GDMLParser(fire::config::Parameters &params,
                        g4fire::ConditionsInterface &ci) {
   parser_ = std::make_unique<G4GDMLParser>();
   info_ =
-      std::make_unique<g4fire::geo::AuxInfoReader>(parser_.get(), parameters, ci);
-  parameters_ = parameters;
+      std::make_unique<g4fire::geo::AuxInfoReader>(parser_.get(), params, ci);
+  params_ = params;
 }
 
 G4VPhysicalVolume *GDMLParser::GetWorldVolume() {
@@ -16,12 +16,12 @@ G4VPhysicalVolume *GDMLParser::GetWorldVolume() {
 }
 
 void GDMLParser::read() {
-  parser_->Read(parameters_.getParameter<std::string>("detector"),
-                parameters_.getParameter<bool>("validate_detector"));
+  parser_->Read(params_.get<std::string>("detector"),
+                params_.get<bool>("validate_detector", false));
   info_->readGlobalAuxInfo();
   info_->assignAuxInfoToVolumes();
-  detector_name_ = info_->getDetectorHeader()->getName();
+  // detector_name_ = info_->getDetectorHeader()->getName();
 }
 
-}  // namespace geo
-}  // namespace g4fire
+} // namespace geo
+} // namespace g4fire

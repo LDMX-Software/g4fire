@@ -1,30 +1,21 @@
-/**
- * @file LHEPrimaryGenerator.cxx
- * @brief Implementation file for LHEPrimaryGenerator
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Tom Eichlersmith, University of Minnesota
- */
-
 #include "g4fire/LHEPrimaryGenerator.h"
 
-// Geant4
 #include "G4Event.hh"
 #include "G4IonTable.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
 
-// LDMX
-#include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
+#include "fire/exception/Exception.h"
+
 #include "g4fire/UserPrimaryParticleInformation.h"
 
 namespace g4fire {
 
 LHEPrimaryGenerator::LHEPrimaryGenerator(
-    const std::string& name, framework::config::Parameters& parameters)
-    : PrimaryGenerator(name, parameters) {
-  std::string filePath = parameters_.getParameter<std::string>("filePath");
+    const std::string& name, fire::config::Parameters& params)
+    : PrimaryGenerator(name, params) {
+  std::string filePath = params_.get<std::string>("filePath");
   reader_ = new LHEReader(filePath);
 }
 
@@ -56,8 +47,8 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
           if (tungstenIonDef != NULL) {
             primary->SetParticleDefinition(tungstenIonDef);
           } else {
-            EXCEPTION_RAISE("EventGenerator",
-                            "Failed to find particle definition for W ion.");
+            throw fire::Exception("EventGenerator",
+                            "Failed to find particle definition for W ion.", false);
           }
         } else {
           primary->SetPDGcode(particle->getIDUP());

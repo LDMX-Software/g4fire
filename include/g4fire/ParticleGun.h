@@ -1,33 +1,15 @@
-/**
- * @file ParticleGun.h
- * @brief Extension of G4ParticleGun.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Tom Eichlersmith, University of Minnesota
- */
 
-#ifndef SIMCORE_PARTICLE_GUN_H
-#define SIMCORE_PARTICLE_GUN_H
-
-//------------//
-//   Geant4   //
-//------------//
 #include "G4ParticleGun.hh"
 
-//------------//
-//   LDMX     //
-//------------//
 #include "g4fire/PrimaryGenerator.h"
 
-// Forward declarations
+#include "fire/config/Parameters.h" 
+
 class G4Event;
 
 namespace g4fire {
 
-// Forward declarations
-class Parameters;
-
 /**
- * @class ParticleGun
  * @brief Class that extends the functionality of G4ParticleGun.
  */
 class ParticleGun : public PrimaryGenerator {
@@ -35,7 +17,7 @@ class ParticleGun : public PrimaryGenerator {
   /**
    * Constructor.
    *
-   * @param parameters Parameters used to configure the particle gun.
+   * @param params Parameters used to configure the particle gun.
    *
    * Parameters:
    *  verbosity: > 1 means print configuration
@@ -46,10 +28,10 @@ class ParticleGun : public PrimaryGenerator {
    *  direction: direction to shoot in (unitless three-vector)
    */
   ParticleGun(const std::string& name,
-              framework::config::Parameters& parameters);
+              fire::config::Parameters& params);
 
   /// Destructor
-  ~ParticleGun();
+  ~ParticleGun() = default;
 
   /**
    * Generate the primary vertices in the Geant4 event.
@@ -62,7 +44,7 @@ class ParticleGun : public PrimaryGenerator {
   /**
    * The actual Geant4 implementation of the ParticleGun
    */
-  G4ParticleGun theGun_;
+  G4ParticleGun gun_;
 
   /**
    * LDMX Verbosity for this generator
@@ -72,5 +54,3 @@ class ParticleGun : public PrimaryGenerator {
 };  // ParticleGun
 
 }  // namespace g4fire
-
-#endif  // SIMCORE_PARTICLE_GUN_H

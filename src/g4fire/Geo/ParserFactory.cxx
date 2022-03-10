@@ -1,7 +1,7 @@
 
 #include "g4fire/Geo/ParserFactory.h"
 
-//#include "Framework/Exception/Exception.h"
+#include "fire/exception/Exception.h"
 
 #include "g4fire/Geo/GDMLParser.h"
 #include "g4fire/Geo/Parser.h"
@@ -21,14 +21,15 @@ void ParserFactory::registerParser(const std::string &name, createFunc create) {
 }
 
 Parser *ParserFactory::createParser(const std::string &name,
-                                    framework::config::Parameters &parameters,
+                                    fire::config::Parameters &params,
                                     g4fire::ConditionsInterface &ci) {
   auto it{parser_map.find(name)};
-  //if (it == parser_map.end())
-  //EXCEPTION_RAISE("ParserNotFound", "The parser " + name + " was not found.");
+  if (it == parser_map.end())
+    throw fire::Exception("ParserNotFound",
+                          "The parser " + name + " was not found.", false);
 
-  return it->second(parameters, ci);
+  return it->second(params, ci);
 }
 
-}  // namespace geo
-}  // namespace g4fire
+} // namespace geo
+} // namespace g4fire

@@ -1,22 +1,12 @@
-/**
- * @file LHEPrimaryGenerator.h
- * @brief Class for generating a Geant4 event from LHE event data
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Tom Eichlersmith, University of Minnesota
- */
 
-#ifndef SIMCORE_LHEPRIMARYGENERATOR_H
-#define SIMCORE_LHEPRIMARYGENERATOR_H
-
-// LDMX
 #include "g4fire/LHEReader.h"
 #include "g4fire/PrimaryGenerator.h"
+
+#include "fire/config/Parameters.h" 
 
 class G4Event;
 
 namespace g4fire {
-
-class Parameters;
 
 /**
  * @class LHEPrimaryGenerator
@@ -29,7 +19,7 @@ class LHEPrimaryGenerator : public PrimaryGenerator {
    * @param reader The LHE reader with the event data.
    */
   LHEPrimaryGenerator(const std::string& name,
-                      framework::config::Parameters& parameters);
+                      fire::config::Parameters& params);
 
   /**
    * Class destructor.
@@ -50,5 +40,3 @@ class LHEPrimaryGenerator : public PrimaryGenerator {
 };
 
 }  // namespace g4fire
-
-#endif  // SIMCORE_LHEPRIMARYGENERATOR_H

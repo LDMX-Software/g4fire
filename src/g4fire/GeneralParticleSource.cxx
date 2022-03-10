@@ -1,37 +1,25 @@
-/**
- * @file GeneralParticleSource.cxx
- * @brief Extension of G4GeneralParticleSource.
- * @author Tom Eichlersmith, University of Minnesota
- */
-
 #include "g4fire/GeneralParticleSource.h"
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4Event.hh"
 #include "G4UImanager.hh"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
+#include "fire/exception/Exception.h"
 
 namespace g4fire {
 
 GeneralParticleSource::GeneralParticleSource(
-    const std::string& name, framework::config::Parameters& parameters)
-    : PrimaryGenerator(name, parameters) {
+    const std::string& name, fire::config::Parameters& params)
+    : PrimaryGenerator(name, params) {
   auto initCommands{
-      parameters_.getParameter<std::vector<std::string> >("initCommands")};
+      params_.get<std::vector<std::string> >("initCommands")};
 
   for (const auto& cmd : initCommands) {
     int g4Ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
     if (g4Ret > 0) {
-      EXCEPTION_RAISE("InitCmd",
+      throw fire::Exception("InitCmd",
                       "Initialization command '" + cmd +
                           "' returned a failue status from Geant4: " +
-                          std::to_string(g4Ret));
+                          std::to_string(g4Ret), false);
     }
   }
 }
@@ -40,7 +28,7 @@ GeneralParticleSource::~GeneralParticleSource() {}
 
 void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   // just pass to the Geant4 implementation
-  theG4Source_.GeneratePrimaryVertex(event);
+  g4_source_.GeneratePrimaryVertex(event);
 
   return;
 }

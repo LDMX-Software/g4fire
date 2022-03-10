@@ -24,10 +24,10 @@ class GDMLParser : public Parser {
   /**
    * Default constructor.
    *
-   * @param parameters The parameters used to configure this parser.
+   * @param params The parameters used to configure this parser.
    * @param ci Interface that allows access to the conditions.
    */
-  GDMLParser(framework::config::Parameters &parameters,
+  GDMLParser(fire::config::Parameters &params,
              g4fire::ConditionsInterface &ci);
 
   /// Default destructor
@@ -59,9 +59,9 @@ class GDMLParser : public Parser {
   /**
    * Create an instance of this parser.
    */
-  static Parser *create(framework::config::Parameters &parameters,
+  static Parser *create(fire::config::Parameters &params,
                         g4fire::ConditionsInterface &ci) {
-    return new GDMLParser(parameters, ci);
+    return new GDMLParser(params, ci);
   }
 
  private:
@@ -72,7 +72,7 @@ class GDMLParser : public Parser {
   std::unique_ptr<g4fire::geo::AuxInfoReader> info_;
 
   /// The parameters used to configure this parser
-  framework::config::Parameters parameters_;
+  fire::config::Parameters params_;
 
   /// The name of the parsed detector
   std::string detector_name_{""};

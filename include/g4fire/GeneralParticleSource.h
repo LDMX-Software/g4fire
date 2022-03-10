@@ -1,32 +1,16 @@
-/**
- * @file GeneralParticleSource.h
- * @brief Extension of G4GeneralParticleSource.
- * @author Tom Eichlersmith, University of Minnesota
- */
+#pragma once
 
-#ifndef SIMCORE_GENERALPARTICLESOURCE_H
-#define SIMCORE_GENERALPARTICLESOURCE_H
-
-//------------//
-//   Geant4   //
-//------------//
 #include "G4GeneralParticleSource.hh"
 
-//------------//
-//   LDMX     //
-//------------//
 #include "g4fire/PrimaryGenerator.h"
 
-// Forward declarations
+#include "fire/config/Parameters.h" 
+
 class G4Event;
 
 namespace g4fire {
 
-// Forward declarations
-class Parameters;
-
 /**
- * @class GeneralParticleSource
  * @brief Class that extends the functionality of G4GeneralParticleSource.
  */
 class GeneralParticleSource : public PrimaryGenerator {
@@ -34,13 +18,13 @@ class GeneralParticleSource : public PrimaryGenerator {
   /**
    * Constructor.
    *
-   * @param parameters Parameters used to configure the particle gun.
+   * @param params Parameters used to configure the particle gun.
    *
    * Parameters:
    *  initCommands : vector of Geant4 strings to initialize the GPS
    */
   GeneralParticleSource(const std::string& name,
-                        framework::config::Parameters& parameters);
+                        fire::config::Parameters& params);
 
   /// Destructor
   ~GeneralParticleSource();
@@ -59,10 +43,8 @@ class GeneralParticleSource : public PrimaryGenerator {
    * The creation of this class creates a new messenger that we can pass
    * commands to.
    */
-  G4GeneralParticleSource theG4Source_;
+  G4GeneralParticleSource g4_source_;
 
 };  // GeneralParticleSource
 
 }  // namespace g4fire
-
-#endif  // SIMCORE_GENERALPARTICLESOURCE_H

@@ -1,6 +1,5 @@
 #include "g4fire/LHEReader.h"
 
-// STL
 #include <iostream>
 
 namespace g4fire {

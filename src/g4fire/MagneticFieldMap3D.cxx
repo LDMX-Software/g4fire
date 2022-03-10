@@ -1,13 +1,12 @@
 #include "g4fire/MagneticFieldMap3D.h"
-#include "Framework/Exception/Exception.h"
 
-// STL
+#include "fire/exception/Exception.h"
+
 #include <cmath>
 #include <fstream>
 #include <iostream>
 #include <string>
 
-// Geant4
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
 
@@ -15,23 +14,18 @@ using namespace std;
 
 namespace g4fire {
 
-MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
+MagneticFieldMap3D::MagneticFieldMap3D(const char *filename, double xOffset,
                                        double yOffset, double zOffset)
-    : nx_(0),
-      ny_(0),
-      nz_(0),
-      xOffset_(xOffset),
-      yOffset_(yOffset),
-      zOffset_(zOffset),
-      invertX_(false),
-      invertY_(false),
-      invertZ_(false) {
-  ifstream file(filename);  // Open the file for reading.
+    : nx_(0), ny_(0), nz_(0), xOffset_(xOffset), yOffset_(yOffset),
+      zOffset_(zOffset), invertX_(false), invertY_(false), invertZ_(false) {
+  ifstream file(filename); // Open the file for reading.
 
   // Throw an error if file does not exist.
   if (!file.good()) {
-    EXCEPTION_RAISE("FileDNE", "The field map file '" + std::string(filename) +
-                                   "' does not exist!");
+    throw fire::Exception("FileDNE",
+                          "The field map file '" + std::string(filename) +
+                              "' does not exist!",
+                          false);
   }
 
   G4cout << "-----------------------------------------------------------"
@@ -49,7 +43,7 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
   file.getline(buffer, 256);
 
   // Read table dimensions
-  file >> nx_ >> ny_ >> nz_;  // Note dodgy order
+  file >> nx_ >> ny_ >> nz_; // Note dodgy order
 
   G4cout << "  Number of values: " << nx_ << " " << ny_ << " " << nz_ << G4endl;
 
@@ -142,7 +136,7 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
 }
 
 void MagneticFieldMap3D::GetFieldValue(const double point[4],
-                                       double* bfield) const {
+                                       double *bfield) const {
   double x = point[0] - xOffset_;
   double y = point[1] - yOffset_;
   double z = point[2] - zOffset_;
@@ -257,4 +251,4 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4],
   }
 }
 
-}  // namespace g4fire
+} // namespace g4fire

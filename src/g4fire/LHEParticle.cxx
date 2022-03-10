@@ -1,13 +1,12 @@
 #include "g4fire/LHEParticle.h"
-#include "Framework/Exception/Exception.h"
 
-// STL
+#include "fire/exception/Exception.h" 
+
 #include <stdlib.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
 
-// Geant4
 #include "globals.hh"
 
 namespace g4fire {
@@ -24,8 +23,8 @@ LHEParticle::LHEParticle(std::string& line) {
   } while (iss);
 
   if (tokens.size() != 13) {
-    EXCEPTION_RAISE("TokenNum",
-                    "Wrong number of tokens in LHE particle record.");
+    throw fire::Exception("TokenNum",
+                    "Wrong number of tokens in LHE particle record.", false);
   }
 
   idup_ = atof(tokens[0].c_str());

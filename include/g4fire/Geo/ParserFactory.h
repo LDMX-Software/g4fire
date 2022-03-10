@@ -25,7 +25,7 @@ class ParserFactory {
    * @param[in] ci Interface to conditions system.
    */
   Parser *createParser(const std::string &name,
-                       framework::config::Parameters &parameters,
+                       fire::config::Parameters &params,
                        g4fire::ConditionsInterface &ci);
 
   // Delete the following methods to make sure they are inaccesible.
@@ -50,7 +50,7 @@ class ParserFactory {
   // Mapping between a parser type and its create function
   std::map<std::string, createFunc> parser_map;
 };
-}  // namespace geo
-}  // namespace g4fire
+} // namespace geo
+} // namespace g4fire
 
-#endif  // G4FIRE_GEO_PARSERFACTORY_H_
+#endif // G4FIRE_GEO_PARSERFACTORY_H_

@@ -1,5 +1,4 @@
-#ifndef G4FIRE_GEO_GEOPARSER_H_
-#define G4FIRE_GEO_GEOPARSER_H_
+#pragma once
 
 #include <functional>
 
@@ -43,13 +42,10 @@ class Parser {
    */
   virtual void read() = 0;
 
-};  // Parser
+}; // Parser
 
-using createFunc =
-    std::function<Parser *(framework::config::Parameters &parameters,
-                           g4fire::ConditionsInterface &ci)>;
+using createFunc = std::function<Parser *(fire::config::Parameters &parameters,
+                                          g4fire::ConditionsInterface &ci)>;
 
-}  // namespace geo
-}  // namespace g4fire
-
-#endif  // G4FIRE_GEO_GEOPARSER_H_
+} // namespace geo
+} // namespace g4fire

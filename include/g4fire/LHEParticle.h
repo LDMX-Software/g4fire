@@ -1,20 +1,11 @@
-/**
- * @file LHEParticle.h
- * @brief Class defining a single particle record in an LHE event
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#pragma once 
 
-#ifndef SIMCORE_LHEPARTICLE_H_
-#define SIMCORE_LHEPARTICLE_H_
-
-// STL
 #include <string>
 #include <vector>
 
 namespace g4fire {
 
 /**
- * @class LHEParticle
  * @brief Single particle record in an LHE event
  */
 class LHEParticle {
@@ -138,5 +129,3 @@ class LHEParticle {
 };
 
 }  // namespace g4fire
-
-#endif
