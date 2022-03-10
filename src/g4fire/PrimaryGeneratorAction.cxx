@@ -7,6 +7,8 @@
 #include "g4fire/UserEventInformation.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 
+#include "fire/exception/Exception.h" 
+
 namespace g4fire {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(
@@ -32,8 +34,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
       params_.get<std::vector<fire::config::Parameters> >(
           "generators", {})};
   if (generators.empty()) {
-    EXCEPTION_RAISE("MissingGenerator",
-                    "Need to define some generator of primaries.");
+    throw fire::Exception("MissingGenerator",
+                    "Need to define some generator of primaries.", false);
   }
 
   for (auto& generator : generators) {
@@ -50,10 +52,10 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
    */
   // Make sure we aren't overwriting a different information container
   if (event->GetUserInformation()) {
-    EXCEPTION_RAISE(
+    throw fire::Exception(
         "Misconfig",
         "There was a UserEventInformation attached before beginning event."
-        "\nI don't know how this happend!!");
+        "\nI don't know how this happend!!", false);
   }
 
   // Make our information container and give it to geant4
@@ -130,9 +132,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
 
     }  // iPV - loop over primary vertices
   } else {
-    EXCEPTION_RAISE(
+    throw fire::Exception(
         "NoPrimaries",
-        "No primary vertices were produced by any of the generators.");
+        "No primary vertices were produced by any of the generators.", false);
   }
 }
 }  // namespace g4fire
