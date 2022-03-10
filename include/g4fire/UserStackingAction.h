@@ -15,10 +15,10 @@ namespace g4fire {
 class UserStackingAction : public G4UserStackingAction {
  public:
   /// Constructor
-  UserStackingAction();
+  UserStackingAction() = default;
 
   /// Destructor
-  virtual ~UserStackingAction() final override;
+  virtual ~UserStackingAction() = default;
 
   /**
    * Classify a new track.
