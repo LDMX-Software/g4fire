@@ -40,14 +40,17 @@ AuxInfoReader::AuxInfoReader(G4GDMLParser *parser, fire::config::Parameters ps,
 //}
 
 void AuxInfoReader::readGlobalAuxInfo() {
-  const G4GDMLAuxListType *aux_info_list = parser_->GetAuxList();
+  auto aux_info_list{parser_->GetAuxList()};
+  std::cout << "Got aux list." << std::endl;
   for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
            aux_info_list->begin();
        iaux != aux_info_list->end(); iaux++) {
     G4String aux_type = iaux->type;
     G4String aux_val = iaux->value;
     G4String aux_unit = iaux->unit;
-
+    std::cout << "aux type: " << aux_type << std::endl;
+    std::cout << "aux val: " << aux_val << std::endl;
+    std::cout << "aux unit: " << aux_unit << std::endl;
     if (aux_type == "SensDet") {
       createSensitiveDetector(aux_val, iaux->auxList);
     } else if (aux_type == "MagneticField") {
@@ -56,9 +59,9 @@ void AuxInfoReader::readGlobalAuxInfo() {
       createRegion(aux_val, iaux->auxList);
     } else if (aux_type == "VisAttributes") {
       createVisAttributes(aux_val, iaux->auxList);
-    } else if (aux_type == "DetectorVersion") {
+    } /*else if (aux_type == "DetectorVersion") {
       createDetectorHeader(aux_val, iaux->auxList);
-    }
+    }*/
   }
   return;
 }

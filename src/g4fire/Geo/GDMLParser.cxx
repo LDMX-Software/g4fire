@@ -20,7 +20,7 @@ void GDMLParser::read() {
                 params_.get<bool>("validate_detector", false));
   info_->readGlobalAuxInfo();
   info_->assignAuxInfoToVolumes();
-  // detector_name_ = info_->getDetectorHeader()->getName();
+  //detector_name_ = info_->getDetectorHeader()->getName();
 }
 
 } // namespace geo

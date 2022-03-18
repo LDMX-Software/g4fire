@@ -2,13 +2,13 @@
 
 #include "fire/Process.h"
 #include "fire/RandomNumberSeedService.h"
-#include "fire/version/Version.h" 
+#include "fire/exception/Exception.h"
+#include "fire/version/Version.h"
 
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/DetectorConstruction.h"
 #include "g4fire/G4Session.h"
 #include "g4fire/Geo/ParserFactory.h"
-//#include "g4fire/Persist/RootPersistencyManager.h"
 #include "g4fire/PluginFactory.h"
 #include "g4fire/RunManager.h"
 
@@ -24,41 +24,45 @@
 namespace g4fire {
 
 const std::vector<std::string> Simulator::invalid_cmds = {
-    "/run/initialize",        // hard coded at the right time
-    "/run/beamOn",            // passed commands should only be sim setup
-    "/random/setSeeds",       // handled by own config parameter (if passed)
-    "ldmx",                   // all ldmx messengers have been removed
-    "/persistency/gdml/read"  // detector description is read after passed a
-                              // path to the detector description (required)
+    "/run/initialize",       // hard coded at the right time
+    "/run/beamOn",           // passed commands should only be sim setup
+    "/random/setSeeds",      // handled by own config parameter (if passed)
+    "ldmx",                  // all ldmx messengers have been removed
+    "/persistency/gdml/read" // detector description is read after passed a
+                             // path to the detector description (required)
 };
 
-Simulator::Simulator(const fire::config::Parameters& params)
-      : fire::Processor(params), conditions_intf_(this) {
-  // The UI manager pointer is handled by Geant4 
+Simulator::Simulator(const fire::config::Parameters &params)
+    : fire::Processor(params), conditions_intf_(this) {
+  // The UI manager pointer is handled by Geant4
   ui_manager_ = G4UImanager::GetUIpointer();
+
+  // Configure this processor
+  configure(params);
 }
 
+void Simulator::configure(const fire::config::Parameters &params) {
+  std::cout << "Configuring ..." << std::endl;
 
-void Simulator::configure(const fire::config::Parameters& params) {
   // parameters used to configure the simulation
   params_ = params;
 
   // Set the verbosity level.  The default level  is 0.
-  verbosity_ = params_.get<int>("verbosity");
+  verbosity_ = params_.get<int>("verbosity", 0);
 
   // If the verbosity level is set to 0,
   // If the verbosity level is > 1, log everything to a file. Otherwise,
   // dump the output. If a prefix has been specified, append it ot the
   // log message.
-  auto loggingPrefix = params_.get<std::string>("logging_prefix");
+  auto logging_prefix{params_.get<std::string>("logging_prefix", "g4fire_log")};
   if (verbosity_ == 0)
     session_handle_ = std::make_unique<BatchSession>();
   else if (verbosity_ > 1) {
-    if (loggingPrefix.empty())
+    if (logging_prefix.empty())
       session_handle_ = std::make_unique<LoggedSession>();
     else
       session_handle_ = std::make_unique<LoggedSession>(
-          loggingPrefix + "_G4cout.log", loggingPrefix + "_G4cerr.log");
+          logging_prefix + "_G4cout.log", logging_prefix + "_G4cerr.log");
   }
   if (session_handle_ != nullptr)
     ui_manager_->SetCoutDestination(session_handle_.get());
@@ -68,7 +72,7 @@ void Simulator::configure(const fire::config::Parameters& params) {
 
   // Instantiate the GDML parser
   auto parser{g4fire::geo::ParserFactory::getInstance().createParser(
-      "gdml", params, conditions_intf_)};
+      "gdml", params_, conditions_intf_)};
 
   // Instantiate the class so cascade params can be set.
   G4CascadeParameters::Instance();
@@ -76,7 +80,7 @@ void Simulator::configure(const fire::config::Parameters& params) {
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
   run_manager_->SetUserInitialization(
-      new DetectorConstruction(parser, params, conditions_intf_));
+      new DetectorConstruction(parser, params_, conditions_intf_));
 
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser->read();
@@ -84,24 +88,25 @@ void Simulator::configure(const fire::config::Parameters& params) {
 
   auto pre_init_cmds =
       params_.get<std::vector<std::string>>("pre_init_cmds", {});
-  for (const std::string& cmd : pre_init_cmds) {
+  for (const std::string &cmd : pre_init_cmds) {
     if (allowed(cmd)) {
       int g4ret = ui_manager_->ApplyCommand(cmd);
       if (g4ret > 0) {
-        //EXCEPTION_RAISE("PreInitCmd",
-        //                "Pre Initialization command '" + cmd +
-        //                    "' returned a failue status from Geant4: " +
-        //                    std::to_string(g4ret));
+        throw fire::Exception("PreInitCmd",
+                              "Pre Initialization command '" + cmd +
+                                  "' returned a failue status from Geant4: " +
+                                  std::to_string(g4ret),
+                              false);
       }
     } else {
-      //EXCEPTION_RAISE(
-      //    "PreInitCmd",
-      //    "Pre Initialization command '" + cmd +
-      //        "' is not allowed because another part of Simulator handles it.");
+      throw fire::Exception(
+          "PreInitCmd",
+          "Pre Initialization command '" + cmd +
+              "' is not allowed because another part of Simulator handles it.",
+          false);
     }
   }
 }
-
 
 /*void Simulator::onFileOpen(fire::EventFile& file) {
   // Initialize persistency manager and connect it to the current EventFile
@@ -111,139 +116,133 @@ void Simulator::configure(const fire::config::Parameters& params) {
   persistencyManager_->Initialize();
 }*/
 
-void Simulator::beforeNewRun(fire::RunHeader& header) {
+void Simulator::beforeNewRun(fire::RunHeader &header) {
   // Get the detector header from the user detector construction
-  DetectorConstruction* detector =
-      static_cast<RunManager*>(RunManager::GetRunManager())
+  DetectorConstruction *detector =
+      static_cast<RunManager *>(RunManager::GetRunManager())
           ->getDetectorConstruction();
 
   if (!detector)
-    //EXCEPTION_RAISE("SimSetup", "Detector not constructed before run start.");
+    throw fire::Exception("SimSetup",
+                          "Detector not constructed before run start.", false);
 
-  header.setDetectorName(detector->getDetectorName());
-  header.setDescription(params_.get<std::string>("description"));
+  // TODO(OM) LDMX specific things should be moved elsewhere.
+  header.set<std::string>("Detector Name", detector->getDetectorName());
+  header.set<std::string>("Description",
+                          params_.get<std::string>("description"));
 
-  header.setIntParameter("Save ECal Hit Contribs",
-                         params_.get<bool>("enableHitContribs"));
-  header.setIntParameter("Compress ECal Hit Contribs",
-                         params_.get<bool>("compressHitContribs"));
-  header.setIntParameter(
-      "Included Scoring Planes",
-      !params_.get<std::string>("scoringPlanes").empty());
-  header.setIntParameter(
-      "Use Random Seed from Event Header",
-      params_.get<bool>("rootPrimaryGenUseSeed"));
+  header.set<int>("Save calorimeter hit contribs",
+                  params_.get<bool>("enable_hit_contribs"));
+  header.set<int>("Compress calorimeter hit contribs",
+                  params_.get<bool>("compress_hit_contribs"));
+  header.set<int>("Included Scoring Planes",
+                  !params_.get<std::string>("scoring_planes").empty());
+  // header.set<int>("Use Random Seed from Event Header",
+  //                       params_.get<bool>("rootPrimaryGenUseSeed"));
 
   // lambda function for dumping 3-vectors into the run header
-  auto threeVectorDump = [&header](const std::string& name,
-                                   const std::vector<double>& vec) {
-    header.setFloatParameter(name + " X", vec.at(0));
-    header.setFloatParameter(name + " Y", vec.at(1));
-    header.setFloatParameter(name + " Z", vec.at(2));
+  auto threeVectorDump = [&header](const std::string &name,
+                                   const std::vector<double> &vec) {
+    header.set<float>(name + " X", vec.at(0));
+    header.set<float>(name + " Y", vec.at(1));
+    header.set<float>(name + " Z", vec.at(2));
   };
 
-  auto beam_spot_delta{
-      params_.get<std::vector<double>>("beam_spot_delta", {})};
+  auto beam_spot_delta{params_.get<std::vector<double>>("beam_spot_delta", {})};
   if (!beam_spot_delta.empty())
     threeVectorDump("Smear Beam Spot [mm]", beam_spot_delta);
 
   // lambda function for dumping vectors of strings to the run header
-  auto stringVectorDump = [&header](const std::string& name,
-                                    const std::vector<std::string>& vec) {
+  auto stringVectorDump = [&header](const std::string &name,
+                                    const std::vector<std::string> &vec) {
     int index = 0;
-    for (auto const& val : vec) {
-      header.setStringParameter(name + " " + std::to_string(++index), val);
+    for (auto const &val : vec) {
+      header.set<std::string>(name + " " + std::to_string(++index), val);
     }
   };
 
   stringVectorDump("Pre Init Command",
-                   params_.get<std::vector<std::string>>(
-                       "pre_init_cmds", {}));
+                   params_.get<std::vector<std::string>>("pre_init_cmds", {}));
   stringVectorDump("Post Init Command",
-                   params_.get<std::vector<std::string>>(
-                       "post_init_cmds", {}));
+                   params_.get<std::vector<std::string>>("post_init_cmds", {}));
 
   auto bops{PluginFactory::getInstance().getBiasingOperators()};
-  for (const XsecBiasingOperator* bop : bops) {
-    bop->RecordConfig(header);
+  for (const XsecBiasingOperator *bop : bops) {
+    // bop->RecordConfig(header);
   }
 
-  auto dark_brem{
-      params_.get<fire::config::Parameters>("dark_brem")};
+  /*auto dark_brem{params_.get<fire::config::Parameters>("dark_brem")};
   if (dark_brem.get<bool>("enable")) {
     // the dark brem process is enabled, find it and then record its
     // configuration
-    G4ProcessVector* electron_processes =
+    G4ProcessVector *electron_processes =
         G4Electron::Electron()->GetProcessManager()->GetProcessList();
     int n_electron_processes = electron_processes->size();
     for (int i_process = 0; i_process < n_electron_processes; i_process++) {
-      G4VProcess* process = (*electron_processes)[i_process];
+      G4VProcess *process = (*electron_processes)[i_process];
       if (process->GetProcessName().contains(
               darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
         // reset process to wrapped process if it is biased
-        if (dynamic_cast<G4BiasingProcessInterface*>(process))
-          process = dynamic_cast<G4BiasingProcessInterface*>(process)
+        if (dynamic_cast<G4BiasingProcessInterface *>(process))
+          process = dynamic_cast<G4BiasingProcessInterface *>(process)
                         ->GetWrappedProcess();
         // record the process configuration to the run header
-        dynamic_cast<darkbrem::G4eDarkBremsstrahlung*>(process)->RecordConfig(
+        dynamic_cast<darkbrem::G4eDarkBremsstrahlung *>(process)->RecordConfig(
             header);
         break;
-      }  // this process is the dark brem process
-    }    // loop through electron processes
-  }      // dark brem has been enabled
+      } // this process is the dark brem process
+    }   // loop through electron processes
+  } */    // dark brem has been enabled
 
   auto generators{
-      params_.get<std::vector<fire::config::Parameters>>(
-          "generators")};
+      params_.get<std::vector<fire::config::Parameters>>("generators")};
   int counter = 0;
-  for (auto const& gen : generators) {
+  for (auto const &gen : generators) {
     std::string genID = "Gen " + std::to_string(++counter);
     auto class_name{gen.get<std::string>("class_name")};
-    header.setStringParameter(genID + " Class", class_name);
+    header.set<std::string>(genID + " Class", class_name);
 
     if (class_name.find("g4fire::ParticleGun") != std::string::npos) {
-      header.setFloatParameter(genID + " Time [ns]",
-                               gen.get<double>("time"));
-      header.setFloatParameter(genID + " Energy [GeV]",
-                               gen.get<double>("energy"));
-      header.setStringParameter(genID + " Particle",
-                                gen.get<std::string>("particle"));
+      header.set<float>(genID + " Time [ns]", gen.get<double>("time"));
+      header.set<float>(genID + " Energy [GeV]", gen.get<double>("energy"));
+      header.set<std::string>(genID + " Particle",
+                              gen.get<std::string>("particle"));
       threeVectorDump(genID + " Position [mm]",
                       gen.get<std::vector<double>>("position"));
       threeVectorDump(genID + " Direction",
                       gen.get<std::vector<double>>("direction"));
     } else if (class_name.find("g4fire::MultiParticleGunPrimaryGenerator") !=
                std::string::npos) {
-      header.setIntParameter(genID + " Poisson Enabled",
-                             gen.get<bool>("enablePoisson"));
-      header.setIntParameter(genID + " N Particles",
-                             gen.get<int>("nParticles"));
-      header.setIntParameter(genID + " PDG ID", gen.get<int>("pdgID"));
+      header.set<int>(genID + " Poisson Enabled",
+                      gen.get<bool>("enablePoisson"));
+      header.set<int>(genID + " N Particles", gen.get<int>("nParticles"));
+      header.set<int>(genID + " PDG ID", gen.get<int>("pdgID"));
       threeVectorDump(genID + " Vertex [mm]",
                       gen.get<std::vector<double>>("vertex"));
       threeVectorDump(genID + " Momentum [MeV]",
                       gen.get<std::vector<double>>("momentum"));
     } else if (class_name.find("g4fire::LHEPrimaryGenerator") !=
                std::string::npos) {
-      header.setStringParameter(genID + " LHE File",
-                                gen.get<std::string>("filePath"));
-    } else if (class_name.find("g4fire::RootCompleteReSim") !=
-               std::string::npos) {
-      header.setStringParameter(genID + " ROOT File",
-                                gen.get<std::string>("filePath"));
-    } else if (class_name.find("g4fire::RootSimFromEcalSP") !=
-               std::string::npos) {
-      header.setStringParameter(genID + " ROOT File",
-                                gen.get<std::string>("filePath"));
-      header.setFloatParameter(genID + " Time Cutoff [ns]",
-                               gen.get<double>("time_cutoff"));
+      header.set<std::string>(genID + " LHE File",
+                              gen.get<std::string>("filePath"));
+      //}
+      // else if (class_name.find("g4fire::RootCompleteReSim") !=
+      //           std::string::npos) {
+      //  header.set<std::string>(genID + " ROOT File",
+      //                            gen.get<std::string>("filePath"));
+      //} else if (class_name.find("g4fire::RootSimFromEcalSP") !=
+      //           std::string::npos) {
+      //  header.set<std::string>(genID + " ROOT File",
+      //                            gen.get<std::string>("filePath"));
+      //  header.set<float>(genID + " Time Cutoff [ns]",
+      //                           gen.get<double>("time_cutoff"));
     } else if (class_name.find("g4fire::GeneralParticleSource") !=
                std::string::npos) {
-      stringVectorDump(
-          genID + " Init Cmd",
-          gen.get<std::vector<std::string>>("initCommands"));
+      stringVectorDump(genID + " Init Cmd",
+                       gen.get<std::vector<std::string>>("initCommands"));
     } else {
-      //ldmx_log(warn) << "Unrecognized primary generator '" << class_name << "'. "
+      // ldmx_log(warn) << "Unrecognized primary generator '" << class_name <<
+      //"'. "
       //               << "Will not be saving details to RunHeader.";
     }
   }
@@ -252,33 +251,34 @@ void Simulator::beforeNewRun(fire::RunHeader& header) {
   if (G4RunManagerKernel::GetRunManagerKernel()) {
     G4String g4_version{
         G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
-    header.setStringParameter("Geant4 revision", g4_version);
+    header.set<std::string>("Geant4 revision", g4_version);
   } else {
-    //ldmx_log(warn) << "Unable to access G4 RunManager Kernel. Will not store "
+    // ldmx_log(warn) << "Unable to access G4 RunManager Kernel. Will not store
+    // "
     //                  "G4 Version string.";
   }
 
-  header.setStringParameter("ldmx-sw revision", GIT_SHA1);
+  // header.set<std::string>("ldmx-sw revision", GIT_SHA1);
 }
 
-void Simulator::onNewRun(const fire::RunHeader&) {
-  const fire::RandomNumberSeedService& rseed =
-      getCondition<fire::RandomNumberSeedService>(
-          fire::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+void Simulator::onNewRun(const fire::RunHeader &) {
+  auto rseed{getCondition<fire::RandomNumberSeedService>(
+      fire::RandomNumberSeedService::CONDITIONS_OBJECT_NAME)};
   std::vector<int> seeds;
   seeds.push_back(rseed.getSeed("Simulator[0]"));
   seeds.push_back(rseed.getSeed("Simulator[1]"));
   setSeeds(seeds);
 }
 
-void Simulator::process(fire::Event& event) {
+void Simulator::process(fire::Event &event) {
+  std::cout << "Processing." << std::endl;
   // Pass the current LDMX event object to the persistency manager.  This
   // is needed by the persistency manager to fill the current event.
-  //persistencyManager_->setCurrentEvent(&event);
+  // persistencyManager_->setCurrentEvent(&event);
 
   // Generate and process a Geant4 event.
   n_events_began_++;
-  run_manager_->ProcessOneEvent(event.getEventHeader().getEventNumber());
+  run_manager_->ProcessOneEvent(event.header().number());
 
   // If a Geant4 event has been aborted, skip the rest of the processing
   // sequence. This will immediately force the simulation to move on to
@@ -288,44 +288,48 @@ void Simulator::process(fire::Event& event) {
     this->abortEvent();                // get out of processors loop
   }
 
-  if (this->getLogFrequency() > 0 and
+  /*if (this->getLogFrequency() > 0 and
       event.getEventHeader().getEventNumber() % this->getLogFrequency() == 0) {
     // print according to log frequency and verbosity
     if (verbosity_ > 1) {
       std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
       event.Print();
     }
-  }
+  }*/
 
   // Terminate the event.  This checks if an event is to be stored or
   // stacked for later.
   n_events_completed_++;
   run_manager_->TerminateOneEvent();
 
-  return;
+  return; 
 }
 
 void Simulator::onProcessStart() {
+  std::cout << "on process start" << std::endl;
+
   // initialize run
   run_manager_->Initialize();
 
   // Get the extra simulation configuring commands
-  auto post_init_cmds = params_.get<std::vector<std::string>>(
-      "post_init_cmds", {});
-  for (const std::string& cmd : post_init_cmds) {
+  auto post_init_cmds{
+      params_.get<std::vector<std::string>>("post_init_cmds", {})};
+  for (const std::string &cmd : post_init_cmds) {
     if (allowed(cmd)) {
-      int g4ret = ui_manager_->ApplyCommand(cmd);
+      int g4ret{ui_manager_->ApplyCommand(cmd)};
       if (g4ret > 0) {
-        //EXCEPTION_RAISE("PostInitCmd",
-        //                "Post Initialization command '" + cmd +
-        //                    "' returned a failue status from Geant4: " +
-        //                    std::to_string(g4ret));
+        throw fire::Exception("PostInitCmd",
+                              "Post Initialization command '" + cmd +
+                                  "' returned a failue status from Geant4: " +
+                                  std::to_string(g4ret),
+                              false);
       }
     } else {
-      //EXCEPTION_RAISE(
-      //    "PostInitCmd",
-      //    "Post Initialization command '" + cmd +
-      //        "' is not allowed because another part of Simulator handles it.");
+      throw fire::Exception(
+          "PostInitCmd",
+          "Post Initialization command '" + cmd +
+              "' is not allowed because another part of Simulator handles it.",
+          false);
     }
   }
 
@@ -386,8 +390,8 @@ void Simulator::onProcessEnd() {
   session_handle_.reset(nullptr);
 }
 
-bool Simulator::allowed(const std::string& command) const {
-  for (const std::string& invalid_substring : invalid_cmds) {
+bool Simulator::allowed(const std::string &command) const {
+  for (const std::string &invalid_substring : invalid_cmds) {
     if (command.find(invalid_substring) != std::string::npos) {
       // found invalid substring in this command ==> NOT ALLOWED
       return false;
@@ -399,13 +403,14 @@ bool Simulator::allowed(const std::string& command) const {
 
 void Simulator::setSeeds(std::vector<int> seeds) {
   // If no seeds have been specified then return immediately.
-  if (seeds.empty()) return;
+  if (seeds.empty())
+    return;
 
   // If seeds are specified, make sure that the container has at least
   // two seeds.  If not, throw an exception.
   if (seeds.size() == 1) {
-    //EXCEPTION_RAISE("ConfigurationException",
-    //                "At least two seeds need to be specified.");
+    throw fire::Exception("ConfigurationException",
+                          "At least two seeds need to be specified.", false);
   }
 
   // Create the array of seeds and pass them to G4Random.  Currently,
@@ -418,6 +423,6 @@ void Simulator::setSeeds(std::vector<int> seeds) {
   // Pass the array of seeds to the random engine.
   G4Random::setTheSeeds(&seed_vec[0]);
 }
-}  // namespace g4fire
+} // namespace g4fire
 
 DECLARE_PROCESSOR(g4fire::Simulator)

@@ -1,5 +1,4 @@
-#ifndef G4FIRE_RUNMANAGER_H
-#define G4FIRE_RUNMANAGER_H
+#pragma once
 
 #include <any>
 #include <map>
@@ -90,5 +89,3 @@ class RunManager : public G4RunManager {
 
 }; // RunManager
 }  // namespace g4fire
-
-#endif  // G4FIRE_RUNMANAGER_H

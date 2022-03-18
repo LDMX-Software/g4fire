@@ -18,10 +18,8 @@
 #include "g4fire/UserRunAction.h"
 #include "g4fire/UserStackingAction.h"
 #include "g4fire/UserTrackingAction.h"
-/*
 #include "g4fire/PrimaryGeneratorAction.h"
 #include "g4fire/UserEventAction.h"
-*/
 
 namespace g4fire {
 
@@ -40,40 +38,41 @@ RunManager::RunManager(const fire::config::Parameters &params,
 
 void RunManager::setupPhysics() {
 
+  std::cout << "setting up physics." << std::endl;
   auto physics_list{physics_list_factory_.GetReferencePhysList("FTFP_BERT")};
   physics_list->RegisterPhysics(new GammaPhysics);
-  physics_list->RegisterPhysics(new darkbrem::APrimePhysics(
-      params.get<fire::config::Parameters>("dark_brem")));
+  /*physics_list->RegisterPhysics(new darkbrem::APrimePhysics(
+      params_.get<fire::config::Parameters>("dark_brem")));*/
 
-  parallel_world_path_ = params.get<std::string>("scoringPlanes");
+  parallel_world_path_ = params_.get<std::string>("parallel_world", {});
   pw_enabled_ = !parallel_world_path_.empty();
   if (pw_enabled_) {
+    // TODO(OM) Use logger instead.
     std::cout
         << "[ RunManager ]: Parallel worlds physics list has been registered."
         << std::endl;
     physics_list->RegisterPhysics(
-        new G4ParallelWorldPhysics("ldmxParallelWorld"));
+        new G4ParallelWorldPhysics("parallel_world"));
   }
 
-  auto biasing_operators{params.get<std::vector<fire::config::Parameters>>(
+  auto biasing_operators{params_.get<std::vector<fire::config::Parameters>>(
       "biasing_operators", {})};
   if (!biasing_operators.empty()) {
     std::cout << "[ RunManager ]: Biasing enabled with "
               << biasing_operators.size() << " operator(s)." << std::endl;
 
-    // create all the biasing operators that will be used
+    // Create all the biasing operators that will be used.
     for (fire::config::Parameters &bop : biasing_operators) {
       g4fire::PluginFactory::getInstance().createBiasingOperator(
           bop.get<std::string>("class_name"),
           bop.get<std::string>("instance_name"), bop);
     }
 
-    // Instantiate the constructor used when biasing
-    G4GenericBiasingPhysics *biasing_physics = new G4GenericBiasingPhysics();
+    auto biasing_physics{new G4GenericBiasingPhysics()};
 
-    // specify which particles are going to be biased
-    //  this will put a biasing interface wrapper around *all* processes
-    //  associated with these particles
+    // Specify which particles are going to be biased. This will put a biasing
+    // interface wrapper around *all* processes associated with these
+    // particles.
     for (const g4fire::XsecBiasingOperator *bop :
          g4fire::PluginFactory::getInstance().getBiasingOperators()) {
       std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
@@ -88,29 +87,31 @@ void RunManager::setupPhysics() {
 }
 
 void RunManager::Initialize() {
+  std::cout << "Initializing run ..." << std::endl;
   setupPhysics();
 
   // The parallel world needs to be registered before the mass world is
   // constructed i.e. before G4RunManager::Initialize() is called.
-  (pw_enabled_) {
+  if (pw_enabled_) {
     std::cout << "[ RunManager ]: Parallel worlds have been enabled."
               << std::endl;
 
-    auto validate_geometry_{params.get<bool>("validate_detector")};
-    G4GDMLParser *pw_parser = new G4GDMLParser();
+    auto validate_geometry_{params_.get<bool>("validate_detector")};
+    auto pw_parser{new G4GDMLParser()};
     pw_parser->Read(parallel_world_path_, validate_geometry_);
     this->getDetectorConstruction()->RegisterParallelWorld(
-        new ParallelWorld(pw_parser, "ldmxParallelWorld", conditions_intf_));
+        new ParallelWorld(pw_parser, "parallel_world", conditions_intf_));
   }
 
   // This is where the physics lists are told to construct their particles and
-  // their processes
-  //  They are constructed in order, so it is important to register the biasing
-  //  physics *after* any other processes that need to be able to be biased
+  // their processes. They are constructed in order, so it is important to 
+  // register the biasing physics *after* any other processes that need to be
+  // able to be biased
   G4RunManager::Initialize();
+  std::cout << "done initializing." << std::endl;
 
   // Instantiate the primary generator action
-  auto primaryGeneratorAction{new PrimaryGeneratorAction(params)};
+  auto primaryGeneratorAction{new PrimaryGeneratorAction(params_)};
   SetUserAction(primaryGeneratorAction);
 
   // Get instances of all G4 actions
@@ -119,7 +120,7 @@ void RunManager::Initialize() {
 
   // Create all user actions
   auto userActions{
-      params.get<std::vector<g4fire::config::Parameters>>("actions", {})};
+      params_.get<std::vector<fire::config::Parameters>>("actions", {})};
   for (auto &userAction : userActions) {
     PluginFactory::getInstance().createAction(
         userAction.get<std::string>("class_name"),
@@ -148,7 +149,7 @@ void RunManager::TerminateOneEvent() {
   // while the table is silenced. If the table isn't silenced,
   // the process that isn't in the table will cause the table
   // to throw a "not found" warning.
-  std::vector<G4String> dark_brem_processes = {
+  /*std::vector<G4String> dark_brem_processes = {
       darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME,
       "biasWrapper(" + darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME + ")"};
   ptable->SetVerboseLevel(
@@ -156,13 +157,13 @@ void RunManager::TerminateOneEvent() {
   for (auto const &name : dark_brem_processes)
     ptable->SetProcessActivation(name, true);
   ptable->SetVerboseLevel(verbosity);
-
+  -- Up-to-date: /home/omoreno/projects/ldmx/softwa
   if (this->GetVerboseLevel() > 1) {
     std::cout << "[ RunManager ] : "
               << "Reset the dark brem process (if it was activated)."
               << std::endl;
   }
-  ptable->SetVerboseLevel(verbosity);
+  ptable->SetVerboseLevel(verbosity); */
 }
 
 DetectorConstruction *RunManager::getDetectorConstruction() {

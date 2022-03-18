@@ -95,6 +95,10 @@ install(TARGETS g4fire
   INCLUDES DESTINATION include
 )
 
+install(DIRECTORY python/ DESTINATION python FILES_MATCHING 
+  PATTERN "*.py" 
+)
+
 # Unpack the example dark brem vertex library (or libraries)
 #file(GLOB vertex_libraries data/*.tar.gz)
 
@@ -135,5 +139,3 @@ install(TARGETS g4fire
   #install(TARGETS print-dark-brem-xsec-table 
   #        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
   #endif()
-
-  #setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
