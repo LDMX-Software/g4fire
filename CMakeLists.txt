@@ -45,6 +45,11 @@ set (dark_brem_sources
   ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/G4eDarkBremsstrahlung.cxx
 )
 
+set (event_sources
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/EventBuilder.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/SimParticle.cxx
+)
+
 set (geo_sources
   ${g4fire_SOURCE_DIR}/src/g4fire/Geo/AuxInfoReader.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/Geo/GDMLParser.cxx
@@ -83,11 +88,12 @@ set (sim_sources
 
 add_library(g4fire SHARED 
   ${dark_brem_sources}
-  ${sim_sources}
+  ${event_sources}
   ${geo_sources}
+  ${sim_sources}
 )
 target_link_libraries(g4fire PUBLIC 
-  Geant4::Interface fire::framework Eigen3::Eigen)
+  Geant4::Interface fire::io fire::framework Eigen3::Eigen)
 target_include_directories(g4fire PUBLIC ${g4fire_SOURCE_DIR}/include/)
 
 install(TARGETS g4fire 
