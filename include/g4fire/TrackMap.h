@@ -2,12 +2,11 @@
 
 #include <unordered_map>
 
-#include "G4Event.hh"
-#include "G4Track.hh"
-
-//#include "g4fire/Event/SimParticle.h"
-#include "g4fire/UserTrackInformation.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
+#include "g4fire/UserTrackInformation.h"
+#include "g4fire/event/SimParticle.h"
+
+class G4Track;
 
 namespace g4fire {
 
@@ -21,19 +20,21 @@ namespace g4fire {
  * parent and children faithfully recorded in the output file.
  */
 class TrackMap {
- public:
+public:
   /**
    * Add a record in the map for the input track.
    *
-   * @param track G4Track to insert
+   * @param track G4Track to insert.
    */
-  void insert(const G4Track* track);
+  void insert(const G4Track *track);
 
   /**
    * Check if the passed track has already been inserted
    * into the track map.
+   *
+   * @param track G4Track to check for.
    */
-  inline bool contains(const G4Track* track) const {
+  inline bool contains(const G4Track *track) const {
     return ancestry_.find(track->GetTrackID()) != ancestry_.end();
   }
 
@@ -49,15 +50,14 @@ class TrackMap {
   int findIncident(int track_id) const;
 
   /**
-   * Return true if the given track ID  is saved
-   * i.e. will be stored in output file
+   * Return true if the given track ID  will be persisted.
    *
    * @param track_id The track ID.
    * @return True if the track ID has been inserted in output particle map
    */
-  //inline bool isSaved(int track_id) const {
-  //  return particle_map_.find(track_id) != particle_map_.end();
-  //}
+  inline bool isSaved(int track_id) const {
+    return particle_map_.find(track_id) != particle_map_.end();
+  }
 
   /**
    * Add a track to be stored into output map
@@ -66,7 +66,7 @@ class TrackMap {
    * kinematics.
    * @param track G4Track to store into output
    */
-  void save(const G4Track* track);
+  void save(const G4Track *track);
 
   /**
    * Trace the ancestry for the particles that will be stored.
@@ -86,23 +86,23 @@ class TrackMap {
   void clear();
 
   /**
-   * Get the map of particles to be stored in output event.
+   * @return The map of particles to be persisted.
    */
-  //std::map<int,ldmx::SimParticle> &getParticleMap() {
-  //  return particle_map_;
-  //}
+  std::map<int, g4fire::event::SimParticle> &particleMap() {
+    return particle_map_;
+  }
 
- private:
+private:
   /**
    * Was the input track generated inside the calorimeter region?
    *
    * We rely on the fact that the calorimeter region is named
-   *  'CalorimeterRegion'
-   * and no other region names contain the string 'Calorimeter'
+   * 'CalorimeterRegion' and no other region names contain the string
+   * 'Calorimeter'.
    */
-  bool isInCalorimeterRegion(const G4Track* track) const;
+  bool isInCalorimeterRegion(const G4Track *track) const;
 
- private:
+private:
   /**
    * ancestry map of particles in event (child -> parent)
    *
@@ -121,12 +121,12 @@ class TrackMap {
    * @see isInCalorimeterRegion for how we check if a track
    * originated in the calorimeter region.
    */
-  std::unordered_map<int,std::pair<int,bool>> ancestry_;
+  std::unordered_map<int, std::pair<int, bool>> ancestry_;
 
   /// descendents map of particles in event (parent -> children)
-  std::unordered_map<int,std::vector<int>> descendents_;
+  std::unordered_map<int, std::vector<int>> descendents_;
 
   /// map of SimParticles that will be stored
-  //std::map<int,ldmx::SimParticle> particle_map_;
+  std::map<int, g4fire::event::SimParticle> particle_map_;
 };
-}  // namespace g4fire
+} // namespace g4fire

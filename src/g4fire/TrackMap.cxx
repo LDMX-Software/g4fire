@@ -2,6 +2,7 @@
 
 #include "G4Event.hh"
 #include "G4EventManager.hh"
+#include "G4Track.hh"
 
 namespace g4fire {
 
@@ -30,62 +31,64 @@ int TrackMap::findIncident(G4int track_id) const {
 }
 
 void TrackMap::save(const G4Track *track) {
-  // create sim particle in map, keep reference to the newly created particle
-  // ldmx::SimParticle& particle{particle_map_[track->GetTrackID()]};
+  auto &particle{particle_map_[track->GetTrackID()]};
 
   // TODO: default gen status?
-  // particle.setGenStatus(0);
+  particle.setGenStatus(0);
 
   // Update the gen status from the primary particle.
   if (track->GetDynamicParticle()->GetPrimaryParticle() != NULL) {
-    G4VUserPrimaryParticleInformation *primary_info{track->GetDynamicParticle()
-                                                        ->GetPrimaryParticle()
-                                                        ->GetUserInformation()};
+    auto primary_info{track->GetDynamicParticle()
+                          ->GetPrimaryParticle()
+                          ->GetUserInformation()};
+
     if (primary_info != NULL) {
-      //particle.setGenStatus(
-      //    ((UserPrimaryParticleInformation *)primary_info)->getHepEvtStatus());
+      particle.setGenStatus(
+          static_cast<UserPrimaryParticleInformation *>(primary_info)
+              ->getHepEvtStatus());
     }
   }
 
-  /*auto particle_def{track->GetDefinition()};
+  auto particle_def{track->GetDefinition()};
 
   particle.setPdgID(particle_def->GetPDGEncoding());
   particle.setCharge(particle_def->GetPDGCharge());
   particle.setMass(track->GetDynamicParticle()->GetMass());
   particle.setEnergy(track->GetVertexKineticEnergy() +
                      track->GetDynamicParticle()->GetMass());
-  */
   auto track_info{UserTrackInformation::get(track)};
-  //particle.setVertexVolume(track_info->getVertexVolume());
+  particle.setVertexVolume(track_info->getVertexVolume());
 
   auto vert{track->GetVertexPosition()};
-  //particle.setVertex(vert.x(), vert.y(), vert.z());
-  //particle.setTime(track_info->getVertexTime());
+  particle.setVertex(vert.x(), vert.y(), vert.z());
+  particle.setTime(track_info->getVertexTime());
 
   auto init_momentum{track_info->getInitialMomentum()};
-  //particle.setMomentum(init_momentum.x(), init_momentum.y(), init_momentum.z());
+  particle.setMomentum(init_momentum.x(), init_momentum.y(), init_momentum.z());
 
   const G4VProcess *process{track->GetCreatorProcess()};
   if (process) {
     const G4String &name{process->GetProcessName()};
-    //particle.setProcessType(ldmx::SimParticle::findProcessType(name));
+    particle.setProcessType(g4fire::event::SimParticle::findProcessType(name));
   } else {
-    //particle.setProcessType(ldmx::SimParticle::ProcessType::unknown);
+    particle.setProcessType(g4fire::event::SimParticle::ProcessType::unknown);
   }
 
   // track's current kinematics is its end point kinematics
   //  because we are assuming this track is being stopped/killed
 
   auto momentum{track->GetMomentum()};
-  //particle.setEndPointMomentum(momentum.x(), momentum.y(), momentum.z());
+  particle.setEndPointMomentum(momentum.x(), momentum.y(), momentum.z());
 
   auto end_pt{track->GetPosition()};
-  //particle.setEndPoint(end_pt.x(), end_pt.y(), end_pt.z());
+  particle.setEndPoint(end_pt.x(), end_pt.y(), end_pt.z());
+
+  auto particle_after{particle_map_[track->GetTrackID()]};
 }
 
 void TrackMap::traceAncestry() {
-  //for (auto &[id, particle] : particle_map_) {
-  //  particle.addParent(ancestry_.at(id).first);
+  for (auto &[id, particle] : particle_map_) {
+    particle.addParent(ancestry_.at(id).first);
 
     /**
      * Use [] instead of at() for descendents_
@@ -93,16 +96,16 @@ void TrackMap::traceAncestry() {
      * we will just silently create an empty
      * vector and move on.
      */
-  //  for (auto &child : descendents_[id]) {
-  //    particle.addDaughter(child);
-  //  }
-  //}
+    for (auto &child : descendents_[id]) {
+      particle.addDaughter(child);
+    }
+  }
 }
 
 void TrackMap::clear() {
   ancestry_.clear();
   descendents_.clear();
-  //particle_map_.clear();
+  particle_map_.clear();
 }
 
 bool TrackMap::isInCalorimeterRegion(const G4Track *track) const {
