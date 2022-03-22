@@ -1,19 +1,12 @@
-#ifndef SIMCORE_EVENT_SIMPARTICLE_H
-#define SIMCORE_EVENT_SIMPARTICLE_H
+#pragma one
 
-/*~~~~~~~~~~*/
-/*   ROOT   */
-/*~~~~~~~~~~*/
-#include "TObject.h"
-
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
 #include <map>
 #include <string>
 #include <vector>
 
-namespace ldmx {
+#include "fire/io/Data.h"
+
+namespace g4fire::event {
 
 /**
  * Class representing a simulated particle.
@@ -23,7 +16,8 @@ namespace ldmx {
 class SimParticle {
  public:
   /**
-   * Enum for interesting process types.
+   * Enum for interesting process types.  The names of these process
+   * types are mapped directly to their Geant4 counterpart.
    */
   enum ProcessType {
     unknown = 0,
@@ -45,16 +39,16 @@ class SimParticle {
   typedef std::map<std::string, ProcessType> ProcessTypeMap;
 
   /// Constructor
-  SimParticle();
+  SimParticle() = default;
 
   /// Destructor
-  ~SimParticle();
+  ~SimParticle() = default;
 
   /// Reset an instance of this class by clearing all of its data.
-  void Clear();
+  void clear();
 
   /// Print a string representation of this object.
-  void Print() const;
+  // void Print() const;
 
   /**
    * Get the energy of this particle [MeV].
@@ -68,7 +62,7 @@ class SimParticle {
    *
    * @return The PDG ID of this particle.
    */
-  int getPdgID() const { return pdgID_; }
+  int getPdgID() const { return pdg_id_; }
 
   /**
    * Get the generator status of this particle.  A non-zero status
@@ -77,7 +71,7 @@ class SimParticle {
    *
    * @return The generator status.
    */
-  int getGenStatus() const { return genStatus_; }
+  int getGenStatus() const { return gen_status_; }
 
   /**
    * Get the global time of this particle's creation [ns].
@@ -105,7 +99,7 @@ class SimParticle {
    *
    * @return The volume name in which this particle was created in.
    */
-  std::string getVertexVolume() const { return vertexVolume_; }
+  std::string getVertexVolume() const { return vertex_vol_; }
 
   /**
    * Get the endpoint of this particle where it was destroyed
@@ -113,7 +107,7 @@ class SimParticle {
    *
    * @return The endpoint of this particle
    */
-  std::vector<double> getEndPoint() const { return {endX_, endY_, endZ_}; }
+  std::vector<double> getEndPoint() const { return {endx_, endy_, endz_}; }
 
   /**
    * Get a vector containing the momentum of this particle [MeV].
@@ -158,28 +152,28 @@ class SimParticle {
    *
    * @param[in] energy the energy of this particle.
    */
-  void setEnergy(const double& energy) { energy_ = energy; }
+  void setEnergy(const double &energy) { energy_ = energy; }
 
   /**
    * Set the PDG ID of this particle.
    *
-   * @param[in] pdgID the PDG ID of the hit.
+   * @param[in] pdg_id the PDG ID of the hit.
    */
-  void setPdgID(const int& pdgID) { pdgID_ = pdgID; }
+  void setPdgID(const int &pdg_id) { pdg_id_ = pdg_id; }
 
   /**
    * Set the generator status of this particle.
    *
-   * @param[in] genStatus the generator status of the hit.
+   * @param[in] gen_status the generator status of the hit.
    */
-  void setGenStatus(const int& genStatus) { genStatus_ = genStatus; }
+  void setGenStatus(const int &gen_status) { gen_status_ = gen_status; }
 
   /**
    * Set the global time of this particle's creation [ns].
    *
    * @param[in] time The global time of this particle's creation.
    */
-  void setTime(const double& time) { time_ = time; }
+  void setTime(const double &time) { time_ = time; }
 
   /**
    * Set the vertex of this particle [mm].
@@ -188,7 +182,7 @@ class SimParticle {
    * @param[in] y The vertex y position.
    * @param[in] z The vertex z position.
    */
-  void setVertex(const double& x, const double& y, const double& z) {
+  void setVertex(const double &x, const double &y, const double &z) {
     x_ = x;
     y_ = y;
     z_ = z;
@@ -197,24 +191,24 @@ class SimParticle {
   /**
    * Set the name of the volume that this particle was created in.
    *
-   * @param[in] vertexVolume volume name that this particle was
+   * @param[in] vertex_vol volume name that this particle was
    *      created in.
    */
-  void setVertexVolume(const std::string& vertexVolume) {
-    vertexVolume_ = vertexVolume;
+  void setVertexVolume(const std::string &vertex_vol) {
+    vertex_vol_ = vertex_vol;
   }
 
   /**
    * Set the end point position of this particle [mm].
    *
-   * @param[in] endX The x position of the end point.
-   * @param[in] endY The y position of the end point.
-   * @param[in] endZ The z position of the end point.
+   * @param[in] endx The x position of the end point.
+   * @param[in] endy The y position of the end point.
+   * @param[in] endz The z position of the end point.
    */
-  void setEndPoint(const double& endX, const double& endY, const double& endZ) {
-    endX_ = endX;
-    endY_ = endY;
-    endZ_ = endZ;
+  void setEndPoint(const double &endx, const double &endy, const double &endz) {
+    endx_ = endx;
+    endy_ = endy;
+    endz_ = endz;
   }
 
   /**
@@ -224,7 +218,7 @@ class SimParticle {
    * @param[in] py The y momentum component.
    * @param[in] pz The z momentum component.
    */
-  void setMomentum(const double& px, const double& py, const double& pz) {
+  void setMomentum(const double &px, const double &py, const double &pz) {
     px_ = px;
     py_ = py;
     pz_ = pz;
@@ -235,14 +229,14 @@ class SimParticle {
    *
    * @param[in] mass The mass of this particle.
    */
-  void setMass(const double& mass) { mass_ = mass; }
+  void setMass(const double &mass) { mass_ = mass; }
 
   /**
    * Set the charge of this particle.
    *
    * @param[in] charge The charge of this particle.
    */
-  void setCharge(const double& charge) { charge_ = charge; }
+  void setCharge(const double &charge) { charge_ = charge; }
 
   /**
    * Add a reference to a daughter particle by its track ID.
@@ -252,7 +246,7 @@ class SimParticle {
    *
    * @param[in] daughterTrackID The daughter particle track ID.
    */
-  void addDaughter(const int& daughterTrackID) {
+  void addDaughter(const int &daughterTrackID) {
     daughters_.push_back(daughterTrackID);
   }
 
@@ -261,7 +255,7 @@ class SimParticle {
    *
    * @param[in] parentTrackID The track ID of the parent particle.
    */
-  void addParent(const int& parentTrackID) {
+  void addParent(const int &parentTrackID) {
     parents_.push_back(parentTrackID);
   }
 
@@ -270,14 +264,14 @@ class SimParticle {
    *
    * @return The creator process type of this particle.
    */
-  int getProcessType() const { return processType_; }
+  int getProcessType() const { return process_type_; }
 
   /**
    * Set the creator process type of this particle.
    *
-   * @param[in] processType the creator process type of this particle.
+   * @param[in] process_type the creator process type of this particle.
    */
-  void setProcessType(const int& processType) { processType_ = processType; }
+  void setProcessType(const int &process_type) { process_type_ = process_type; }
 
   /**
    * Set the momentum at this particle's end point.
@@ -286,8 +280,8 @@ class SimParticle {
    * @param[in] endpy The y component of the momentum.
    * @param[in] endpz The z component of the momentum.
    */
-  void setEndPointMomentum(const double& endpx, const double& endpy,
-                           const double& endpz) {
+  void setEndPointMomentum(const double &endpx, const double &endpy,
+                           const double &endpz) {
     endpx_ = endpx;
     endpy_ = endpy;
     endpz_ = endpz;
@@ -312,15 +306,14 @@ class SimParticle {
  private:
   static ProcessTypeMap createProcessTypeMap();
 
- private:
   /// The energy of this particle.
   double energy_{0};
 
   /// The PDG ID of this particle.
-  int pdgID_{0};
+  int pdg_id_{0};
 
   /// The generator status.
-  int genStatus_{-1};
+  int gen_status_{-1};
 
   /// The global creation time.
   double time_{0};
@@ -335,13 +328,13 @@ class SimParticle {
   double z_{0};
 
   /// The x component of the end point.
-  double endX_{0};
+  double endx_{0};
 
   /// The y component of the end point.
-  double endY_{0};
+  double endy_{0};
 
   /// The z component of the end point.
-  double endZ_{0};
+  double endz_{0};
 
   /// The x component of the momentum.
   double px_{0};
@@ -374,17 +367,16 @@ class SimParticle {
   std::vector<int> parents_;
 
   /// Encoding of Geant4 process type.
-  int processType_{-1};
+  int process_type_{-1};
 
   /// Volume the track was created in.
-  std::string vertexVolume_{""};
+  std::string vertex_vol_{""};
 
   /// Map containing the process types.
   static ProcessTypeMap PROCESS_MAP;
 
-  ClassDef(SimParticle, 7);
+  friend class fire::io::Data<SimParticle>;
+  void attach(fire::io::Data<SimParticle> &d);
 
-};  // SimParticle
-}  // namespace ldmx
-
-#endif  // SIMCORE_EVENT_SIMPARTICLE_H
+}; // SimParticle
+} // namespace g4fire::event
