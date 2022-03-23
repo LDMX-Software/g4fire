@@ -74,7 +74,7 @@ void SimParticle::attach(fire::io::Data<SimParticle>& d) {
   d.attach("endy", endy_);
   d.attach("endz", endz_);
   d.attach("px", px_);
-  d.attach("px", py_);
+  d.attach("py", py_);
   d.attach("pz", pz_);
   d.attach("endpx", endpx_);
   d.attach("endpy", endpy_);
