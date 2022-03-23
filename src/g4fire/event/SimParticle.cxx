@@ -5,7 +5,7 @@
 namespace g4fire::event {
 
 SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
-  
+
   ProcessTypeMap procMap;
   /// e Z --> e Z gamma
   procMap["eBrem"] = ProcessType::eBrem;
@@ -30,7 +30,6 @@ SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
   /// e- Z --> e- Z A'
   procMap["eDarkBrem"] = ProcessType::eDarkBrem;
   return procMap;
-
 }
 
 SimParticle::ProcessTypeMap SimParticle::PROCESS_MAP =
@@ -58,11 +57,11 @@ void SimParticle::clear() {
   endpz_ = 0;
   mass_ = 0;
   charge_ = 0;
-  //processType_ = ProcessType::unknown;
+  process_type_ = ProcessType::unknown;
   vertex_vol_ = "";
 }
 
-void SimParticle::attach(fire::io::Data<SimParticle>& d) { 
+void SimParticle::attach(fire::io::Data<SimParticle> &d) {
   d.attach("energy", energy_);
   d.attach("pdg_id", pdg_id_);
   d.attach("gen_status", gen_status_);
@@ -81,29 +80,36 @@ void SimParticle::attach(fire::io::Data<SimParticle>& d) {
   d.attach("endpz", endpz_);
   d.attach("mass", mass_);
   d.attach("charge", charge_);
-  //d.attach(processType_ = ProcessType::unknown;
+  d.attach("process_type", process_type_);
   d.attach("vertex_vol", vertex_vol_);
+  d.attach("daughters", daughters_);
+  d.attach("parents", parents_);
 }
 
-/*
-void SimParticle::Print() const {
-  std::cout << "SimParticle { "
-            << "energy: " << energy_ << ", "
-            << "PDG ID: " << pdg_id_ << ", "
-            << "gen_status: " << gen_status_ << ", "
-            << "time: " << time_ << ", "
-            << "vertex: ( " << x_ << ", " << y_ << ", " << z_ << " ), "
-            << "endPoint: ( " << endx_ << ", " << endy_ << ", " << endz_
-            << " ), "
-            << "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " ), "
-            << "endPointMomentum: ( " << endpx_ << ", " << endpy_ << ", "
-            << endpz_ << " ), "
-            << "mass: " << mass_ << ", "
-            << "nDaughters: " << daughters_.size() << ", "
-            << "nParents: " << parents_.size() << ", "
-            << "processType: " << processType_ << ", "
-            << "vertex volume: " << vertex_vol_ << " }" << std::endl;
-}*/
+std::ostream &operator<<(std::ostream &output, const SimParticle &particle) {
+  output << "---[ SimParticle ] { \n"
+         << "\tEnergy (MeV): " << particle.energy() << "\n"
+         << "\tPDG ID: " << particle.pdgID() << "\n"
+         << "\tGenerator Status: " << particle.genStatus() << "\n"
+         << "\tTime (ns): " << particle.time() << "\n"
+         << "\tVertex (mm): ( " << particle.vertex()[0] << ", "
+         << particle.vertex()[1] << ", " << particle.vertex()[2] << " )\n"
+         << "\tEndpoint (mm): ( " << particle.endPoint()[0] << ", "
+         << particle.endPoint()[1] << ", " << particle.endPoint()[2] << " )\n"
+         << "\tMomentum (MeV): ( " << particle.momentum()[0] << ", "
+         << particle.momentum()[1] << ", " << particle.momentum()[2] << " )\n"
+         << "\tEndpoint Momentum (MeV): ( " << particle.endPointMomentum()[0]
+         << ", " << particle.endPointMomentum()[1] << ", "
+         << particle.endPointMomentum()[2] << " )\n"
+         << "\tMass (MeV): " << particle.mass() << "\n"
+         << "\tDaughter count: " << particle.daughters().size() << "\n"
+         << "\tParent count: " << particle.parents().size() << "\n"
+         << "\tProcess type: " << particle.processType() << "\n"
+         << "\tVertex volume: " << particle.vertexVolume() << "\n}"
+         << std::endl;
+
+  return output;
+}
 
 SimParticle::ProcessType SimParticle::findProcessType(std::string processName) {
   if (processName.find("biasWrapper") != std::string::npos) {
