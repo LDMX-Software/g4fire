@@ -48,6 +48,8 @@ set (dark_brem_sources
 set (event_sources
   ${g4fire_SOURCE_DIR}/src/g4fire/event/EventBuilder.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/event/SimParticle.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/SimCalorimeterHit.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/SimTrackerHit.cxx
 )
 
 set (geo_sources
