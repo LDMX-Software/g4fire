@@ -82,8 +82,6 @@ void TrackMap::save(const G4Track *track) {
 
   auto end_pt{track->GetPosition()};
   particle.setEndPoint(end_pt.x(), end_pt.y(), end_pt.z());
-
-  auto particle_after{particle_map_[track->GetTrackID()]};
 }
 
 void TrackMap::traceAncestry() {
