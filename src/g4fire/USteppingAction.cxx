@@ -8,15 +8,18 @@ void USteppingAction::UserSteppingAction(const G4Step *step) {
 
   // get the track weights before this step and after this step
   //  ** these weights include the factors of all upstream step weights **
-  double track_weight_pre_step = step->GetPreStepPoint()->GetWeight();
-  double track_weight_post_step = step->GetPostStepPoint()->GetWeight();
+  auto track_weight_pre_step{step->GetPreStepPoint()->GetWeight()};
+  auto track_weight_post_step{step->GetPostStepPoint()->GetWeight()};
 
   //  so, to get _this_ step's weight, we divide post_weight by pre_weight
-  double weight_of_this_step_alone =
-      track_weight_post_step / track_weight_pre_step;
+  auto weight_of_this_step_alone{track_weight_post_step /
+                                 track_weight_pre_step};
 
   event_info->incWeight(weight_of_this_step_alone);
 
+  //
+  // TODO(OM) This should just move to it's own processor. 
+  //
   const std::vector<const G4Track *> *secondaries{
       step->GetSecondaryInCurrentStep()};
 
