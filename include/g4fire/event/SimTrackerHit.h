@@ -1,278 +1,235 @@
-/**
- * @file SimTrackerHit.h
- * @brief Class which encapsulates information from a hit in a simulated
- * tracking detector
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#pragma once
 
-#ifndef SIMCORE_EVENT_SIMTRACKERHIT_H_
-#define SIMCORE_EVENT_SIMTRACKERHIT_H_
+#include <vector>
 
-// ROOT
-#include "TObject.h"  //For ClassDef
+#include "fire/io/Data.h"
 
-// STL
-#include <iostream>
-
-namespace ldmx {
+namespace g4fire::event {
 
 /**
- * @class SimTrackerHit
  * @brief Represents a simulated tracker hit in the simulation
  */
 class SimTrackerHit {
- public:
-  /**
-   * Class constructor.
-   */
-  SimTrackerHit();
+public:
+  /// Constructor
+  SimTrackerHit() = default;
 
-  /**
-   * Class destructor.
-   */
-  virtual ~SimTrackerHit();
+  /// Destructor
+  ~SimTrackerHit() = default;
 
-  /**
-   * Print a description of this object.
-   */
-  void Print() const;
+  /// Reset an instance of this class by clearing all of its data.
+  void clear();
 
-  /**
-   * Reset the SimTrackerHit object.
-   */
-  void Clear();
+  /// @return The detector ID of the hit.
+  int id() const { return id_; };
 
-  /**
-   * Get the detector ID of the hit.
-   * @return The detector ID of the hit.
-   */
-  int getID() const { return id_; };
-
-  /**
-   * Get the geometric layer ID of the hit.
-   * @return The layer ID of the hit.
-   */
-  int getLayerID() const { return layerID_; };
+  /// @return The geometric layer ID of the hit.
+  short layerID() const { return layer_id_; };
 
   /**
    * Get the module ID associated with a hit.  This is used to
    * uniquely identify a sensor within a layer.
+   *
    * @return The module ID associated with a hit.
    */
-  int getModuleID() const { return moduleID_; };
+  short moduleID() const { return module_id_; };
 
   /**
-   * Get the XYZ position of the hit [mm].
-   * @return The position of the hit.
+   * Get the (x, y, z) position of the hit in mm.
+   *
+   * @return A vector representation of the x, y, z position of a hit.
    */
-  std::vector<float> getPosition() const { return {x_, y_, z_}; };
+  std::vector<float> position() const { return {x_, y_, z_}; };
 
-  /**
-   * Get the energy deposited on the hit [MeV].
-   * @return The energy deposited on the hit.
-   */
-  float getEdep() const { return edep_; };
+  /// @return The energy deposited on the hit in MeV.
+  float edep() const { return edep_; };
 
-  /**
-   * Get the energy
-   * @return The energy of the hit.
-   */
-  float getEnergy() const { return energy_; };
+  /// @return The energy of the hit in MeV.
+  float energy() const { return energy_; };
 
-  /**
-   * Get the global time of the hit [ns].
-   * @return The global time of the hit.
-   */
-  float getTime() const { return time_; };
+  /// @return The global time of the hit in ns.
+  float time() const { return time_; };
 
   /**
    * Get the path length between the start and end points of the
    * hit [mm].
+   *
    * @return The path length of the hit.
    */
-  float getPathLength() const { return pathLength_; };
+  float pathLength() const { return path_length_; };
 
   /**
-   * Get the XYZ momentum of the particle at the position at which
+   * Get the momentum of the particle at the position at which
    * the hit took place [MeV].
-   * @return The momentum of the particle.
+   *
+   * @return A vector representation of the momentum of the particle.
    */
-  std::vector<double> getMomentum() const { return {px_, py_, pz_}; };
+  std::vector<float> momentum() const { return {px_, py_, pz_}; };
 
-  /**
-   * Get the Sim particle track ID of the hit.
-   * @return The Sim particle track ID of the hit.
-   */
-  int getTrackID() const { return trackID_; };
+  /// @return The Geant4 track ID of the particle associated with this hit.
+  short trackID() const { return track_id_; };
 
-  /**
-   * Get the Sim particle track ID of the hit.
-   * @return The Sim particle track ID of the hit.
-   */
-  int getPdgID() const { return pdgID_; };
+  /// @return The PDG ID of the SimParticle associated with this hit.
+  int pdgID() const { return pdg_id_; };
 
   /**
    * Set the detector ID of the hit.
-   * @param id The detector ID of the hit.
+   *
+   * @param[in] id The detector ID of the hit.
    */
-  void setID(const long id) { this->id_ = id; };
+  void setID(const long id) { id_ = id; };
 
   /**
    * Set the geometric layer ID of the hit.
-   * @param layerID The layer ID of the hit.
+   *
+   * @param[in] layer_id The layer ID of the hit.
    */
-  void setLayerID(const int layerID) { this->layerID_ = layerID; };
+  void setLayerID(const int layer_id) { layer_id_ = layer_id; };
 
   /**
    * Set the module ID associated with a hit.  This is used to
    * uniquely identify a sensor within a layer.
-   * @return moduleID The module ID associated with a hit.
+   *
+   * @param[in] module_id The module ID associated with a hit.
    */
-  void setModuleID(const int moduleID) { this->moduleID_ = moduleID; };
+  void setModuleID(const int module_id) { module_id_ = module_id; };
 
   /**
-   * Set the position of the hit [mm].
-   * @param x The X position.
-   * @param y The Y position.
-   * @param z The Z position.
+   * Set the position of the hit in mm.
+   *
+   * @param[in] x The x position.
+   * @param[in] y The y position.
+   * @param[in] z The z position.
    */
-  void setPosition(const float x, const float y, const float z);
+  inline void setPosition(const float x, const float y, const float z) {
+    x_ = x;
+    y_ = y;
+    z_ = z;
+  }
 
   /**
-   * Set the energy deposited on the hit [MeV].
-   * @param edep The energy deposited on the hit.
+   * Set the energy deposited on the hit in MeV.
+   *
+   * @param[in] edep The energy deposited on the hit.
    */
-  void setEdep(const float edep) { this->edep_ = edep; };
+  void setEdep(const float edep) { edep_ = edep; };
 
   /**
    * Set the energy of the hit.
-   * @param e The energy of the hit.
+   *
+   * @param[in] energy The energy of the hit.
    */
   void setEnergy(const float energy) { energy_ = energy; };
 
   /**
-   * Set the global time of the hit [ns].
-   * @param time The global time of the hit.
+   * Set the global time of the hit in ns.
+   *
+   * @param[in] time The global time of the hit.
    */
-  void setTime(const float time) { this->time_ = time; };
+  void setTime(const float time) { time_ = time; };
 
   /**
-   * Set the path length of the hit [mm].
-   * @param pathLength The path length of the hit.
+   * Set the path length of the hit in mm.
+   *
+   * @param[in] path_length The path length of the hit.
    */
-  void setPathLength(const float pathLength) {
-    this->pathLength_ = pathLength;
-  };
+  void setPathLength(const float path_length) { path_length_ = path_length; };
 
   /**
    * Set the momentum of the particle at the position at which
-   * the hit took place [GeV].
-   * @param px The X momentum.
-   * @param py The Y momentum.
-   * @param pz The Z momentum.
+   * the hit took place in MeV.
+   *
+   * @param[in] px The X momentum.
+   * @param[in] py The Y momentum.
+   * @param[in] pz The Z momentum.
    */
-  void setMomentum(const float px, const float py, const float pz);
+  inline void setMomentum(const float px, const float py, const float pz) { 
+    px_ = px; 
+    py_ = py; 
+    pz_ = pz; 
+  };
 
   /**
-   * Set the Sim particle track ID of the hit.
-   * @return The Sim particle track ID of the hit.
+   * Set the Geant4 track ID of the particle associted with this hit.
+   *
+   * @param[in] track_id The Sim particle track ID of the hit.
    */
-  void setTrackID(const int simTrackID) { this->trackID_ = simTrackID; };
+  void setTrackID(const int track_id) { track_id_ = track_id; };
 
   /**
-   * Set the Sim particle track ID of the hit.
-   * @return The Sim particle track ID of the hit.
+   * Set the PDG ID of the SimParticle associated with this hit.
+   *
+   * @param[in] pdg_id The PDG ID of the SimParticle associated with this hit.
    */
-  void setPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
+  void setPdgID(const int pdg_id) { pdg_id_ = pdg_id; };
 
-  /**
-   * Sort by time of hit
-   */
-  bool operator<(const ldmx::SimTrackerHit &rhs) const {
-    return this->getTime() < rhs.getTime();
+  /// Sort by time of hit
+  bool operator<(const g4fire::event::SimTrackerHit &rhs) const {
+    return time() < rhs.time();
   }
-
- private:
+  
   /**
-   * The detector ID.
+   * Overload the stream insertion operator to output a string representation
+   * of this SimTrackerHit.
+   *
+   * @param[in] output The output stream where the string representation will
+   *    be inserted.
+   * @param[in] particle The SimTrackerHit to stringify.
+   *
+   * @return[out] An ostream object with the string representation of
+   *    SimTrackerHit inserted.
    */
+  friend std::ostream &operator<<(std::ostream &output,
+                                  const SimTrackerHit &hit);
+
+private:
+  /// The detector ID.
   int id_{0};
 
-  /**
-   * The layer ID.
-   */
-  int layerID_{0};
+  /// The layer ID.
+  int layer_id_{0};
 
-  /** The module ID. */
-  int moduleID_{0};
+  /// The module ID.
+  int module_id_{0};
 
-  /**
-   * The energy deposited on the hit.
-   */
+  /// The energy deposited on the hit.
   float edep_{0};
 
-  /**
-   * The global time of the hit.
-   */
+  /// The global time of the hit.
   float time_{0};
 
-  /**
-   * The X momentum.
-   */
+  /// The x component of the momentum.
   float px_{0};
 
-  /**
-   * The Y momentum.
-   */
+  /// The y component of the momentum.
   float py_{0};
 
-  /**
-   * The Z momentum.
-   */
+  /// The z component of the momentum.
   float pz_{0};
 
-  /**
-   * The total energy.
-   */
+  /// The hit energy.
   float energy_{0};
 
-  /**
-   * The X position.
-   */
+  /// The x position.
   float x_{0};
 
-  /**
-   * The Y position.
-   */
+  /// The y position.
   float y_{0};
 
-  /**
-   * The Z position.
-   */
+  /// The z position.
   float z_{0};
 
-  /**
-   * The path length of the hit.
-   */
-  float pathLength_{0};
+  /// The path length of the hit.
+  float path_length_{0};
 
-  /**
-   * The Sim Track ID.
-   */
-  int trackID_{0};
+  /// The Geant4 track ID.
+  int track_id_{0};
 
-  /**
-   * The Sim PDG ID.
-   */
-  int pdgID_{0};
+  /// The PDG ID of the particle associated with this track.
+  int pdg_id_{0};
 
-  /**
-   * The ROOT class definition.
-   */
-  ClassDef(SimTrackerHit, 3);
+  friend class fire::io::Data<SimTrackerHit>;
+  void attach(fire::io::Data<SimTrackerHit> &d);
 
-};  // SimTrackerHit
-}  // namespace ldmx
-
-#endif  // EVENT_SIMTRACKERHIT_H_
+}; // SimTrackerHit
+} // namespace g4fire::event
