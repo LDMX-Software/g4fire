@@ -156,10 +156,10 @@ void Simulator::beforeNewRun(fire::RunHeader &header) {
 
   auto bops{PluginFactory::getInstance().getBiasingOperators()};
   for (const XsecBiasingOperator *bop : bops) {
-    // bop->RecordConfig(header);
+    bop->RecordConfig(header);
   }
 
-  /*auto dark_brem{params_.get<fire::config::Parameters>("dark_brem")};
+  auto dark_brem{params_.get<fire::config::Parameters>("dark_brem")};
   if (dark_brem.get<bool>("enable")) {
     // the dark brem process is enabled, find it and then record its
     // configuration
@@ -180,7 +180,7 @@ void Simulator::beforeNewRun(fire::RunHeader &header) {
         break;
       } // this process is the dark brem process
     }   // loop through electron processes
-  } */    // dark brem has been enabled
+  }     // dark brem has been enabled
 
   auto generators{
       params_.get<std::vector<fire::config::Parameters>>("generators")};
@@ -259,11 +259,7 @@ void Simulator::onNewRun(const fire::RunHeader &) {
 }
 
 void Simulator::process(fire::Event &event) {
-  std::cout << "Processing." << std::endl;
-  // Pass the current LDMX event object to the persistency manager.  This
-  // is needed by the persistency manager to fill the current event.
-  // persistencyManager_->setCurrentEvent(&event);
-
+  
   // Generate and process a Geant4 event.
   n_events_began_++;
   run_manager_->ProcessOneEvent(event.header().number());
@@ -345,13 +341,6 @@ void Simulator::onFileClose(const std::string &file_name) {
   // Persist any remaining events, call the end of run action and
   // terminate the Geant4 kernel.
   run_manager_->RunTermination();
-
-  // Cleanup persistency manager
-  //  Geant4 expects us to handle the persistency manager
-  //  In order to avoid segfaulting nonsense, I delete it here
-  //  so that it is deleted before the EventFile it references
-  //  is deleted
-  // persistencyManager_.reset(nullptr);
 }
 
 void Simulator::onProcessEnd() {
@@ -414,3 +403,4 @@ void Simulator::setSeeds(std::vector<int> seeds) {
 } // namespace g4fire
 
 DECLARE_PROCESSOR(g4fire::Simulator)
+
