@@ -8,18 +8,18 @@
 #include "G4VModularPhysicsList.hh"
 
 #include "g4fire/ConditionsInterface.h"
-#include "g4fire/darkbrem/APrimePhysics.h"
-#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h" //for process name
 #include "g4fire/DetectorConstruction.h"
 #include "g4fire/GammaPhysics.h"
 #include "g4fire/ParallelWorld.h"
 #include "g4fire/PluginFactory.h"
+#include "g4fire/PrimaryGeneratorAction.h"
 #include "g4fire/USteppingAction.h"
+#include "g4fire/UserEventAction.h"
 #include "g4fire/UserRunAction.h"
 #include "g4fire/UserStackingAction.h"
 #include "g4fire/UserTrackingAction.h"
-#include "g4fire/PrimaryGeneratorAction.h"
-#include "g4fire/UserEventAction.h"
+#include "g4fire/darkbrem/APrimePhysics.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h" //for process name
 
 namespace g4fire {
 
@@ -41,8 +41,8 @@ void RunManager::setupPhysics() {
   std::cout << "setting up physics." << std::endl;
   auto physics_list{physics_list_factory_.GetReferencePhysList("FTFP_BERT")};
   physics_list->RegisterPhysics(new GammaPhysics);
-  /*physics_list->RegisterPhysics(new darkbrem::APrimePhysics(
-      params_.get<fire::config::Parameters>("dark_brem")));*/
+  physics_list->RegisterPhysics(new darkbrem::APrimePhysics(
+      params_.get<fire::config::Parameters>("dark_brem")));
 
   parallel_world_path_ = params_.get<std::string>("parallel_world", {});
   pw_enabled_ = !parallel_world_path_.empty();
@@ -51,8 +51,7 @@ void RunManager::setupPhysics() {
     std::cout
         << "[ RunManager ]: Parallel worlds physics list has been registered."
         << std::endl;
-    physics_list->RegisterPhysics(
-        new G4ParallelWorldPhysics("parallel_world"));
+    physics_list->RegisterPhysics(new G4ParallelWorldPhysics("parallel_world"));
   }
 
   auto biasing_operators{params_.get<std::vector<fire::config::Parameters>>(
@@ -104,7 +103,7 @@ void RunManager::Initialize() {
   }
 
   // This is where the physics lists are told to construct their particles and
-  // their processes. They are constructed in order, so it is important to 
+  // their processes. They are constructed in order, so it is important to
   // register the biasing physics *after* any other processes that need to be
   // able to be biased
   G4RunManager::Initialize();
@@ -149,7 +148,7 @@ void RunManager::TerminateOneEvent() {
   // while the table is silenced. If the table isn't silenced,
   // the process that isn't in the table will cause the table
   // to throw a "not found" warning.
-  /*std::vector<G4String> dark_brem_processes = {
+  std::vector<G4String> dark_brem_processes = {
       darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME,
       "biasWrapper(" + darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME + ")"};
   ptable->SetVerboseLevel(
@@ -157,13 +156,12 @@ void RunManager::TerminateOneEvent() {
   for (auto const &name : dark_brem_processes)
     ptable->SetProcessActivation(name, true);
   ptable->SetVerboseLevel(verbosity);
-  -- Up-to-date: /home/omoreno/projects/ldmx/softwa
   if (this->GetVerboseLevel() > 1) {
     std::cout << "[ RunManager ] : "
               << "Reset the dark brem process (if it was activated)."
               << std::endl;
   }
-  ptable->SetVerboseLevel(verbosity); */
+  ptable->SetVerboseLevel(verbosity);
 }
 
 DetectorConstruction *RunManager::getDetectorConstruction() {
