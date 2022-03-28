@@ -1,34 +1,29 @@
-#ifndef SIMCORE_BIASOPERATORS_DARKBREM_H
-#define SIMCORE_BIASOPERATORS_DARKBREM_H
+#pragma once
 
-//----------//
-//   LDMX   //
-//----------//
-#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/XsecBiasingOperator.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 /**
  * Bias operator for the dark brem process
  */
 class DarkBrem : public XsecBiasingOperator {
- public:
+public:
   /**
    * Constructor
    *
    * Calls base class constructor and allows
    * access to configuration parameters.
    */
-  DarkBrem(std::string name, const framework::config::Parameters& p);
+  DarkBrem(std::string name, const fire::config::Parameters &p);
 
   /**
    * Destructor
    *
    * Blank right now
    */
-  ~DarkBrem() {}
+  ~DarkBrem() = default;
 
   /**
    * Calculate the biased cross section given the
@@ -43,9 +38,9 @@ class DarkBrem : public XsecBiasingOperator {
    * @return Method that returns the biasing operation that will be used
    *         to bias the occurence of events.
    */
-  G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+  G4VBiasingOperation *ProposeOccurenceBiasingOperation(
+      const G4Track *track,
+      const G4BiasingProcessInterface *callingProcess) final override;
 
   /// Return the name of the process this operator biases
   virtual std::string getProcessToBias() const {
@@ -63,9 +58,9 @@ class DarkBrem : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record configuration to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const;
+  virtual void RecordConfig(fire::RunHeader &header) const;
 
- protected:
+protected:
   /**
    * DEBUG FUNCTION
    * This function is called by the biasing interface class during PostStepDoIt.
@@ -92,7 +87,7 @@ class DarkBrem : public XsecBiasingOperator {
   }
    */
 
- private:
+private:
   /// volume we want to bias in
   std::string volume_;
 
@@ -102,8 +97,5 @@ class DarkBrem : public XsecBiasingOperator {
   /// should we bias all electrons? (or only the primary)
   bool bias_all_;
 
-};  // DarkBrem
-}  // namespace biasoperators
-}  // namespace g4fire
-
-#endif  // SIMCORE_DARKBREM_DARKBREMXSECBIASINGOPERATOR_H
+}; // DarkBrem
+} // namespace g4fire::biasing

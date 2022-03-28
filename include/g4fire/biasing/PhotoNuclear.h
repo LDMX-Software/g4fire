@@ -1,19 +1,15 @@
 
-#ifndef SIMCORE_BIASOPERATORS_PHOTONUCLEAR_H_
-#define SIMCORE_BIASOPERATORS_PHOTONUCLEAR_H_
-
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 /**
  * Bias the Photon-Nuclear process
  */
 class PhotoNuclear : public XsecBiasingOperator {
- public:
+public:
   /** Constructor */
-  PhotoNuclear(std::string name, const framework::config::Parameters& p);
+  PhotoNuclear(std::string name, const fire::config::Parameters &p);
 
   /** Method called at the beginning of a run. */
   void StartRun();
@@ -22,9 +18,9 @@ class PhotoNuclear : public XsecBiasingOperator {
    * @return Method that returns the biasing operation that will be used
    *         to bias the occurence of photonuclear events.
    */
-  G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+  G4VBiasingOperation *ProposeOccurenceBiasingOperation(
+      const G4Track *track,
+      const G4BiasingProcessInterface *callingProcess) final override;
 
   /// return the process we want to bias
   virtual std::string getProcessToBias() const { return "photonNuclear"; }
@@ -36,22 +32,21 @@ class PhotoNuclear : public XsecBiasingOperator {
   virtual std::string getVolumeToBias() const { return volume_; }
 
   /// record the configuration into the run header
-  virtual void RecordConfig(ldmx::RunHeader& h) const {
-    h.setStringParameter("BiasOperators::PhotoNuclear::Volume", volume_);
-    h.setFloatParameter("BiasOperators::PhotoNuclear::Threshold", threshold_);
-    h.setFloatParameter("BiasOperators::PhotoNuclear::Factor", factor_);
-    h.setIntParameter("BiasOperators::PhotoNuclear::Bias Conv Down",
-                      down_bias_conv_);
-    h.setIntParameter("BiasOperators::PhotoNuclear::Only Children Of Primary",
-                      only_children_of_primary_);
+  virtual void RecordConfig(fire::RunHeader &h) const {
+    h.set<std::string>("biasings::PhotoNuclear::Volume", volume_);
+    h.set<float>("biasings::PhotoNuclear::Threshold", threshold_);
+    h.set<float>("biasings::PhotoNuclear::Factor", factor_);
+    h.set<int>("biasings::PhotoNuclear::Bias Conv Down", down_bias_conv_);
+    h.set<int>("biasings::PhotoNuclear::Only Children Of Primary",
+               only_children_of_primary_);
   }
 
- private:
+private:
   /** Geant4 gamma conversion process name. */
   static const std::string CONVERSION_PROCESS;
 
   /** Cross-section biasing operation for conversion process */
-  G4BOptnChangeCrossSection* emXsecOperation{nullptr};
+  G4BOptnChangeCrossSection *emXsecOperation{nullptr};
 
   /** Unbiased photonuclear xsec. */
   double pnXsecUnbiased_{0};
@@ -74,8 +69,5 @@ class PhotoNuclear : public XsecBiasingOperator {
   /// Should we restrict biasing to only children of primary?
   bool only_children_of_primary_;
 
-};  // PhotoNuclear
-}  // namespace biasoperators
-}  // namespace g4fire
-
-#endif  // SIMCORE_BIASOPERATORS_PHOTONUCLEAR_H_
+}; // PhotoNuclear
+} // namespace g4fire::biasing

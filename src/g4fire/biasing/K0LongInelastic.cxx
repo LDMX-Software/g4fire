@@ -1,14 +1,13 @@
 
-#include "g4fire/BiasOperators/K0LongInelastic.h"
+#include "g4fire/biasing/K0LongInelastic.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
-K0LongInelastic::K0LongInelastic(std::string name, const framework::config::Parameters& p)
+K0LongInelastic::K0LongInelastic(std::string name, const fire::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  threshold_ = p.getParameter<double>("threshold");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  threshold_ = p.get<double>("threshold");
 }
 
 G4VBiasingOperation* K0LongInelastic::ProposeOccurenceBiasingOperation(
@@ -31,7 +30,6 @@ G4VBiasingOperation* K0LongInelastic::ProposeOccurenceBiasingOperation(
     return 0;
 }
 
-}  // namespace biasoperators
 }  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, K0LongInelastic)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasing, K0LongInelastic)

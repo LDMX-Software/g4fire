@@ -1,23 +1,19 @@
-#ifndef SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_
-#define SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_
-
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 /**
  * Bias the neutron inelastic collsions
  */
 class NeutronInelastic : public XsecBiasingOperator {
- public:
+public:
   /**
    * Constructor
    *
    * Calls parent constructor and allows
    * accesss to configuration parameters.
    */
-  NeutronInelastic(std::string name, const framework::config::Parameters& p);
+  NeutronInelastic(std::string name, const fire::config::Parameters &p);
 
   /** Destructor */
   ~NeutronInelastic() = default;
@@ -26,9 +22,9 @@ class NeutronInelastic : public XsecBiasingOperator {
    * @return Method that returns the biasing operation that will be used
    *         to bias the neutron inelactic hadronic interactions.
    */
-  G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+  G4VBiasingOperation *ProposeOccurenceBiasingOperation(
+      const G4Track *track,
+      const G4BiasingProcessInterface *callingProcess) final override;
 
   /// Return the process to bias
   virtual std::string getProcessToBias() const { return "neutronInelastic"; }
@@ -44,14 +40,13 @@ class NeutronInelastic : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
-    header.setStringParameter("BiasOperator::NeutronInelastic::Volume", volume_);
-    header.setFloatParameter("BiasOperator::NeutronInelastic::Factor", factor_);
-    header.setFloatParameter("BiasOperator::NeutronInelastic::Threshold",
-                             threshold_);
+  virtual void RecordConfig(fire::RunHeader &header) const {
+    header.set<std::string>("biasing::NeutronInelastic::Volume", volume_);
+    header.set<float>("biasing::NeutronInelastic::Factor", factor_);
+    header.set<float>("biasing::NeutronInelastic::Threshold", threshold_);
   }
 
- private:
+private:
   /// The volume to bias in
   std::string volume_;
 
@@ -60,10 +55,5 @@ class NeutronInelastic : public XsecBiasingOperator {
 
   /// Minimum kinetic energy [MeV] to allow a track to be biased
   double threshold_;
-
 };
-
-}  // namespace biasoperators
-}  // namespace g4fire
-
-#endif  // SIMCORE_BIASOPERATORS_NEUTRONINELASTIC_H_
+} // namespace g4fire::biasing

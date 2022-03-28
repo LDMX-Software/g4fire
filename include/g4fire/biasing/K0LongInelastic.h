@@ -1,23 +1,19 @@
-#ifndef SIMCORE_BIASOPERATORS_K0LONGINELASTIC_H_
-#define SIMCORE_BIASOPERATORS_K0LONGINELASTIC_H_
-
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 /**
  * Bias the k0 long inelastic collisions
  */
 class K0LongInelastic : public XsecBiasingOperator {
- public:
+public:
   /**
    * Constructor
    *
    * Calls parent constructor and allows
    * accesss to configuration parameters.
    */
-  K0LongInelastic(std::string name, const framework::config::Parameters& p);
+  K0LongInelastic(std::string name, const fire::config::Parameters &p);
 
   /** Destructor */
   ~K0LongInelastic() = default;
@@ -26,9 +22,9 @@ class K0LongInelastic : public XsecBiasingOperator {
    * @return Method that returns the biasing operation that will be used
    *         to bias the K0 Long inelactic hadronic interactions.
    */
-  G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+  G4VBiasingOperation *ProposeOccurenceBiasingOperation(
+      const G4Track *track,
+      const G4BiasingProcessInterface *callingProcess) final override;
 
   /// Return the process to bias
   virtual std::string getProcessToBias() const { return "kaon0LInelastic"; }
@@ -44,26 +40,20 @@ class K0LongInelastic : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
-    header.setStringParameter("BiasOperator::K0LongInelastic::Volume", volume_);
-    header.setFloatParameter("BiasOperator::K0LongInelastic::Factor", factor_);
-    header.setFloatParameter("BiasOperator::K0LongInelastic::Threshold",
-                             threshold_);
+  virtual void RecordConfig(fire::RunHeader &header) const {
+    header.set<std::string>("biasing::K0LongInelastic::Volume", volume_);
+    header.set<float>("biasing::K0LongInelastic::Factor", factor_);
+    header.set<float>("biasing::K0LongInelastic::Threshold", threshold_);
   }
 
- private:
+private:
   /// The volume to bias in
   std::string volume_;
 
-  /// The biasing factor
+  /// The bias factor
   double factor_;
 
   /// Minimum kinetic energy [MeV] to allow a track to be biased
   double threshold_;
-
 };
-
-}  // namespace biasoperators
-}  // namespace g4fire
-
-#endif  // SIMCORE_BIASOPERATORS_K0LONGINELASTIC_H_
+} // namespace g4fire::biasing

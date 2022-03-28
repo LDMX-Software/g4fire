@@ -1,19 +1,18 @@
 
-#include "g4fire/BiasOperators/ElectroNuclear.h"
+#include "g4fire/biasing/ElectroNuclear.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 ElectroNuclear::ElectroNuclear(std::string name,
-                               const framework::config::Parameters& p)
+                               const fire::config::Parameters &p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  threshold_ = p.getParameter<double>("threshold");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  threshold_ = p.get<double>("threshold");
 }
 
-G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
-    const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
+G4VBiasingOperation *ElectroNuclear::ProposeOccurenceBiasingOperation(
+    const G4Track *track, const G4BiasingProcessInterface *callingProcess) {
   /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: "
             << "Track ID: " << track->GetTrackID() << ", "
             << "Parent ID: " << track->GetParentID() << ", "
@@ -22,7 +21,8 @@ G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
             << "Currently in volume " << track->GetVolume()->GetName()
             << std::endl;*/
 
-  if (track->GetKineticEnergy() < threshold_) return 0;
+  if (track->GetKineticEnergy() < threshold_)
+    return 0;
 
   /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: "
             << "Calling process: "
@@ -51,7 +51,6 @@ G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
     return 0;
 }
 
-}  // namespace biasoperators
-}  // namespace g4fire
+} // namespace g4fire::biasing
 
-DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, ElectroNuclear)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasing, ElectroNuclear)

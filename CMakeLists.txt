@@ -38,6 +38,15 @@ find_package (Boost REQUIRED COMPONENTS log)
 find_package (fire REQUIRED)
 find_package (Eigen3 REQUIRED NO_MODULE)
 
+set (biasing_sources
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/DarkBrem.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/ElectroNuclear.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/GammaToMuPair.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/K0LongInelastic.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/NeutronInelastic.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/PhotoNuclear.cxx  
+)
+
 set (dark_brem_sources
   ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/APrimePhysics.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/G4APrime.cxx
@@ -89,6 +98,7 @@ set (sim_sources
 )
 
 add_library(g4fire SHARED 
+  ${biasing_sources}
   ${dark_brem_sources}
   ${event_sources}
   ${geo_sources}

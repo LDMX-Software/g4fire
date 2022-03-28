@@ -1,15 +1,14 @@
 
-#include "g4fire/BiasOperators/GammaToMuPair.h"
+#include "g4fire/biasing/GammaToMuPair.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 GammaToMuPair::GammaToMuPair(std::string name,
-                             const framework::config::Parameters& p)
+                             const fire::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  threshold_ = p.getParameter<double>("threshold");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  threshold_ = p.get<double>("threshold");
 }
 
 G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
@@ -31,7 +30,6 @@ G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
     return 0;
 }
 
-}  // namespace biasoperators
 }  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, GammaToMuPair)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasing, GammaToMuPair)

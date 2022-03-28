@@ -1,19 +1,16 @@
 
-#include "g4fire/BiasOperators/DarkBrem.h"
+#include "g4fire/biasing/DarkBrem.h"
 
-//------------//
-//   Geant4   //
-//------------//
 #include "G4RunManager.hh"
 
 namespace g4fire {
-namespace biasoperators {
+namespace biasing {
 
-DarkBrem::DarkBrem(std::string name, const framework::config::Parameters& p)
+DarkBrem::DarkBrem(std::string name, const fire::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  factor_ = p.getParameter<double>("factor");
-  bias_all_ = p.getParameter<bool>("bias_all");
+  volume_ = p.get<std::string>("volume");
+  factor_ = p.get<double>("factor");
+  bias_all_ = p.get<bool>("bias_all");
 }
 
 G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
@@ -41,13 +38,13 @@ G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
     return 0;
 }
 
-void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
-  h.setIntParameter("BiasOperator::DarkBrem::Bias All Electrons", bias_all_);
-  h.setFloatParameter("BiasOperator::DarkBrem::Factor", factor_);
-  h.setStringParameter("BiasOperator::DarkBrem::Volume", volume_);
+void DarkBrem::RecordConfig(fire::RunHeader& h) const {
+  h.set<int>("biasing::DarkBrem::Bias All Electrons", bias_all_);
+  h.set<float>("biasing::DarkBrem::Factor", factor_);
+  h.set<std::string>("biasing::DarkBrem::Volume", volume_);
 }
 
-}  // namespace biasoperators
+}  // namespace biasing
 }  // namespace g4fire
 
-DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, DarkBrem)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasing, DarkBrem)

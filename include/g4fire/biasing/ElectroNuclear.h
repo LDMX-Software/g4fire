@@ -1,10 +1,8 @@
-#ifndef SIMCORE_BIASOPERATORS_ELECTRONUCLEAR_H_
-#define SIMCORE_BIASOPERATORS_ELECTRONUCLEAR_H_
+#pragma once
 
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 /**
  * Bias the Electron-Nuclear process
@@ -17,10 +15,10 @@ class ElectroNuclear : public XsecBiasingOperator {
    * Calls parent constructor and allows
    * accesss to configuration parameters.
    */
-  ElectroNuclear(std::string name, const framework::config::Parameters& p);
+  ElectroNuclear(std::string name, const fire::config::Parameters& p);
 
   /** Destructor */
-  ~ElectroNuclear() {}
+  ~ElectroNuclear() = default;
 
   /**
    * @return Method that returns the biasing operation that will be used
@@ -44,10 +42,10 @@ class ElectroNuclear : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
-    header.setStringParameter("BiasOperator::ElectroNuclear::Volume", volume_);
-    header.setFloatParameter("BiasOperator::ElectroNuclear::Factor", factor_);
-    header.setFloatParameter("BiasOperator::ElectroNuclear::Threshold",
+  virtual void RecordConfig(fire::RunHeader& header) const {
+    header.set<std::string>("biasing::ElectroNuclear::Volume", volume_);
+    header.set<float>("biasing::ElectroNuclear::Factor", factor_);
+    header.set<float>("biasing::ElectroNuclear::Threshold",
                              threshold_);
   }
 
@@ -62,8 +60,4 @@ class ElectroNuclear : public XsecBiasingOperator {
   double threshold_;
 
 };  // ElectroNuclear
-
-}  // namespace biasoperators
 }  // namespace g4fire
-
-#endif  // SIMCORE_BIASOPERATORS_ELECTRONUCLEAR_H_

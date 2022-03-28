@@ -1,23 +1,19 @@
-#ifndef SIMCORE_BIASOPERATORS_GAMMATOMUPAIR_H_
-#define SIMCORE_BIASOPERATORS_GAMMATOMUPAIR_H_
-
 #include "g4fire/XsecBiasingOperator.h"
 
-namespace g4fire {
-namespace biasoperators {
+namespace g4fire::biasing {
 
 /**
  * Bias the Gamma to Mu Pair process
  */
 class GammaToMuPair : public XsecBiasingOperator {
- public:
+public:
   /**
    * Constructor
    *
    * Calls parent constructor and allows
    * accesss to configuration parameters.
    */
-  GammaToMuPair(std::string name, const framework::config::Parameters& p);
+  GammaToMuPair(std::string name, const fire::config::Parameters &p);
 
   /** Destructor */
   ~GammaToMuPair() = default;
@@ -26,9 +22,9 @@ class GammaToMuPair : public XsecBiasingOperator {
    * @return Method that returns the biasing operation that will be used
    *         to bias the conversion of gammas to muon pairs.
    */
-  G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+  G4VBiasingOperation *ProposeOccurenceBiasingOperation(
+      const G4Track *track,
+      const G4BiasingProcessInterface *callingProcess) final override;
 
   /// Return the process to bias
   virtual std::string getProcessToBias() const { return "GammaToMuPair"; }
@@ -44,14 +40,13 @@ class GammaToMuPair : public XsecBiasingOperator {
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
-    header.setStringParameter("BiasOperator::GammaToMuPair::Volume", volume_);
-    header.setFloatParameter("BiasOperator::GammaToMuPair::Factor", factor_);
-    header.setFloatParameter("BiasOperator::GammaToMuPair::Threshold",
-                             threshold_);
+  virtual void RecordConfig(fire::RunHeader &header) const {
+    header.set<std::string>("biasing::GammaToMuPair::Volume", volume_);
+    header.set<float>("biasing::GammaToMuPair::Factor", factor_);
+    header.set<float>("biasing::GammaToMuPair::Threshold", threshold_);
   }
 
- private:
+private:
   /// The volume to bias in
   std::string volume_;
 
@@ -61,8 +56,4 @@ class GammaToMuPair : public XsecBiasingOperator {
   /// Minimum kinetic energy [MeV] to allow a track to be biased
   double threshold_;
 };
-
-}  // namespace biasoperators
-}  // namespace g4fire
-
-#endif  // SIMCORE_BIASOPERATORS_GAMMATOMUPAIR_H_
+} // namespace g4fire::biasing

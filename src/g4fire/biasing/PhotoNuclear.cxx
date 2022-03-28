@@ -1,18 +1,19 @@
-#include "g4fire/BiasOperators/PhotoNuclear.h"
 
-namespace g4fire {
-namespace biasoperators {
+#include "g4fire/biasing/PhotoNuclear.h"
+
+#include "fire/exception/Exception.h"
+
+namespace g4fire::biasing {
 
 const std::string PhotoNuclear::CONVERSION_PROCESS = "conv";
 
-PhotoNuclear::PhotoNuclear(std::string name,
-                           const framework::config::Parameters& p)
+PhotoNuclear::PhotoNuclear(std::string name, const fire::config::Parameters &p)
     : XsecBiasingOperator(name, p) {
-  volume_ = p.getParameter<std::string>("volume");
-  threshold_ = p.getParameter<double>("threshold");
-  factor_ = p.getParameter<double>("factor");
-  down_bias_conv_ = p.getParameter<bool>("down_bias_conv");
-  only_children_of_primary_ = p.getParameter<bool>("only_children_of_primary");
+  volume_ = p.get<std::string>("volume");
+  threshold_ = p.get<double>("threshold");
+  factor_ = p.get<double>("factor");
+  down_bias_conv_ = p.get<bool>("down_bias_conv");
+  only_children_of_primary_ = p.get<bool>("only_children_of_primary");
 }
 
 void PhotoNuclear::StartRun() {
@@ -21,24 +22,27 @@ void PhotoNuclear::StartRun() {
   if (processIsBiased(CONVERSION_PROCESS)) {
     emXsecOperation = new G4BOptnChangeCrossSection("changeXsec-conv");
   } else if (down_bias_conv_) {
-    EXCEPTION_RAISE(
-        "PhotoNuclearBiasing",
-        "Gamma Conversion process '" + CONVERSION_PROCESS + "' is not biased!");
+    throw fire::Exception("PhotoNuclearBiasing",
+                          "Gamma Conversion process '" + CONVERSION_PROCESS +
+                              "' is not biased!",
+                          false);
   }
 }
 
-G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
-    const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
+G4VBiasingOperation *PhotoNuclear::ProposeOccurenceBiasingOperation(
+    const G4Track *track, const G4BiasingProcessInterface *callingProcess) {
   /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
             << "Kinetic energy: " << track->GetKineticEnergy()
             << " MeV" << std::endl;*/
 
   // if we want to only bias children of primary, leave if this track is NOT a
   // child of the primary
-  if (only_children_of_primary_ and track->GetParentID() != 1) return 0;
+  if (only_children_of_primary_ and track->GetParentID() != 1)
+    return 0;
 
   // is this track too low energy to be biased?
-  if (track->GetKineticEnergy() < threshold_) return 0;
+  if (track->GetKineticEnergy() < threshold_)
+    return 0;
 
   /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
             << "Calling process: "
@@ -93,8 +97,6 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
   } else
     return 0;
 }
+} // namespace g4fire::biasing
 
-}  // namespace biasoperators
-}  // namespace g4fire
-
-DECLARE_XSECBIASINGOPERATOR(g4fire::biasoperators, PhotoNuclear)
+DECLARE_XSECBIASINGOPERATOR(g4fire::biasing, PhotoNuclear)
