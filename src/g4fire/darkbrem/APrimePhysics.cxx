@@ -1,6 +1,6 @@
-#include "g4fire/DarkBrem/APrimePhysics.h"
+#include "g4fire/darkbrem/APrimePhysics.h"
 
-#include "g4fire/DarkBrem/G4APrime.h"
+#include "g4fire/darkbrem/G4APrime.h"
 
 #include "G4Electron.hh"
 #include "G4ProcessManager.hh"

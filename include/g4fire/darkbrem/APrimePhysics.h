@@ -3,7 +3,7 @@
 #include "G4VPhysicsConstructor.hh"
 
 #include "fire/config/Parameters.h"
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 
 namespace g4fire {
 

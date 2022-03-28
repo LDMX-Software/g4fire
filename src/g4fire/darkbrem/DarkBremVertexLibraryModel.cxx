@@ -1,4 +1,4 @@
-#include "g4fire/DarkBrem/DarkBremVertexLibraryModel.h"
+#include "g4fire/darkbrem/DarkBremVertexLibraryModel.h"
 
 #include <dirent.h>
 #include <math.h>
@@ -11,7 +11,7 @@
 #include "fire/exception/Exception.h"
 //#include "Framework/Logger.h"
 
-#include "g4fire/DarkBrem/G4APrime.h"
+#include "g4fire/darkbrem/G4APrime.h"
 
 #include "G4Electron.hh"
 #include "G4EventManager.hh"

@@ -9,7 +9,7 @@
 //   LDMX   //
 //----------//
 #include "Framework/Configure/Parameters.h"
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 
 /**
  * @func printUsage

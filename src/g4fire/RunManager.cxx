@@ -8,8 +8,8 @@
 #include "G4VModularPhysicsList.hh"
 
 #include "g4fire/ConditionsInterface.h"
-#include "g4fire/DarkBrem/APrimePhysics.h"
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h" //for process name
+#include "g4fire/darkbrem/APrimePhysics.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h" //for process name
 #include "g4fire/DetectorConstruction.h"
 #include "g4fire/GammaPhysics.h"
 #include "g4fire/ParallelWorld.h"

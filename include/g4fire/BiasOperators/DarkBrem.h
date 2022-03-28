@@ -4,7 +4,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/XsecBiasingOperator.h"
 
 namespace g4fire {

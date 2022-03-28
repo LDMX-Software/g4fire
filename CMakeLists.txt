@@ -39,10 +39,10 @@ find_package (fire REQUIRED)
 find_package (Eigen3 REQUIRED NO_MODULE)
 
 set (dark_brem_sources
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/APrimePhysics.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/G4APrime.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/DarkBremVertexLibraryModel.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/G4eDarkBremsstrahlung.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/APrimePhysics.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/G4APrime.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/DarkBremVertexLibraryModel.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/G4eDarkBremsstrahlung.cxx
 )
 
 set (event_sources

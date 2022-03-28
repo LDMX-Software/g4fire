@@ -5,7 +5,7 @@
 #include "fire/exception/Exception.h"
 #include "fire/version/Version.h"
 
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/DetectorConstruction.h"
 #include "g4fire/G4Session.h"
 #include "g4fire/PluginFactory.h"

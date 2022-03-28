@@ -1,4 +1,4 @@
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 
 #include "fire/RunHeader.h"
 
@@ -8,8 +8,8 @@
 #include "G4ProcessType.hh"   //for type of process
 #include "G4RunManager.hh"    //for VerboseLevel
 
-#include "g4fire/DarkBrem/DarkBremVertexLibraryModel.h"
-#include "g4fire/DarkBrem/G4APrime.h"
+#include "g4fire/darkbrem/DarkBremVertexLibraryModel.h"
+#include "g4fire/darkbrem/G4APrime.h"
 
 namespace g4fire {
 namespace darkbrem {
