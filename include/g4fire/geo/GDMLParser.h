@@ -5,8 +5,8 @@
 
 #include "fire/config/Parameters.h"
 
-#include "g4fire/Geo/AuxInfoReader.h"
-#include "g4fire/Geo/Parser.h"
+#include "g4fire/geo/AuxInfoReader.h"
+#include "g4fire/geo/Parser.h"
 
 class G4VPhysicalVolume;
 

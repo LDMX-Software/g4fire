@@ -1,4 +1,4 @@
-#include "g4fire/Geo/AuxInfoReader.h"
+#include "g4fire/geo/AuxInfoReader.h"
 
 #include <stdlib.h>
 #include <string>

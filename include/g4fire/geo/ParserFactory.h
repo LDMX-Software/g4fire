@@ -1,7 +1,7 @@
 #ifndef G4FIRE_GEO_PARSERFACTORY_H_
 #define G4FIRE_GEO_PARSERFACTORY_H_
 
-#include "g4fire/Geo/Parser.h"
+#include "g4fire/geo/Parser.h"
 
 #include <map>
 

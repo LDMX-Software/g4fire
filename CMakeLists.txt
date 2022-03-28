@@ -53,9 +53,9 @@ set (event_sources
 )
 
 set (geo_sources
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/AuxInfoReader.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/GDMLParser.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/ParserFactory.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/geo/AuxInfoReader.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/geo/GDMLParser.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/geo/ParserFactory.cxx
 )
 
 set (sim_sources

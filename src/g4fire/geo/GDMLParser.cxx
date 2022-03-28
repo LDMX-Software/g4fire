@@ -1,4 +1,4 @@
-#include "g4fire/Geo/GDMLParser.h"
+#include "g4fire/geo/GDMLParser.h"
 
 namespace g4fire {
 namespace geo {

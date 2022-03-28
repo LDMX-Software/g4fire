@@ -1,10 +1,10 @@
 
-#include "g4fire/Geo/ParserFactory.h"
+#include "g4fire/geo/ParserFactory.h"
 
 #include "fire/exception/Exception.h"
 
-#include "g4fire/Geo/GDMLParser.h"
-#include "g4fire/Geo/Parser.h"
+#include "g4fire/geo/GDMLParser.h"
+#include "g4fire/geo/Parser.h"
 
 namespace g4fire {
 namespace geo {

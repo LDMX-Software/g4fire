@@ -8,9 +8,9 @@
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/DetectorConstruction.h"
 #include "g4fire/G4Session.h"
-#include "g4fire/Geo/ParserFactory.h"
 #include "g4fire/PluginFactory.h"
 #include "g4fire/RunManager.h"
+#include "g4fire/geo/ParserFactory.h"
 
 #include "G4CascadeParameters.hh"
 #include "G4Electron.hh"
@@ -259,7 +259,7 @@ void Simulator::onNewRun(const fire::RunHeader &) {
 }
 
 void Simulator::process(fire::Event &event) {
-  
+
   // Generate and process a Geant4 event.
   n_events_began_++;
   run_manager_->ProcessOneEvent(event.header().number());
@@ -403,4 +403,3 @@ void Simulator::setSeeds(std::vector<int> seeds) {
 } // namespace g4fire
 
 DECLARE_PROCESSOR(g4fire::Simulator)
-
