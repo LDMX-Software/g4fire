@@ -106,16 +106,44 @@ add_library(g4fire SHARED
 )
 target_link_libraries(g4fire PUBLIC 
   Geant4::Interface fire::io fire::framework Eigen3::Eigen)
-target_include_directories(g4fire PUBLIC ${g4fire_SOURCE_DIR}/include/)
+
+target_include_directories(g4fire PUBLIC 
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>"
+)
 
 install(TARGETS g4fire 
+  EXPORT g4fire-targets
   LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
 )
+
+# need pattern to exclude version header configured by CMake above
+install(DIRECTORY include/ DESTINATION include/ FILES_MATCHING PATTERN "*.h")
 
 install(DIRECTORY python/ DESTINATION python FILES_MATCHING 
   PATTERN "*.py" 
 )
+
+install(EXPORT g4fire-targets 
+        FILE g4fire-targets.cmake
+        NAMESPACE g4fire::
+        DESTINATION lib/cmake/g4fire
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/g4fireConfig.cmake.in" 
+  "${CMAKE_CURRENT_BINARY_DIR}/g4fireConfig.cmake"
+	INSTALL_DESTINATION "lib/cmake/g4fire"
+)
+
+install(FILES 
+        "${CMAKE_CURRENT_BINARY_DIR}/g4fireConfig.cmake" 
+        DESTINATION "lib/cmake/g4fire"
+)
+
 
 # Unpack the example dark brem vertex library (or libraries)
 #file(GLOB vertex_libraries data/*.tar.gz)
