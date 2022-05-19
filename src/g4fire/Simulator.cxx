@@ -120,14 +120,6 @@ void Simulator::configure(const fire::config::Parameters &params) {
   }
 }
 
-/*void Simulator::onFileOpen(fire::EventFile& file) {
-  // Initialize persistency manager and connect it to the current EventFile
-  persistencyManager_ =
-      std::make_unique<g4fire::persist::RootPersistencyManager>(
-          file, params_, this->getRunNumber(), conditions_intf_);
-  persistencyManager_->Initialize();
-}*/
-
 void Simulator::beforeNewRun(fire::RunHeader &header) {
   // Get the detector header from the user detector construction
   DetectorConstruction *detector = static_cast<DetectorConstruction*>(this->userDetector);
@@ -282,10 +274,6 @@ void Simulator::onNewRun(const fire::RunHeader &) {
 
 void Simulator::process(fire::Event &event) {
   std::cout << "Processing." << std::endl;
-  // Pass the current LDMX event object to the persistency manager.  This
-  // is needed by the persistency manager to fill the current event.
-  // persistencyManager_->setCurrentEvent(&event);
-
   // Generate and process a Geant4 event.
   n_events_began_++;
   this->ProcessOneEvent(event.header().number());

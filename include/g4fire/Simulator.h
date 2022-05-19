@@ -24,8 +24,6 @@ class G4CascadeParameters;
 
 namespace g4fire {
 
-class EventFile;
-class ParameterSet;
 class DetectorConstruction;
 
 /**
@@ -86,7 +84,7 @@ public:
   /// Callback called once processing is complete.
   void onProcessEnd() final override;
 
-private:
+ private:
   /**
    * Configure the simulation given the set of parameters passed by the user
    * at runtime.
@@ -121,10 +119,6 @@ private:
 
   /// User interface handle
   G4UImanager *ui_manager_{nullptr};
-
-  /// PersistencyManager
-  // std::unique_ptr<g4fire::persist::RootPersistencyManager>
-  // persistencyManager_;
 
   /// Handle to the G4Session -> how to deal with G4cout and G4cerr
   std::unique_ptr<G4UIsession> session_handle_;
