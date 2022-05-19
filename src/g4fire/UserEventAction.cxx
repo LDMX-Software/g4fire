@@ -3,12 +3,10 @@
 
 #include <iostream>
 
-#include "g4fire/RunManager.h"
 #include "g4fire/TrackMap.h"
 #include "g4fire/UserTrackingAction.h"
 
 #include "G4Event.hh"
-#include "G4RunManager.hh"
 
 namespace g4fire {
 

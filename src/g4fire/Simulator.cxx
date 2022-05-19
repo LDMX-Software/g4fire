@@ -5,18 +5,33 @@
 #include "fire/exception/Exception.h"
 #include "fire/version/Version.h"
 
+#include "g4fire/DarkBrem/APrimePhysics.h"
 #include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/DetectorConstruction.h"
+#include "g4fire/GammaPhysics.h"
 #include "g4fire/G4Session.h"
 #include "g4fire/Geo/ParserFactory.h"
 #include "g4fire/PluginFactory.h"
-#include "g4fire/RunManager.h"
+#include "g4fire/ParallelWorld.h"
+#include "g4fire/PrimaryGeneratorAction.h"
+#include "g4fire/USteppingAction.h"
+#include "g4fire/UserEventAction.h"
+#include "g4fire/UserRunAction.h"
+#include "g4fire/UserStackingAction.h"
+#include "g4fire/UserTrackingAction.h"
 
+#include "FTFP_BERT.hh"
+#include "G4GDMLParser.hh"
+#include "G4GenericBiasingPhysics.hh"
+#include "G4ParallelWorldPhysics.hh"
+#include "G4ProcessTable.hh"
+#include "G4VModularPhysicsList.hh"
 #include "G4CascadeParameters.hh"
 #include "G4Electron.hh"
 #include "G4GDMLParser.hh"
 #include "G4GeometryManager.hh"
 #include "G4UIsession.hh"
+#include "G4PhysListFactory.hh"
 #include "Randomize.hh"
 
 #include "G4UImanager.hh"
@@ -67,9 +82,6 @@ void Simulator::configure(const fire::config::Parameters &params) {
   if (session_handle_ != nullptr)
     ui_manager_->SetCoutDestination(session_handle_.get());
 
-  // Instantiate the run manager.
-  run_manager_ = std::make_unique<RunManager>(params, conditions_intf_);
-
   // Instantiate the GDML parser
   auto parser{g4fire::geo::ParserFactory::getInstance().createParser(
       "gdml", params_, conditions_intf_)};
@@ -79,12 +91,12 @@ void Simulator::configure(const fire::config::Parameters &params) {
 
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
-  run_manager_->SetUserInitialization(
+  this->SetUserInitialization(
       new DetectorConstruction(parser, params_, conditions_intf_));
 
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser->read();
-  run_manager_->DefineWorldVolume(parser->GetWorldVolume());
+  this->DefineWorldVolume(parser->GetWorldVolume());
 
   auto pre_init_cmds =
       params_.get<std::vector<std::string>>("pre_init_cmds", {});
@@ -118,9 +130,7 @@ void Simulator::configure(const fire::config::Parameters &params) {
 
 void Simulator::beforeNewRun(fire::RunHeader &header) {
   // Get the detector header from the user detector construction
-  DetectorConstruction *detector =
-      static_cast<RunManager *>(RunManager::GetRunManager())
-          ->getDetectorConstruction();
+  DetectorConstruction *detector = static_cast<DetectorConstruction*>(this->userDetector);
 
   if (!detector)
     throw fire::Exception("SimSetup",
@@ -278,13 +288,13 @@ void Simulator::process(fire::Event &event) {
 
   // Generate and process a Geant4 event.
   n_events_began_++;
-  run_manager_->ProcessOneEvent(event.header().number());
+  this->ProcessOneEvent(event.header().number());
 
   // If a Geant4 event has been aborted, skip the rest of the processing
   // sequence. This will immediately force the simulation to move on to
   // the next event.
-  if (run_manager_->GetCurrentEvent()->IsAborted()) {
-    run_manager_->TerminateOneEvent();  // clean up event objects
+  if (this->GetCurrentEvent()->IsAborted()) {
+    this->TerminateOneEvent();  // clean up event objects
     this->abortEvent();                // get out of processors loop
   }
 
@@ -300,7 +310,7 @@ void Simulator::process(fire::Event &event) {
   // Terminate the event.  This checks if an event is to be stored or
   // stacked for later.
   n_events_completed_++;
-  run_manager_->TerminateOneEvent();
+  this->TerminateOneEvent();
 
   return; 
 }
@@ -308,8 +318,93 @@ void Simulator::process(fire::Event &event) {
 void Simulator::onProcessStart() {
   std::cout << "on process start" << std::endl;
 
-  // initialize run
-  run_manager_->Initialize();
+  auto physics_list{G4PhysListFactory().GetReferencePhysList("FTFP_BERT")};
+  physics_list->RegisterPhysics(new GammaPhysics);
+  /*physics_list->RegisterPhysics(new darkbrem::APrimePhysics(
+      params_.get<fire::config::Parameters>("dark_brem")));*/
+
+  std::string parallel_world_path_ = params_.get<std::string>("parallel_world", {});
+  bool pw_enabled_ = !parallel_world_path_.empty();
+  if (pw_enabled_) {
+    // TODO(OM) Use logger instead.
+    std::cout
+        << "[ RunManager ]: Parallel worlds physics list has been registered."
+        << std::endl;
+    physics_list->RegisterPhysics(
+        new G4ParallelWorldPhysics("parallel_world"));
+  }
+
+  auto biasing_operators{params_.get<std::vector<fire::config::Parameters>>(
+      "biasing_operators", {})};
+  if (!biasing_operators.empty()) {
+    std::cout << "[ RunManager ]: Biasing enabled with "
+              << biasing_operators.size() << " operator(s)." << std::endl;
+
+    // Create all the biasing operators that will be used.
+    for (fire::config::Parameters &bop : biasing_operators) {
+      g4fire::PluginFactory::getInstance().createBiasingOperator(
+          bop.get<std::string>("class_name"),
+          bop.get<std::string>("instance_name"), bop);
+    }
+
+    auto biasing_physics{new G4GenericBiasingPhysics()};
+
+    // Specify which particles are going to be biased. This will put a biasing
+    // interface wrapper around *all* processes associated with these
+    // particles.
+    for (const g4fire::XsecBiasingOperator *bop :
+         g4fire::PluginFactory::getInstance().getBiasingOperators()) {
+      std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
+                << "' set to bias " << bop->getParticleToBias() << std::endl;
+      biasing_physics->Bias(bop->getParticleToBias());
+    }
+
+    // Register the physics constructor to the physics list:
+    physics_list->RegisterPhysics(biasing_physics);
+  }
+  this->SetUserInitialization(physics_list);
+
+  // The parallel world needs to be registered before the mass world is
+  // constructed i.e. before G4RunManager::Initialize() is called.
+  if (pw_enabled_) {
+    std::cout << "[ RunManager ]: Parallel worlds have been enabled."
+              << std::endl;
+
+    auto validate_geometry_{params_.get<bool>("validate_detector")};
+    auto pw_parser{new G4GDMLParser()};
+    pw_parser->Read(parallel_world_path_, validate_geometry_);
+    this->userDetector->RegisterParallelWorld(
+        new ParallelWorld(pw_parser, "parallel_world", conditions_intf_));
+  }
+
+  // This is where the physics lists are told to construct their particles and
+  // their processes. They are constructed in order, so it is important to 
+  // register the biasing physics *after* any other processes that need to be
+  // able to be biased
+  G4RunManager::Initialize();
+  std::cout << "done initializing." << std::endl;
+
+  // Instantiate the primary generator action
+  auto primaryGeneratorAction{new PrimaryGeneratorAction(params_)};
+  SetUserAction(primaryGeneratorAction);
+
+  // Get instances of all G4 actions
+  //      also create them in the factory
+  auto actions{PluginFactory::getInstance().getActions()};
+
+  // Create all user actions
+  auto userActions{
+      params_.get<std::vector<fire::config::Parameters>>("actions", {})};
+  for (auto &userAction : userActions) {
+    PluginFactory::getInstance().createAction(
+        userAction.get<std::string>("class_name"),
+        userAction.get<std::string>("instance_name"), userAction);
+  }
+
+  // Register all actions with the G4 engine
+  for (const auto &[key, act] : actions) {
+    std::visit([this](auto &&arg) { this->SetUserAction(arg); }, act);
+  }
 
   // Get the extra simulation configuring commands
   auto post_init_cmds{
@@ -334,42 +429,29 @@ void Simulator::onProcessStart() {
   }
 
   // Instantiate the scoring worlds including any parallel worlds.
-  run_manager_->ConstructScoringWorlds();
+  this->ConstructScoringWorlds();
 
   // Initialize the current run
-  run_manager_->RunInitialization();
+  this->RunInitialization();
 
   // Initialize the event processing
-  run_manager_->InitializeEventLoop(1);
+  this->InitializeEventLoop(1);
 
   return;
 }
 
-/*
-void Simulator::onFileClose(fire::EventFile&) {
-  // End the current run and print out some basic statistics if verbose
-  // level > 0.
-  run_manager_->TerminateEventLoop();
-
-  // Pass the **real** number of events to the persistency manager
-  persistencyManager_->setNumEvents(n_events_began_, n_events_completed_);
-
-  // Persist any remaining events, call the end of run action and
-  // terminate the Geant4 kernel.
-  run_manager_->RunTermination();
-
-  // Cleanup persistency manager
-  //  Geant4 expects us to handle the persistency manager
-  //  In order to avoid segfaulting nonsense, I delete it here
-  //  so that it is deleted before the EventFile it references
-  //  is deleted
-  persistencyManager_.reset(nullptr);
-}
-*/
 void Simulator::onProcessEnd() {
   std::cout << "[ Simulator ] : "
             << "Started " << n_events_began_ << " events to produce "
             << n_events_completed_ << " events." << std::endl;
+
+  // End the current run and print out some basic statistics if verbose
+  // level > 0.
+  this->TerminateEventLoop();
+
+  // Persist any remaining events, call the end of run action and
+  // terminate the Geant4 kernel.
+  this->RunTermination();
 
   // Delete Run Manager
   // From Geant4 Basic Example B01:
@@ -382,7 +464,7 @@ void Simulator::onProcessEnd() {
   //  1. When the histogram file is closed (all ROOT objects created during
   //  processing are put there because ROOT)
   //  2. When Simulator is deleted because run_manager_ is a unique_ptr
-  run_manager_.reset(nullptr);
+  //run_manager_.reset(nullptr);
 
   // Delete the G4UIsession
   // I don't think this needs to happen here, but since we are cleaning up loose

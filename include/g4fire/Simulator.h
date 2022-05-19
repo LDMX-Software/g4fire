@@ -14,6 +14,8 @@
 
 #include "g4fire/ConditionsInterface.h"
 
+#include <G4RunManager.hh>
+
 class G4UImanager;
 class G4UIsession;
 class G4GDMLParser;
@@ -22,7 +24,6 @@ class G4CascadeParameters;
 
 namespace g4fire {
 
-class RunManager;
 class EventFile;
 class ParameterSet;
 class DetectorConstruction;
@@ -30,7 +31,7 @@ class DetectorConstruction;
 /**
  * Geant4 simulation wrapped within a fire producer.
  */
-class Simulator : public fire::Processor {
+class Simulator : public fire::Processor, public G4RunManager {
 public:
   Simulator(const fire::config::Parameters &params);
 
@@ -117,9 +118,6 @@ private:
    *      an exception is thrown.
    */
   void setSeeds(std::vector<int> seeds);
-
-  /// Manager controlling G4 simulation run
-  std::unique_ptr<RunManager> run_manager_;
 
   /// User interface handle
   G4UImanager *ui_manager_{nullptr};

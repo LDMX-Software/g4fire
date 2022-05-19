@@ -66,7 +66,6 @@ set (sim_sources
   ${g4fire_SOURCE_DIR}/src/g4fire/PluginFactory.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/PrimaryGeneratorAction.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/PrimaryGenerator.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/RunManager.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/Simulator.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/TrackMap.cxx
   ${g4fire_SOURCE_DIR}/src/g4fire/UserAction.cxx
