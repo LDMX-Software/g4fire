@@ -1,8 +1,8 @@
-#include "g4fire/USteppingAction.h"
+#include "SteppingAction.h"
 
-namespace g4fire {
+namespace g4fire::g4user {
 
-void USteppingAction::UserSteppingAction(const G4Step *step) {
+void SteppingAction::UserSteppingAction(const G4Step *step) {
   auto event_info{static_cast<UserEventInformation *>(
       G4EventManager::GetEventManager()->GetUserInformation())};
 
