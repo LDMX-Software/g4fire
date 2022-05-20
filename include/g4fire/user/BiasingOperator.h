@@ -58,23 +58,6 @@ class BiasingOperator : public G4VBiasingOperator {
   virtual ~BiasingOperator() = default;
 
   /**
-   * Propose a biasing operation for the current track and calling process.
-   *
-   * @note Returning `0` from this function will mean that the current track
-   * and process will not be biased.
-   *
-   * @see BiasedXsec for a method that allows the derived class to not
-   * interact with the biasing operation itself.
-   *
-   * @param track handle to current track that could be biased
-   * @param calling_process handle to process asking if it should be biased
-   * @return the biasing operation with the biased xsec
-   */
-  virtual G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track,
-      const G4BiasingProcessInterface* calling_process) = 0;
-
-  /**
    * Method called at the beginning of a run.
    *
    * This makes sure that the process we want to bias can
@@ -111,6 +94,32 @@ class BiasingOperator : public G4VBiasingOperator {
       //                    " is not found in list of biased processes!");
     }
   }
+
+  /**
+   * Attach ourselves to the input logical volume if it should be biased
+   *
+   * Use the Geant4 method G4VBiasingOperator::Attach when you know that lv
+   * should be biased.
+   */
+  virtual void isBiased(G4LogicalVolume* lv) const = 0;
+
+  /**
+   * Propose a biasing operation for the current track and calling process.
+   *
+   * @note Returning `0` from this function will mean that the current track
+   * and process will not be biased.
+   *
+   * @see BiasedXsec for a method that allows the derived class to not
+   * interact with the biasing operation itself.
+   *
+   * @param track handle to current track that could be biased
+   * @param calling_process handle to process asking if it should be biased
+   * @return the biasing operation with the biased xsec
+   */
+  virtual G4VBiasingOperation* ProposeOccurenceBiasingOperation(
+      const G4Track* track,
+      const G4BiasingProcessInterface* calling_process) = 0;
+
 
   /**
    * Return the process whose cross-section will be biased.
