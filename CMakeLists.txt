@@ -80,7 +80,7 @@ add_library(user INTERFACE)
 target_include_directories(user INTERFACE 
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
-target_link_libraries(user INTERFACE Geant4::Interface)
+target_link_libraries(user INTERFACE Geant4::Interface fire::config)
 
 add_library(g4user SHARED
   src/g4fire/g4user/EventAction.cxx
