@@ -1,22 +1,18 @@
-#include "g4fire/PrimaryGeneratorAction.h"
+#include "PrimaryGeneratorAction.h"
 
-#include "G4Event.hh"
-#include "G4RunManager.hh"  // Needed for CLHEP
+#include <G4Event.hh>
+#include <G4RunManager.hh>  // Needed for CLHEP
 
-#include "g4fire/PluginFactory.h"
+#include <fire/exception/Exception.h> 
+
 #include "g4fire/UserEventInformation.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 
-#include "fire/exception/Exception.h" 
-
-namespace g4fire {
+namespace g4fire::g4user {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(
     fire::config::Parameters& params)
-    : G4VUserPrimaryGeneratorAction(), manager_(PluginFactory::getInstance()) {
-  // The parameters used to configure the primary generator action
-  params_ = params;
-
+    : G4VUserPrimaryGeneratorAction() {
   // Check whether a beamspot should be used or not.
   // TODO(OM): Change individual beam spot variables to a vector
   auto beam_spot_{
@@ -39,9 +35,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   }
 
   for (auto& generator : generators) {
-    manager_.createGenerator(
-        generator.get<std::string>("class_name"),
-        generator.get<std::string>("instance_name"), generator);
+    generators_.emplace_back(
+        user::PrimaryGenerator::Factory::make(generator.get<std::string>("class_name"), generator)
+        );
   }
 }
 
@@ -63,11 +59,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   auto event_info{new UserEventInformation};
   event->SetUserInformation(event_info);
 
-  /// Get the list of generators that will be used for this event
-  auto generators{manager_.getGenerators()};
-
   // Generate the primary vertices using the generators
-  std::for_each(generators.begin(), generators.end(),
+  std::for_each(generators_.begin(), generators_.end(),
                 [event](const auto& generator) {
                   generator->GeneratePrimaryVertex(event);
                 });

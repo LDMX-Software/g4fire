@@ -1,18 +1,18 @@
-#ifndef G4FIRE_PRIMARYGENERATORACTION_H
-#define G4FIRE_PRIMARYGENERATORACTION_H
+#ifndef G4FIRE_G4USER_PRIMARYGENERATORACTION_H
+#define G4FIRE_G4USER_PRIMARYGENERATORACTION_H
 
 #include <algorithm>
 #include <memory>
 
-#include "G4VUserPrimaryGeneratorAction.hh"
+#include <G4VUserPrimaryGeneratorAction.hh>
 
-#include "g4fire/PluginFactory.h"
+#include <fire/config/Parameters.h> 
 
-#include "fire/config/Parameters.h" 
+#include "g4fire/user/PrimaryGenerator.h"
 
 class G4Event;
 
-namespace g4fire {
+namespace g4fire::g4user {
 
 /**
  * Implementation of Geant4 primary generator action.
@@ -67,11 +67,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
  private:
   /// Manager of all generators used by the event
-  PluginFactory& manager_;
-
-  /// The parameters used to configure the primary generator of choice
-  fire::config::Parameters params_;
-
+  std::vector<std::unique_ptr<PrimaryGenerator>> generators_;
   /**
    * Flag denoting whether the vertex position of a particle
    * should be smeared.
@@ -97,6 +93,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
 };  // PrimaryGeneratorAction
 
-}  // namespace g4fire
+}  // namespace g4fire::g4user
 
-#endif  // G4FIRE_PRIMARYGENERATORACTION_H
+#endif  // G4FIRE_G4USER_PRIMARYGENERATORACTION_H
