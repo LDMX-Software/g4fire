@@ -1,22 +1,23 @@
 #ifndef G4FIRE_USER_BIASINGOPERATOR_H_
 #define G4FIRE_USER_BIASINGOPERATOR_H_
 
-#include "fire/config/Parameters.h"
-#include "fire/RunHeader.h"
+#include <fire/config/Parameters.h>
+#include <fire/factory/Factory.h>
+#include <fire/RunHeader.h>
 
-#include "G4BOptnChangeCrossSection.hh"
-#include "G4BiasingProcessInterface.hh"
-#include "G4BiasingProcessSharedData.hh"
-#include "G4Electron.hh"
-#include "G4Gamma.hh"
-#include "G4Neutron.hh"
-#include "G4KaonZeroLong.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4ParticleTable.hh"
-#include "G4ProcessManager.hh"
-#include "G4RunManager.hh"
-#include "G4Track.hh"
-#include "G4VBiasingOperator.hh"
+#include <G4BOptnChangeCrossSection.hh>
+#include <G4BiasingProcessInterface.hh>
+#include <G4BiasingProcessSharedData.hh>
+#include <G4Electron.hh>
+#include <G4Gamma.hh>
+#include <G4Neutron.hh>
+#include <G4KaonZeroLong.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4ParticleTable.hh>
+#include <G4ProcessManager.hh>
+#include <G4RunManager.hh>
+#include <G4Track.hh>
+#include <G4VBiasingOperator.hh>
 
 namespace g4fire::user {
 

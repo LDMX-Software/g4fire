@@ -1,12 +1,12 @@
-#ifndef G4FIRE_PRIMARYGENERATOR_H
-#define G4FIRE_PRIMARYGENERATOR_H
+#ifndef G4FIRE_USER_PRIMARYGENERATOR_H
+#define G4FIRE_USER_PRIMARYGENERATOR_H
 
 #include <string>
 
-#include "G4VPrimaryGenerator.hh"
+#include <G4VPrimaryGenerator.hh>
 
-#include "fire/config/Parameters.h"
-#include "fire/factory/Factory.h"
+#include <fire/config/Parameters.h>
+#include <fire/factory/Factory.h>
 
 class G4Event;
 
@@ -59,4 +59,4 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   auto v = ::g4fire::user::PrimaryGenerator::Factory::get().declare<CLASS>(); \
   }
 
-#endif // G4FIRE_PRIMARYGENERATOR_H
+#endif // G4FIRE_USER_PRIMARYGENERATOR_H

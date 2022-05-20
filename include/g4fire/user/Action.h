@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 
-#include "G4EventManager.hh"
-#include "G4UserStackingAction.hh"
+#include <G4EventManager.hh>
+#include <G4UserStackingAction.hh>
 
-#include "fire/config/Parameters.h"
+#include <fire/config/Parameters.h>
+#include <fire/factory/Factory.h>
+
 #include "g4fire/UserEventInformation.h"
 
 // Forward Declarations
