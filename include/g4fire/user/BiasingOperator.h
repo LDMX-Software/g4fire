@@ -1,8 +1,8 @@
-#ifndef G4FIRE_XSECBIASINGOPERATOR_H_
-#define G4FIRE_XSECBIASINGOPERATOR_H_
+#ifndef G4FIRE_USER_BIASINGOPERATOR_H_
+#define G4FIRE_USER_BIASINGOPERATOR_H_
 
 #include "fire/config/Parameters.h"
-//#include "Framework/RunHeader.h"
+#include "fire/RunHeader.h"
 
 #include "G4BOptnChangeCrossSection.hh"
 #include "G4BiasingProcessInterface.hh"
@@ -18,13 +18,7 @@
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
 
-namespace g4fire {
-
-class XsecBiasingOperator;
-
-/// Define type of building fuction for biasing operators
-typedef XsecBiasingOperator* XsecBiasingOperatorBuilder(
-    const std::string& name, fire::config::Parameters& params);
+namespace g4fire::user {
 
 /**
  * Our specialization of the biasing operator used with Geant4.
@@ -38,7 +32,12 @@ typedef XsecBiasingOperator* XsecBiasingOperatorBuilder(
  *    class only needs to worry about calculating the biased
  *    xsec.
  */
-class XsecBiasingOperator : public G4VBiasingOperator {
+class BiasingOperator : public G4VBiasingOperator {
+ public:
+  /**
+   * Factory for biasing operators
+   */
+  using Factory = ::fire::factory::Factory<BiasingOperator,std::unique_ptr<BiasingOperator>,const fire::config::Parameters&>;
  public:
   /**
    * Constructor
@@ -47,23 +46,15 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * and are given the configuration params loaded from the
    * python script.
    *
-   * @param name unique instance name for this biasing operator
+   * @note We require the parameter 'name' defined.
+   *
    * @param params python configuration parameters
    */
-  XsecBiasingOperator(std::string name,
-                      const fire::config::Parameters& params);
+  BiasingOperator(const fire::config::Parameters& params) 
+    : G4VBiasingOperator(params.get<std::string>("name")) {}
 
   /// Destructor 
-  virtual ~XsecBiasingOperator();
-
-  /**
-   * Method used to register an operator with the manager.
-   *
-   * @param class_name Name of the class instance
-   * @param builder The builder used to create and instance of this class.
-   */
-  static void declare(const std::string& class_name,
-                      XsecBiasingOperatorBuilder* builder);
+  virtual ~BiasingOperator() = default;
 
   /**
    * Propose a biasing operation for the current track and calling process.
@@ -89,10 +80,36 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * be biased and constructs a corresponding biasing operation.
    *
    * It can be over-written, but then the derived class should
-   * call `XsecBiasingOperator::StartRun()` at the beginning of
+   * call `BiasingOperator::StartRun()` at the beginning of
    * their own StartRun.
    */
-  void StartRun();
+  virtual void StartRun() {
+    if (this->getParticleToBias().compare("gamma") == 0) {
+      process_manager_ = G4Gamma::GammaDefinition()->GetProcessManager();
+    } else if (this->getParticleToBias().compare("e-") == 0) {
+      process_manager_ = G4Electron::ElectronDefinition()->GetProcessManager();
+    } else if (this->getParticleToBias().compare("neutron") == 0) {
+      process_manager_ = G4Neutron::NeutronDefinition()->GetProcessManager();
+    } else if (this->getParticleToBias().compare("kaon0L") == 0) {
+      process_manager_ = G4KaonZeroLong::KaonZeroLongDefinition()->GetProcessManager();
+    } else {
+      //EXCEPTION_RAISE("BiasSetup", "Invalid particle type '" +
+      //                                 this->getParticleToBias() + "'.");
+    }
+  
+    // TODO(OM): Use logger instead
+    std::cout << "[ BiasingOperator ]: Biasing particles of type "
+              << this->getParticleToBias() << std::endl;
+  
+    if (processIsBiased(this->getProcessToBias())) {
+      xsec_operation_ =
+          new G4BOptnChangeCrossSection("changeXsec-" + this->getProcessToBias());
+    } else {
+      //EXCEPTION_RAISE("BiasSetup",
+      //                this->getProcessToBias() +
+      //                    " is not found in list of biased processes!");
+    }
+  }
 
   /**
    * Return the process whose cross-section will be biased.
@@ -126,7 +143,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    *
    * @param[in,out] header RunHeader to write configuration to
    */
-  //virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
+  virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
 
  protected:
   /**
@@ -155,7 +172,26 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * @param process Process of interest
    * @return true if the process is being biased, false otherwise
    */
-  bool processIsBiased(std::string process);
+  bool processIsBiased(std::string process) {
+    // Loop over all processes and check if the given process is being
+    // biased.
+    const G4BiasingProcessSharedData* shared_data{
+        G4BiasingProcessInterface::GetSharedData(process_manager_)};
+    if (shared_data) {
+      for (size_t iprocess = 0;
+           iprocess < (shared_data->GetPhysicsBiasingProcessInterfaces()).size();
+           ++iprocess) {
+        const G4BiasingProcessInterface* wrapperProcess =
+            (shared_data->GetPhysicsBiasingProcessInterfaces())[iprocess];
+  
+        if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(
+                process) == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   /// Cross-section biasing operation.
   G4BOptnChangeCrossSection* xsec_operation_{nullptr};
@@ -175,23 +211,17 @@ class XsecBiasingOperator : public G4VBiasingOperator {
     return nullptr;
   }
 
-}; // XsecBiasingOperator
-}  // namespace g4fire
+}; // BiasingOperator
+}  // namespace g4fire::user
 
 /**
- * @macro DECLARE_XSECBIASINGOPERATOR
+ * @macro DECLARE_BIASING_OPERATOR
  *
- * Defines a builder for the declared class
- * and then registers the class as a biasing operator.
+ * Registers the class as a biasing operator that is available
  */
-#define DECLARE_XSECBIASINGOPERATOR(NS, CLASS)                              \
-  g4fire::XsecBiasingOperator* CLASS##Builder(                             \
-      const std::string& name, fire::config::Parameters& params) { \
-    return new NS::CLASS(name, params);                                 \
-  }                                                                         \
-  __attribute((constructor(205))) static void CLASS##Declare() {            \
-    g4fire::XsecBiasingOperator::declare(                                  \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
+#define DECLARE_BIASING_OPERATOR(CLASS)                              \
+  namespace { \
+  auto v = ::g4fire::user::BiasingOperator::Factory::get().declare<CLASS>(); \
   }
 
-#endif  // G4FIRE_XSECBIASINGOPERATOR_H_
+#endif  // G4FIRE_USER_BIASINGOPERATOR_H_

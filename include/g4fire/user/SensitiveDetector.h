@@ -75,7 +75,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    *
    * @param[in,out] header RunHeader to write configuration to
    */
-  //virtual void RecordConfig(framework::RunHeader& header) const = 0;
+  virtual void RecordConfig(framework::RunHeader& header) const = 0;
 
  protected:
   /**

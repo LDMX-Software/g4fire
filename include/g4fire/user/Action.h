@@ -1,5 +1,5 @@
-#ifndef G4FIRE_USERACTION_H
-#define G4FIRE_USERACTION_H
+#ifndef G4FIRE_USER_ACTION_H
+#define G4FIRE_USER_ACTION_H
 
 #include <iostream>
 #include <map>
@@ -18,41 +18,30 @@ class G4Run;
 class G4Step;
 class G4Track;
 
-namespace g4fire {
+namespace g4fire::user {
 
 /// Enum for each of the user action types.
 enum TYPE { RUN = 1, EVENT, TRACKING, STEPPING, STACKING, NONE };
 
-// Forward declarations
-class UserAction;
-
-typedef UserAction* UserActionBuilder(
-    const std::string& name, fire::config::Parameters& params);
-
 /**
- * @class UserAction
- * @brief Interface that defines a user action.
+ * Generalized action with various Geant4 call backs
  */
-class UserAction {
+class Action {
  public:
   /**
-   * Constructor.
+   * Factory for actions
+   */
+  using Factory = ::fire::factory::Factor<Action,std::unique_ptr<Action>,const fire::config::Parameters&>;
+ public:
+  /**
+   * Configure the action
    *
    * @param name Name given the to class instance.
    */
-  UserAction(const std::string& name,
-             fire::config::Parameters& params);
+  Action(const fire::config::Parameters& params) {}
 
   /// Destructor
-  virtual ~UserAction() = default;
-
-  /**
-   * Method used to register a user action with the manager.
-   *
-   * @param class_name Name of the class instance
-   * @param builder The builder used to create and instance of this class.
-   */
-  static void declare(const std::string& class_name, UserActionBuilder* builder);
+  virtual ~Action() = default;
 
   /**
    * Method called at the beginning of every event.
@@ -61,7 +50,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void BeginOfEventAction(const G4Event*){};
+  virtual void BeginOfEventAction(const G4Event*) {}
 
   /**
    * Method called at the end of every event.
@@ -70,7 +59,7 @@ class UserAction {
    *
    * @param event Geant4 event object.
    */
-  virtual void EndOfEventAction(const G4Event*){};
+  virtual void EndOfEventAction(const G4Event*) {}
 
   /**
    * Method called at the beginning of a run.
@@ -79,7 +68,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void BeginOfRunAction(const G4Run*){};
+  virtual void BeginOfRunAction(const G4Run*) {}
 
   /**
    * Method called at the end of a run.
@@ -88,7 +77,7 @@ class UserAction {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void EndOfRunAction(const G4Run*){};
+  virtual void EndOfRunAction(const G4Run*) {}
 
   /**
    * Method called before the UserTrackingAction.
@@ -97,7 +86,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void PreUserTrackingAction(const G4Track*){};
+  virtual void PreUserTrackingAction(const G4Track*) {}
 
   /**
    * Method called after the UserTrackingAction.
@@ -106,7 +95,7 @@ class UserAction {
    *
    * @param track current Geant4 track
    */
-  virtual void PostUserTrackingAction(const G4Track*){};
+  virtual void PostUserTrackingAction(const G4Track*) {}
 
   /**
    * Method called after each simulation step.
@@ -115,7 +104,7 @@ class UserAction {
    *
    * @param current Geant4 step
    */
-  virtual void stepping(const G4Step*){};
+  virtual void stepping(const G4Step*) {}
 
   /**
    * Method called when a track is updated
@@ -135,19 +124,19 @@ class UserAction {
    *
    * TYPE::STACKING
    */
-  virtual void NewStage(){};
+  virtual void NewStage() {}
 
   /**
    * Method called at the beginning of a new event
    *
    * TYPE::STACKING
    */
-  virtual void PrepareNewEvent(){};
+  virtual void PrepareNewEvent() {}
 
   /**
    * @return The user action types
    *
-   * Must be defined by any UserActions so that we know what functions to call.
+   * Must be defined by any Actions so that we know what functions to call.
    */
   virtual std::vector<TYPE> getTypes() = 0;
 
@@ -166,26 +155,13 @@ class UserAction {
     return static_cast<UserEventInformation*>(
         G4EventManager::GetEventManager()->GetUserInformation());
   }
-
- protected:
-  /// Name of the UserAction
-  std::string name_{""};
-
-  /// The set of parameters used to configure this class
-  fire::config::Parameters params_;
-
-};  // UserAction
+};  // Action
 
 }  // namespace g4fire
 
-#define DECLARE_ACTION(NS, CLASS)                                           \
-  g4fire::UserAction* CLASS##Builder(                                      \
-      const std::string& name, fire::config::Parameters& params) { \
-    return new NS::CLASS(name, params);                                 \
-  }                                                                         \
-  __attribute((constructor(205))) static void CLASS##Declare() {            \
-    g4fire::UserAction::declare(                                           \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
+#define DECLARE_ACTION(CLASS)                                           \
+  namespace { \
+  auto v = ::g4fire::user::Action::Factory::get().declare<CLASS>(); \
   }
 
-#endif  // G4FIRE_USERACTION_H
+#endif  // G4FIRE_USER_ACTION_H

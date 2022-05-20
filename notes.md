@@ -10,6 +10,7 @@ Class | Description | Pre-Defined Options
 ---|---|---
 Physics Constructor | adding custom physics processes and particles | None
 Detector | defining detector to be simulated | simple rectangle prism and GDML reader
+Sensitive Detectors | generate "hits" in detector volumes | None (maybe Calorimeter/Tracker ?)
 Biasing Operator | biasing processes in specific volumes | None
 Primary Generators | starting simulation | ParticleGun, LHE, GPS
 Generalized Actions | filtering and/or watching at G4 callbacks | None
