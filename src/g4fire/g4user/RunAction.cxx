@@ -1,15 +1,15 @@
-#include "g4fire/UserRunAction.h"
+#include "RunAction.h"
 
-#include "G4Run.hh"
+#include <G4Run.hh>
 
-namespace g4fire {
+namespace g4fire::g4user {
 
-void UserRunAction::BeginOfRunAction(const G4Run* run) {
+void RunAction::BeginOfRunAction(const G4Run* run) {
   // Call user run action
   for (auto& run_action : run_actions_) run_action->BeginOfRunAction(run);
 }
 
-void UserRunAction::EndOfRunAction(const G4Run* run) {
+void RunAction::EndOfRunAction(const G4Run* run) {
   // Call user run action
   for (auto& run_action : run_actions_) run_action->EndOfRunAction(run);
 }

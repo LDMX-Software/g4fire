@@ -1,26 +1,26 @@
-#ifndef G4FIRE_USEREVENTACTION_H
-#define G4FIRE_USEREVENTACTION_H
+#ifndef G4FIRE_G4USER_EVENTACTION_H
+#define G4FIRE_G4USER_EVENTACTION_H
 
 #include <vector>
 
-#include "G4UserEventAction.hh"
+#include <G4UserEventAction.hh>
 
-#include "g4fire/UserAction.h"
+#include "g4fire/user/Action.h"
 
 class G4Event;
 
-namespace g4fire {
+namespace g4fire::g4user {
 
 /**
  * @brief Implementation of user event action hook
  */
-class UserEventAction : public G4UserEventAction {
+class EventAction : public G4UserEventAction {
  public:
   /// Class constructor.
-  UserEventAction() = default;
+  EventAction() = default;
 
   /// Class destructor.
-  virtual ~UserEventAction() = default;
+  virtual ~EventAction() = default;
 
   /**
    * Implementation of begin of event hook.
@@ -39,17 +39,17 @@ class UserEventAction : public G4UserEventAction {
   /**
    * Register a user action of type EventAction with this class.
    *
-   * @param action  User action of type EventAction
+   * @param action   action of type EventAction
    */
-  void registerAction(UserAction* event_action) {
+  void registerAction(user::Action* event_action) {
     event_actions_.push_back(event_action);
   }
 
  private:
-  std::vector<UserAction*> event_actions_;
+  std::vector<user::Action*> event_actions_;
 
-};  // UserEventAction
+};  // EventAction
 
-}  // namespace g4fire
+}  // namespace g4fire::g4user
 
-#endif  // G4FIRE_USEREVENTACTION_H
+#endif  // G4FIRE_G4USER_EVENTACTION_H

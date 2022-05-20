@@ -1,24 +1,24 @@
-#ifndef G4FIRE_USERSTACKINGACTION_H
-#define G4FIRE_USERSTACKINGACTION_H
+#ifndef G4FIRE_G4USER_STACKINGACTION_H
+#define G4FIRE_G4USER_STACKINGACTION_H
 
 #include <vector>
 
 #include "G4UserStackingAction.hh"
 
-#include "g4fire/UserAction.h"
+#include "g4fire/user/Action.h"
 
-namespace g4fire {
+namespace g4fire::g4user {
 
 /**
  * @brief Class implementing a user stacking action.
  */
-class UserStackingAction : public G4UserStackingAction {
+class StackingAction : public G4UserStackingAction {
  public:
   /// Constructor
-  UserStackingAction() = default;
+  StackingAction() = default;
 
   /// Destructor
-  virtual ~UserStackingAction() = default;
+  virtual ~StackingAction() = default;
 
   /**
    * Classify a new track.
@@ -40,17 +40,17 @@ class UserStackingAction : public G4UserStackingAction {
   /**
    * Register a user action of type stacking action with this class.
    *
-   * @param action  User action of type StackingAction
+   * @param action   action of type StackingAction
    */
-  void registerAction(UserAction* stacking_action) {
+  void registerAction(user::Action* stacking_action) {
     stacking_actions_.push_back(stacking_action);
   }
 
  private:
   /// Collection of user stacking actions
-  std::vector<UserAction*> stacking_actions_;
+  std::vector<user::Action*> stacking_actions_;
 
-};  // UserStackingAction
+};  // StackingAction
 
 }  // namespace g4fire
 

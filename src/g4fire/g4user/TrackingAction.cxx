@@ -1,18 +1,18 @@
-#include "g4fire/UserTrackingAction.h"
+#include "TrackingAction.h"
+
+#include <G4PrimaryParticle.hh>
+#include <G4VUserPrimaryParticleInformation.hh>
+
+#include <iostream>
 
 #include "g4fire/TrackMap.h"
 #include "g4fire/UserPrimaryParticleInformation.h"
 #include "g4fire/UserRegionInformation.h"
 #include "g4fire/UserTrackInformation.h"
 
-#include "G4PrimaryParticle.hh"
-#include "G4VUserPrimaryParticleInformation.hh"
+namespace g4fire::g4user {
 
-#include <iostream>
-
-namespace g4fire {
-
-void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
+void TrackingAction::PreUserTrackingAction(const G4Track* track) {
   if (!track_map_.contains(track)) {
     // New Track
     
@@ -61,7 +61,7 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
     tracking_action->PreUserTrackingAction(track);
 }
 
-void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
+void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   // Activate user tracking actions
   for (auto& tracking_action : tracking_actions_)
     tracking_action->PostUserTrackingAction(track);

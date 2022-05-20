@@ -1,16 +1,16 @@
-#ifndef G4FIRE_USERTRACKINGACTION_H_
-#define G4FIRE_USERTRACKINGACTION_H_
+#ifndef G4FIRE_G4USER_TRACKINGACTION_H_
+#define G4FIRE_G4USER_TRACKINGACTION_H_
 
 #include <vector>
 
+#include <G4RunManager.hh>
+#include <G4UserTrackingAction.hh>
+
 #include "g4fire/TrackMap.h"
 
-#include "G4RunManager.hh"
-#include "G4UserTrackingAction.hh"
+#include "g4fire/user/Action.h"
 
-#include "g4fire/UserAction.h"
-
-namespace g4fire {
+namespace g4fire::g4user {
 
 /**
  * @brief Implementation of user tracking action
@@ -18,13 +18,13 @@ namespace g4fire {
  * Here, we manage the interaction between our track storage machinery
  * (TrackMap) and Geant4's tracking manager (G4TrackingManager).
  */
-class UserTrackingAction : public G4UserTrackingAction {
+class TrackingAction : public G4UserTrackingAction {
  public:
   /// Class constructor.
-  UserTrackingAction() = default;
+  TrackingAction() = default;
 
   /// Class destructor.
-  virtual ~UserTrackingAction() = default;
+  virtual ~TrackingAction() = default;
 
   /**
    * Implementation of pre-tracking action.
@@ -94,9 +94,9 @@ class UserTrackingAction : public G4UserTrackingAction {
    * Get a pointer to the current UserTrackingAction from the G4RunManager.
    * @return A pointer to the current UserTrackingAction.
    */
-  static UserTrackingAction* getUserTrackingAction() {
-    return static_cast<UserTrackingAction*>(const_cast<G4UserTrackingAction*>(
-        G4RunManager::GetRunManager()->GetUserTrackingAction()));
+  static TrackingAction* getTrackingAction() {
+    return static_cast<TrackingAction*>(const_cast<G4TrackingAction*>(
+        G4RunManager::GetRunManager()->GetTrackingAction()));
   }
 
   /**
@@ -104,17 +104,17 @@ class UserTrackingAction : public G4UserTrackingAction {
    *
    * @param action  User action of type RunAction
    */
-  void registerAction(UserAction* tracking_action) {
+  void registerAction(user::Action* tracking_action) {
     tracking_actions_.push_back(tracking_action);
   }
 
  private:
   /// custom user actions to be called before and after processing a track
-  std::vector<UserAction*> tracking_actions_;
+  std::vector<user::Action*> tracking_actions_;
 
   /// Stores parentage information for all tracks in the event. 
   TrackMap track_map_;
-};  // UserTrackingAction
-}  // namespace g4fire
+};  // TrackingAction
+}  // namespace g4fire::g4user
 
 #endif

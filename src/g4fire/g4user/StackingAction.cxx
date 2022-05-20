@@ -1,9 +1,9 @@
-#include "g4fire/UserStackingAction.h"
+#include "StackingAction.h"
 
-namespace g4fire {
+namespace g4fire::g4user {
 
 G4ClassificationOfNewTrack
-UserStackingAction::ClassifyNewTrack(const G4Track *track) {
+StackingAction::ClassifyNewTrack(const G4Track *track) {
   // Default value of a track is fUrgent.
   G4ClassificationOfNewTrack current_track_class =
       G4ClassificationOfNewTrack::fUrgent;
@@ -22,12 +22,12 @@ UserStackingAction::ClassifyNewTrack(const G4Track *track) {
   return current_track_class;
 }
 
-void UserStackingAction::NewStage() {
+void StackingAction::NewStage() {
   for (auto &stacking_action : stacking_actions_)
     stacking_action->NewStage();
 }
 
-void UserStackingAction::PrepareNewEvent() {
+void StackingAction::PrepareNewEvent() {
   for (auto &stacking_action : stacking_actions_)
     stacking_action->PrepareNewEvent();
 }

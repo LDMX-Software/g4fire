@@ -1,26 +1,26 @@
-#ifndef G4FIRE_USERRUNACTION_H
-#define G4FIRE_USERRUNACTION_H
+#ifndef G4FIRE_G4USER_RUNACTION_H
+#define G4FIRE_G4USER_RUNACTION_H
 
 #include <vector>
 
-#include "G4UserRunAction.hh"
+#include <G4UserRunAction.hh>
 
-#include "g4fire/UserAction.h"
+#include "g4fire/user/Action.h"
 
 class G4Run;
 
-namespace g4fire {
+namespace g4fire::g4user {
 
 /**
  * @brief Implementation of user run action hook
  */
-class UserRunAction : public G4UserRunAction {
+class RunAction : public G4UserRunAction {
  public:
   /// Class constructor.
-  UserRunAction() = default;
+  RunAction() = default;
 
   /// Class destructor.
-  virtual ~UserRunAction() = default;
+  virtual ~RunAction() = default;
 
   /**
    * Implementation of begin run hook.
@@ -37,16 +37,16 @@ class UserRunAction : public G4UserRunAction {
   /**
    * Register a user action of type RunAction with this class.
    *
-   * @param action  User action of type RunAction
+   * @param action   action of type RunAction
    */
-  void registerAction(UserAction* run_action) {
+  void registerAction(user::Action* run_action) {
     run_actions_.push_back(run_action);
   }
 
  private:
-  std::vector<UserAction*> run_actions_;
+  std::vector<user::Action*> run_actions_;
 
-};  // UserRunAction
+};  // RunAction
 }  // namespace g4fire
 
 #endif  // G4FIRE_USERRUNACTION_H
