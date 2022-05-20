@@ -38,103 +38,98 @@ find_package (Boost REQUIRED COMPONENTS log)
 find_package (fire REQUIRED)
 find_package (Eigen3 REQUIRED NO_MODULE)
 
-set (dark_brem_sources
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/APrimePhysics.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/G4APrime.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/DarkBremVertexLibraryModel.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/G4eDarkBremsstrahlung.cxx
-)
+# Execute the command to extract the SHA1 hash of the current git tag.
+# 'git' is removed from within the container to discourage opening a shell
+# in the container, so we need to go to some lengths in order to avoid using 'git'
+# The variable GIT_SHA1 will be set to contain the hash.
+set(git_dir "${PROJECT_SOURCE_DIR}/.git")
+if (NOT IS_DIRECTORY "${git_dir}")
+  # we are a submodule of another project
+  file(READ "${git_dir}" git_dir)
+  string(REGEX REPLACE "^gitdir: " "" git_dir ${git_dir})
+  string(REGEX REPLACE "\n$" "" git_dir ${git_dir})
+endif()
+file(READ "${git_dir}/HEAD" current_ref)
+string(REGEX REPLACE "\n$" "" current_ref ${current_ref})
+if (current_ref MATCHES "^ref:.*$")
+  # on a branch
+  string(REGEX REPLACE "^ref: " "" current_ref "${current_ref}")
+  file(READ "${git_dir}/${current_ref}" GIT_SHA1)
+  string(REGEX REPLACE "\n$" "" GIT_SHA1 ${GIT_SHA1})
+else()
+  # in detached head state (probably on a tag)
+  set(GIT_SHA1 ${current_ref})
+endif()
+message(STATUS "Deduced git SHA: ${GIT_SHA1}")
 
-set (geo_sources
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/AuxInfoReader.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/GDMLParser.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/ParserFactory.cxx
-)
+# Copies the file 'Version.h.in', substitutes the value of GIT_SHA1 and writes
+# it out to Version.h.
+configure_file(${PROJECT_SOURCE_DIR}/include/g4fire/version/Version.h.in
+              ${PROJECT_BINARY_DIR}/include/g4fire/version/Version.h)
+install(FILES ${PROJECT_BINARY_DIR}/include/g4fire/version/Version.h
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g4fire/version)
 
-set (sim_sources
-  ${g4fire_SOURCE_DIR}/src/g4fire/DetectorConstruction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/G4Session.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/GammaPhysics.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/GeneralParticleSource.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/LHEEvent.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/LHEParticle.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/LHEPrimaryGenerator.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/LHEReader.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/MagneticFieldMap3D.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/ParallelWorld.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/ParticleGun.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/PluginFactory.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/PrimaryGeneratorAction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/PrimaryGenerator.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/Simulator.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/TrackMap.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserAction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserEventAction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserEventInformation.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserRegionInformation.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserRunAction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserStackingAction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserTrackInformation.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/UserTrackingAction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/USteppingAction.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/XsecBiasingOperator.cxx
-)
+add_library(version INTERFACE)
+target_include_directories(version
+  INTERFACE
+  "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>"
+  )
 
-add_library(g4fire SHARED 
-  ${dark_brem_sources}
-  ${sim_sources}
-  ${geo_sources}
-)
-target_link_libraries(g4fire PUBLIC 
-  Geant4::Interface fire::framework Eigen3::Eigen)
-target_include_directories(g4fire PUBLIC ${g4fire_SOURCE_DIR}/include/)
+add_library(user INTERFACE)
+target_include_directories(user INTERFACE 
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
+target_link_libraries(user INTERFACE Geant4::Interface)
 
-install(TARGETS g4fire 
+add_library(g4user SHARED
+  src/g4fire/g4user/EventAction.cxx
+  src/g4fire/g4user/RunAction.cxx
+  src/g4fire/g4user/SteppingAction.cxx
+  src/g4fire/g4user/StackingAction.cxx
+  src/g4fire/g4user/TrackingAction.cxx
+  src/g4fire/g4user/PrimaryGeneratorAction.cxx
+  )
+target_link_libraries(g4user PUBLIC user)
+
+add_library(simulator SHARED src/g4fire/Simulator.cxx)
+target_link_libraries(simulator PUBLIC g4user fire::framework)
+
+set_target_properties(
+  user g4user simulator
+  PROPERTIES CXX_STANDARD 17
+             CXX_STANDARD_REQUIRED YES
+             CXX_EXTENSIONS NO
+             PREFIX "libg4fire_")
+
+install(TARGETS user g4user simulator
+  EXPORT g4fireTargets
   LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
-)
+  )
+install(DIRECTORY include DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY python DESTINATION python FILES_MATCHING
+  PATTERN "*.py" # INCLUDE
+  PATTERN "test_*" EXCLUDE
+  PATTERN ".pytest_cache" EXCLUDE
+  PATTERN "__pycache__" EXCLUDE
+  )
 
-install(DIRECTORY python/ DESTINATION python FILES_MATCHING 
-  PATTERN "*.py" 
-)
+install(EXPORT g4fireTargets
+  FILE g4fireTargets.cmake
+  NAMESPACE g4fire::
+  DESTINATION lib/cmake/g4fire)
 
-# Unpack the example dark brem vertex library (or libraries)
-#file(GLOB vertex_libraries data/*.tar.gz)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/g4fireConfig.cmake"
+  INSTALL_DESTINATION lib/cmake/g4fire)
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/g4fireConfigVersion.cmake"
+  COMPATIBILITY AnyNewerVersion)
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/g4fireConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/g4fireConfigVersion.cmake
+  DESTINATION lib/cmake/g4fire)
 
-#option(INSTALL_EXAMPLE_DB_LIBRARIES 
-#  "Unpack and install the example dark brem event libraries." ON)
-#if(INSTALL_EXAMPLE_DB_LIBRARIES)
-  # set installation location of dark brem vertex libraries
-  #   also used when configuring the makePath.py module
-  #  set(DB_VERTEX_LIB_INSTALL ${CMAKE_INSTALL_PREFIX}/data/db_vertex_libraries)
-  #  if(NOT EXISTS ${DB_VERTEX_LIB_INSTALL})
-  #      #assume new build ==> unpack vertex libraries
-  #      message(STATUS "Unpacking example dark brem vertex libraries.")
-  #      file(MAKE_DIRECTORY ${DB_VERTEX_LIB_INSTALL})
-  #      foreach(library_path ${vertex_libraries})
-  #          execute_process(COMMAND 
-  #              tar -C ${DB_VERTEX_LIB_INSTALL} --skip-old-files -zxf ${library_path})
-  #      endforeach()
-  #  endif()
-  
-  # Add compiled tests
-  #configure_file(${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx.in 
-  #               ${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx)
-  #setup_test(dependencies SimCore::SimCore Geant4::Interface)
-  
-  # Configure the executable so it knows the installation path of the db vertex libraries
-  #configure_file(${PROJECT_SOURCE_DIR}/src/SimCore/DarkBrem/print_dark_brem_xsec_table.cxx.in
-  #               ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)
-  #add_executable(print-dark-brem-xsec-table 
-  #               ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)
-  
-  # Link to the Framework library
-  #target_link_libraries(print-dark-brem-xsec-table 
-  #                      PRIVATE Geant4::Interface 
-  #                              SimCore::SimCore 
-  #                              Framework::Framework)
-  
-  # Install the fire executable
-  #install(TARGETS print-dark-brem-xsec-table 
-  #        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-  #endif()

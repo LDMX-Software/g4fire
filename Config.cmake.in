@@ -1,0 +1,21 @@
+@PACKAGE_INIT@
+
+# leave early if we have already found fire
+if (g4fire_FOUND)
+  return()
+endif()
+
+message(STATUS "g4fire @PROJECT_VERSION@ found")
+
+# We need to find_dependency for the same packages
+#   we needed to find_package for
+#   this registers the packages we need to dynamically
+#   link with other projects using fire
+include(CMakeFindDependencyMacro)
+find_dependency(fire COMPONENTS framework)
+find_dependency(Geant4 COMPONENTS gdml ui_all vis_all)
+find_dependency(Eigen3)
+
+include("${CMAKE_CURRENT_LIST_DIR}/g4fireTargets.cmake")
+
+check_required_components(g4fire)
