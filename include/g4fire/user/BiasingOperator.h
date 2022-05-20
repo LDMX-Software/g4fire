@@ -100,6 +100,10 @@ class BiasingOperator : public G4VBiasingOperator {
    *
    * Use the Geant4 method G4VBiasingOperator::Attach when you know that lv
    * should be biased.
+   *
+   * ```cpp
+   * this->Attach(lv);
+   * ```
    */
   virtual void isBiased(G4LogicalVolume* lv) const = 0;
 

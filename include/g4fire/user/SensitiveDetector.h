@@ -40,13 +40,16 @@ class SensitiveDetector : public G4VSensitiveDetector {
 
   /**
    * Here, we must determine if we should be attached to the 
-   * input logical volume. Return 'true' if we should be attached
-   * to it and 'false' otherwise.
+   * input logical volume. Use G4LogicalVolume::SetSensitiveDetector
+   * if the input lv is this sensitive detecotr
+   *
+   * ```cpp
+   * lv->SetSensitiveDetector(this);
+   * ```
    * 
    * @param[in] lv logical volume to check
-   * @returns true if the input lv should be connected to this sensitive detector
    */
-  virtual bool isSensDet(G4LogicalVolume* lv) const = 0;
+  virtual void isSensDet(G4LogicalVolume* lv) const = 0;
 
   /**
    * This is Geant4's handle to tell us that a particle has stepped
