@@ -92,17 +92,43 @@ add_library(g4user SHARED
   )
 target_link_libraries(g4user PUBLIC user)
 
-add_library(simulator SHARED src/g4fire/Simulator.cxx)
+add_library(lhe SHARED
+  src/g4fire/lhe/LHEEvent.cxx
+  src/g4fire/lhe/LHEParticle.cxx
+  src/g4fire/lhe/LHEReader.cxx)
+target_include_directories(lhe INTERFACE 
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
+
+add_library(simulator SHARED 
+  src/g4fire/G4Session.cxx
+  src/g4fire/UserEventInformation.cxx
+  src/g4fire/UserRegionInformation.cxx
+  src/g4fire/UserTrackInformation.cxx
+  src/g4fire/Simulator.cxx)
 target_link_libraries(simulator PUBLIC g4user fire::framework)
 
+add_library(primary_generators SHARED
+  src/g4fire/primary_generators/ParticleGun.cxx
+  src/g4fire/primary_generators/GeneralParticleSource.cxx
+  src/g4fire/primary_generators/LHEPrimaryGenerator.cxx
+  src/g4fire/primary_generators/MultiParticleGunPrimaryGenerator.cxx
+  )
+target_link_libraries(primary_generators PUBLIC user lhe)
+
+add_library(detector_constructors SHARED
+  src/g4fire/detector_constructors/SimplePrism.cxx
+  src/g4fire/detector_constructors/GDML.cxx)
+
 set_target_properties(
-  user g4user simulator
+  user g4user lhe simulator primary_generators detector_constructors
   PROPERTIES CXX_STANDARD 17
              CXX_STANDARD_REQUIRED YES
              CXX_EXTENSIONS NO
              PREFIX "libg4fire_")
 
-install(TARGETS user g4user simulator
+install(TARGETS 
+  user g4user lhe simulator primary_generators detector_constructors
   EXPORT g4fireTargets
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
