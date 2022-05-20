@@ -3,6 +3,14 @@
 Geant4 is also event-by-event based so this document is mainly notes on the order
 with which to do things.
 
+### Organization
+- cmake : modules for custom cmake functions
+- include : only header files that will be used by end user
+  - put header files internal to g4fire in src alongside implementation file
+- src : source files for constructing library
+- test : testing for g4fire
+- ldmx : ldmx-specific library that will be build downstream of g4fire
+
 ### User Classes
 These classes can be derived, registered, and dynamically loaded.
 
