@@ -6,15 +6,12 @@
 #include <memory>
 #include <string>
 
-#include "fire/Processor.h"
-#include "fire/config/Parameters.h"
-#include "fire/config/Parameters.h"
-//#include "Framework/EventDef.h"
-#include "fire/Processor.h"
-
-#include "g4fire/ConditionsInterface.h"
+#include <fire/Processor.h>
+#include <fire/config/Parameters.h>
 
 #include <G4RunManager.hh>
+
+#include "g4fire/ConditionsInterface.h"
 
 class G4UImanager;
 class G4UIsession;
@@ -23,8 +20,6 @@ class G4GDMLMessenger;
 class G4CascadeParameters;
 
 namespace g4fire {
-
-class DetectorConstruction;
 
 /**
  * Geant4 simulation wrapped within a fire producer.

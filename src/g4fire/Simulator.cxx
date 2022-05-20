@@ -1,40 +1,38 @@
-#include "g4fire/Simulator.h"
+#include "Simulator.h"
 
-#include "fire/Process.h"
-#include "fire/RandomNumberSeedService.h"
-#include "fire/exception/Exception.h"
-#include "fire/version/Version.h"
+#include <fire/Process.h>
+#include <fire/RandomNumberSeedService.h>
+#include <fire/exception/Exception.h>
+#include <fire/version/Version.h>
 
-#include "g4fire/DarkBrem/APrimePhysics.h"
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
-#include "g4fire/DetectorConstruction.h"
+#include <FTFP_BERT.hh>
+#include <G4GDMLParser.hh>
+#include <G4GenericBiasingPhysics.hh>
+#include <G4ParallelWorldPhysics.hh>
+#include <G4ProcessTable.hh>
+#include <G4VModularPhysicsList.hh>
+#include <G4CascadeParameters.hh>
+#include <G4Electron.hh>
+#include <G4GDMLParser.hh>
+#include <G4GeometryManager.hh>
+#include <G4UIsession.hh>
+#include <G4PhysListFactory.hh>
+#include <Randomize.hh>
+#include <G4UImanager.hh>
+
 #include "g4fire/GammaPhysics.h"
 #include "g4fire/G4Session.h"
-#include "g4fire/Geo/ParserFactory.h"
-#include "g4fire/PluginFactory.h"
 #include "g4fire/ParallelWorld.h"
-#include "g4fire/PrimaryGeneratorAction.h"
-#include "g4fire/USteppingAction.h"
-#include "g4fire/UserEventAction.h"
-#include "g4fire/UserRunAction.h"
-#include "g4fire/UserStackingAction.h"
-#include "g4fire/UserTrackingAction.h"
 
-#include "FTFP_BERT.hh"
-#include "G4GDMLParser.hh"
-#include "G4GenericBiasingPhysics.hh"
-#include "G4ParallelWorldPhysics.hh"
-#include "G4ProcessTable.hh"
-#include "G4VModularPhysicsList.hh"
-#include "G4CascadeParameters.hh"
-#include "G4Electron.hh"
-#include "G4GDMLParser.hh"
-#include "G4GeometryManager.hh"
-#include "G4UIsession.hh"
-#include "G4PhysListFactory.hh"
-#include "Randomize.hh"
+#include "g4fire/g4user/PrimaryGeneratorAction.h"
+#include "g4fire/g4user/SteppingAction.h"
+#include "g4fire/g4user/EventAction.h"
+#include "g4fire/g4user/RunAction.h"
+#include "g4fire/g4user/StackingAction.h"
+#include "g4fire/g4user/TrackingAction.h"
 
-#include "G4UImanager.hh"
+#include "g4fire/user/DetectorConstruction.h"
+#include "g4fire/user/PhysicsConstructor.h"
 
 namespace g4fire {
 
@@ -91,12 +89,10 @@ void Simulator::configure(const fire::config::Parameters &params) {
 
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
+  auto det{params_.get<fire::config::Parameters>("detector")};
   this->SetUserInitialization(
-      new DetectorConstruction(parser, params_, conditions_intf_));
-
-  G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->read();
-  this->DefineWorldVolume(parser->GetWorldVolume());
+      user::DetectorConstruction::Factory::get().create(
+        det.get<std::string>("class_name"), det));
 
   auto pre_init_cmds =
       params_.get<std::vector<std::string>>("pre_init_cmds", {});
@@ -122,16 +118,7 @@ void Simulator::configure(const fire::config::Parameters &params) {
 
 void Simulator::beforeNewRun(fire::RunHeader &header) {
   // Get the detector header from the user detector construction
-  DetectorConstruction *detector = static_cast<DetectorConstruction*>(this->userDetector);
-
-  if (!detector)
-    throw fire::Exception("SimSetup",
-                          "Detector not constructed before run start.", false);
-
-  // TODO(OM) LDMX specific things should be moved elsewhere.
-  header.set<std::string>("Detector Name", detector->getDetectorName());
-  header.set<std::string>("Description",
-                          params_.get<std::string>("description"));
+  static_cast<user::DetectorConstruction*>(this->userDetector)->RecordConfig(header);
 
   header.set<int>("Save calorimeter hit contribs",
                   params_.get<bool>("enable_hit_contribs"));
@@ -306,10 +293,14 @@ void Simulator::process(fire::Event &event) {
 void Simulator::onProcessStart() {
   std::cout << "on process start" << std::endl;
 
-  auto physics_list{G4PhysListFactory().GetReferencePhysList("FTFP_BERT")};
-  physics_list->RegisterPhysics(new GammaPhysics);
-  /*physics_list->RegisterPhysics(new darkbrem::APrimePhysics(
-      params_.get<fire::config::Parameters>("dark_brem")));*/
+  auto ref_phys_list{params_.get<std::string>("reference_phys_list")};
+  auto physics_list{G4PhysListFactory().GetReferencePhysList(ref_phys_list)};
+  auto additional_phys{params_.get<std::vector<fire::config::Parameters>("additional_physics",{})};
+  for (const auto& phys : additional_phys) {
+    physics_list->RegisterPhysics(
+        user::PhysicsConstructor::Factory::get().create(phys.get<std::string>("class_name"), phys)
+        );
+  }
 
   std::string parallel_world_path_ = params_.get<std::string>("parallel_world", {});
   bool pw_enabled_ = !parallel_world_path_.empty();
