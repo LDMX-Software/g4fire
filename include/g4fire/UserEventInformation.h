@@ -1,14 +1,15 @@
-#ifndef G4FIRE_USEREVENTINFORMATION_H
-#define G4FIRE_USEREVENTINFORMATION_H
+#pragma once 
 
 #include "G4VUserEventInformation.hh"
+
+#include "g4fire/Parameters.h" 
 
 namespace g4fire {
 
 /**
  * Encapsulates user defined information associated with a Geant4 event.
  */
-class UserEventInformation : public G4VUserEventInformation {
+class UserEventInformation : public G4VUserEventInformation, Parameters {
  public:
   /// Constructor
   UserEventInformation() = default;
@@ -17,7 +18,6 @@ class UserEventInformation : public G4VUserEventInformation {
   ~UserEventInformation() = default;
 
   /// Print the information associated with the track
-  // TODO(OM): Use stream operator instead
   void Print() const final override;
 
   /// Increment the number of brem candidates in an event.
@@ -36,7 +36,7 @@ class UserEventInformation : public G4VUserEventInformation {
   /**
    * @return The event weight
    */
-  double getWeight() { return weight_; }
+  double getWeight() { return weight_;  }
 
   /**
    * Increment the event weight by the input weight
@@ -144,5 +144,3 @@ class UserEventInformation : public G4VUserEventInformation {
   bool last_step_en_{false};
 };
 } // namespace g4fire
-
-#endif // G4FIRE_USEREVENTINFORMATION_H

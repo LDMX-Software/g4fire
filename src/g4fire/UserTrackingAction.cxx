@@ -12,24 +12,23 @@
 
 namespace g4fire {
 
-void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
+void UserTrackingAction::PreUserTrackingAction(const G4Track *track) {
   if (!track_map_.contains(track)) {
-    // New Track
-    
-    // get track information and initialize our new track
-    //  this will create a new track info object if it doesn't exist
+    // If a track doesn't exists within the track map, create it.
+    // This involves retrieving the track information and instantiating
+    // a new track object to ecanpsulate that information.
+
     auto track_info{UserTrackInformation::get(track)};
     track_info->initialize(track);
 
     // Get the region info for where the track was created (could be NULL)
-    auto region_info = (UserRegionInformation*)track->GetLogicalVolumeAtVertex()
-                          ->GetRegion()
-                          ->GetUserInformation();
+    auto region_info{static_cast<UserRegionInformation*>(
+        track->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation())};
 
     // Get the gen status if track was primary
     int cur_gen_status = -1;
     if (track->GetDynamicParticle()->GetPrimaryParticle()) {
-      auto primaryInfo = dynamic_cast<UserPrimaryParticleInformation*>(
+      auto primaryInfo = dynamic_cast<UserPrimaryParticleInformation *>(
           track->GetDynamicParticle()
               ->GetPrimaryParticle()
               ->GetUserInformation());
@@ -44,12 +43,13 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
      * DON'T change the save-status even if these are false
      *  The track's save-status is false by default when the track-info
      *  is constructed and the track's save-status could have been modified by a
-     *  user action **prior** to the track being processed for the first time. 
+     *  user action **prior** to the track being processed for the first time.
      *  For example, this happens if the user wants to save the
      *  secondaries of a particular track.
      */
-    if (cur_gen_status == 1 or !region_info or region_info->getStoreSecondaries()) {
-      track_info->setSaveFlag(true); 
+    if (cur_gen_status == 1 || !region_info ||
+        region_info->getStoreSecondaries()) {
+      track_info->setSaveFlag(true);
     }
 
     // insert this track into the event's track map
@@ -57,13 +57,13 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
   }
 
   // Activate user tracking actions
-  for (auto& tracking_action : tracking_actions_)
+  for (auto &tracking_action : tracking_actions_)
     tracking_action->PreUserTrackingAction(track);
 }
 
-void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
+void UserTrackingAction::PostUserTrackingAction(const G4Track *track) {
   // Activate user tracking actions
-  for (auto& tracking_action : tracking_actions_)
+  for (auto &tracking_action : tracking_actions_)
     tracking_action->PostUserTrackingAction(track);
 
   /**
@@ -80,4 +80,4 @@ void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
   }
 }
 
-}  // namespace g4fire
+} // namespace g4fire

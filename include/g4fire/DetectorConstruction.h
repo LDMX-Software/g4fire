@@ -7,7 +7,7 @@
 
 #include "fire/config/Parameters.h"
 
-#include "g4fire/Geo/Parser.h"
+#include "g4fire/geo/Parser.h"
 
 namespace g4fire::geo {
 class Parser;

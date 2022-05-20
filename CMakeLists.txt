@@ -38,17 +38,33 @@ find_package (Boost REQUIRED COMPONENTS log)
 find_package (fire REQUIRED)
 find_package (Eigen3 REQUIRED NO_MODULE)
 
+set (biasing_sources
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/DarkBrem.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/ElectroNuclear.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/GammaToMuPair.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/K0LongInelastic.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/NeutronInelastic.cxx  
+  ${g4fire_SOURCE_DIR}/src/g4fire/biasing/PhotoNuclear.cxx  
+)
+
 set (dark_brem_sources
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/APrimePhysics.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/G4APrime.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/DarkBremVertexLibraryModel.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/DarkBrem/G4eDarkBremsstrahlung.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/APrimePhysics.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/G4APrime.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/DarkBremVertexLibraryModel.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/darkbrem/G4eDarkBremsstrahlung.cxx
+)
+
+set (event_sources
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/EventBuilder.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/SimParticle.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/SimCalorimeterHit.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/event/SimTrackerHit.cxx
 )
 
 set (geo_sources
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/AuxInfoReader.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/GDMLParser.cxx
-  ${g4fire_SOURCE_DIR}/src/g4fire/Geo/ParserFactory.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/geo/AuxInfoReader.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/geo/GDMLParser.cxx
+  ${g4fire_SOURCE_DIR}/src/g4fire/geo/ParserFactory.cxx
 )
 
 set (sim_sources
@@ -82,22 +98,56 @@ set (sim_sources
 )
 
 add_library(g4fire SHARED 
+  ${biasing_sources}
   ${dark_brem_sources}
-  ${sim_sources}
+  ${event_sources}
   ${geo_sources}
+  ${sim_sources}
 )
 target_link_libraries(g4fire PUBLIC 
-  Geant4::Interface fire::framework Eigen3::Eigen)
-target_include_directories(g4fire PUBLIC ${g4fire_SOURCE_DIR}/include/)
+  Geant4::Interface fire::io fire::framework Eigen3::Eigen)
+
+target_include_directories(g4fire PUBLIC 
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>"
+)
 
 install(TARGETS g4fire 
+  EXPORT g4fire-targets
   LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
 )
 
+# need pattern to exclude version header configured by CMake above
+install(DIRECTORY include/ DESTINATION include/ FILES_MATCHING PATTERN "*.h")
+
+configure_file(${g4fire_SOURCE_DIR}/python/g4fire/_bias_operators.py.in
+  ${CMAKE_CURRENT_BINARY_DIR}/python/g4fire/_bias_operators.py)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/g4fire/_bias_operators.py
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/python/g4fire)
 install(DIRECTORY python/ DESTINATION python FILES_MATCHING 
   PATTERN "*.py" 
 )
+
+install(EXPORT g4fire-targets 
+        FILE g4fire-targets.cmake
+        NAMESPACE g4fire::
+        DESTINATION lib/cmake/g4fire
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/g4fireConfig.cmake.in" 
+  "${CMAKE_CURRENT_BINARY_DIR}/g4fireConfig.cmake"
+	INSTALL_DESTINATION "lib/cmake/g4fire"
+)
+
+install(FILES 
+        "${CMAKE_CURRENT_BINARY_DIR}/g4fireConfig.cmake" 
+        DESTINATION "lib/cmake/g4fire"
+)
+
 
 # Unpack the example dark brem vertex library (or libraries)
 #file(GLOB vertex_libraries data/*.tar.gz)

@@ -5,7 +5,7 @@ with several helpful member functions.
 """
 
 from fire.cfg import Processor
-
+from g4fire import _dark_brem
 
 class Simulator(Processor):
     """A instance of the simulation configuration
@@ -73,7 +73,9 @@ class Simulator(Processor):
                  biasing_operators=[],
                  logging_prefix='',
                  validate_detector=False,
-                 verbosity = 0):
+                 verbosity = 0,
+                 dark_brem = _dark_brem.DarkBrem()
+                 ):
         super().__init__(instance_name,
                          "g4fire::Simulator",
                          detector=detector, 
@@ -91,11 +93,9 @@ class Simulator(Processor):
                          biasing_operators=biasing_operators,
                          logging_prefix=logging_prefix,
                          validate_detector=validate_detector,
-                         verbosity=verbosity)
-
-        #Dark Brem stuff
-        #from LDMX.g4fire import dark_brem
-        #self.dark_brem = dark_brem.DarkBrem()
+                         verbosity=verbosity, 
+                         dark_brem=dark_brem
+                         )
 
         #def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes

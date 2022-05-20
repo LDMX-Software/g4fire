@@ -1,8 +1,7 @@
-#ifndef G4FIRE_XSECBIASINGOPERATOR_H_
-#define G4FIRE_XSECBIASINGOPERATOR_H_
+#pragma once
 
 #include "fire/config/Parameters.h"
-//#include "Framework/RunHeader.h"
+#include "fire/RunHeader.h"
 
 #include "G4BOptnChangeCrossSection.hh"
 #include "G4BiasingProcessInterface.hh"
@@ -126,7 +125,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    *
    * @param[in,out] header RunHeader to write configuration to
    */
-  //virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
+  virtual void RecordConfig(fire::RunHeader& header) const = 0;
 
  protected:
   /**
@@ -193,5 +192,3 @@ class XsecBiasingOperator : public G4VBiasingOperator {
     g4fire::XsecBiasingOperator::declare(                                  \
         std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
   }
-
-#endif  // G4FIRE_XSECBIASINGOPERATOR_H_

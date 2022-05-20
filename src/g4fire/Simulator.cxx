@@ -5,12 +5,12 @@
 #include "fire/exception/Exception.h"
 #include "fire/version/Version.h"
 
-#include "g4fire/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "g4fire/darkbrem/G4eDarkBremsstrahlung.h"
 #include "g4fire/DetectorConstruction.h"
 #include "g4fire/G4Session.h"
-#include "g4fire/Geo/ParserFactory.h"
 #include "g4fire/PluginFactory.h"
 #include "g4fire/RunManager.h"
+#include "g4fire/geo/ParserFactory.h"
 
 #include "G4CascadeParameters.hh"
 #include "G4Electron.hh"
@@ -42,8 +42,6 @@ Simulator::Simulator(const fire::config::Parameters &params)
 }
 
 void Simulator::configure(const fire::config::Parameters &params) {
-  std::cout << "Configuring ..." << std::endl;
-
   // parameters used to configure the simulation
   params_ = params;
 
@@ -86,12 +84,11 @@ void Simulator::configure(const fire::config::Parameters &params) {
   parser->read();
   run_manager_->DefineWorldVolume(parser->GetWorldVolume());
 
-  auto pre_init_cmds =
-      params_.get<std::vector<std::string>>("pre_init_cmds", {});
-  for (const std::string &cmd : pre_init_cmds) {
+  auto pre_init_cmds{
+      params_.get<std::vector<std::string>>("pre_init_cmds", {})};
+  for (const auto &cmd : pre_init_cmds) {
     if (allowed(cmd)) {
-      int g4ret = ui_manager_->ApplyCommand(cmd);
-      if (g4ret > 0) {
+      if (auto g4ret{ui_manager_->ApplyCommand(cmd)}; g4ret > 0) {
         throw fire::Exception("PreInitCmd",
                               "Pre Initialization command '" + cmd +
                                   "' returned a failue status from Geant4: " +
@@ -108,19 +105,10 @@ void Simulator::configure(const fire::config::Parameters &params) {
   }
 }
 
-/*void Simulator::onFileOpen(fire::EventFile& file) {
-  // Initialize persistency manager and connect it to the current EventFile
-  persistencyManager_ =
-      std::make_unique<g4fire::persist::RootPersistencyManager>(
-          file, params_, this->getRunNumber(), conditions_intf_);
-  persistencyManager_->Initialize();
-}*/
-
 void Simulator::beforeNewRun(fire::RunHeader &header) {
   // Get the detector header from the user detector construction
-  DetectorConstruction *detector =
-      static_cast<RunManager *>(RunManager::GetRunManager())
-          ->getDetectorConstruction();
+  auto detector{static_cast<RunManager *>(RunManager::GetRunManager())
+                    ->getDetectorConstruction()};
 
   if (!detector)
     throw fire::Exception("SimSetup",
@@ -135,7 +123,7 @@ void Simulator::beforeNewRun(fire::RunHeader &header) {
                   params_.get<bool>("enable_hit_contribs"));
   header.set<int>("Compress calorimeter hit contribs",
                   params_.get<bool>("compress_hit_contribs"));
-  header.set<int>("Included Scoring Planes",
+  header.set<int>("Included scoring planes",
                   !params_.get<std::string>("scoring_planes").empty());
   // header.set<int>("Use Random Seed from Event Header",
   //                       params_.get<bool>("rootPrimaryGenUseSeed"));
@@ -150,7 +138,7 @@ void Simulator::beforeNewRun(fire::RunHeader &header) {
 
   auto beam_spot_delta{params_.get<std::vector<double>>("beam_spot_delta", {})};
   if (!beam_spot_delta.empty())
-    threeVectorDump("Smear Beam Spot [mm]", beam_spot_delta);
+    threeVectorDump("Beam spot delta [mm]", beam_spot_delta);
 
   // lambda function for dumping vectors of strings to the run header
   auto stringVectorDump = [&header](const std::string &name,
@@ -161,17 +149,17 @@ void Simulator::beforeNewRun(fire::RunHeader &header) {
     }
   };
 
-  stringVectorDump("Pre Init Command",
+  stringVectorDump("Pre init Command",
                    params_.get<std::vector<std::string>>("pre_init_cmds", {}));
-  stringVectorDump("Post Init Command",
+  stringVectorDump("Post init Command",
                    params_.get<std::vector<std::string>>("post_init_cmds", {}));
 
   auto bops{PluginFactory::getInstance().getBiasingOperators()};
   for (const XsecBiasingOperator *bop : bops) {
-    // bop->RecordConfig(header);
+    bop->RecordConfig(header);
   }
 
-  /*auto dark_brem{params_.get<fire::config::Parameters>("dark_brem")};
+  auto dark_brem{params_.get<fire::config::Parameters>("dark_brem")};
   if (dark_brem.get<bool>("enable")) {
     // the dark brem process is enabled, find it and then record its
     // configuration
@@ -192,7 +180,7 @@ void Simulator::beforeNewRun(fire::RunHeader &header) {
         break;
       } // this process is the dark brem process
     }   // loop through electron processes
-  } */    // dark brem has been enabled
+  }     // dark brem has been enabled
 
   auto generators{
       params_.get<std::vector<fire::config::Parameters>>("generators")};
@@ -271,10 +259,6 @@ void Simulator::onNewRun(const fire::RunHeader &) {
 }
 
 void Simulator::process(fire::Event &event) {
-  std::cout << "Processing." << std::endl;
-  // Pass the current LDMX event object to the persistency manager.  This
-  // is needed by the persistency manager to fill the current event.
-  // persistencyManager_->setCurrentEvent(&event);
 
   // Generate and process a Geant4 event.
   n_events_began_++;
@@ -284,9 +268,13 @@ void Simulator::process(fire::Event &event) {
   // sequence. This will immediately force the simulation to move on to
   // the next event.
   if (run_manager_->GetCurrentEvent()->IsAborted()) {
-    run_manager_->TerminateOneEvent();  // clean up event objects
+    run_manager_->TerminateOneEvent(); // clean up event objects
     this->abortEvent();                // get out of processors loop
+  } else {
+    eb_.writeEvent(run_manager_->GetCurrentEvent(), event);
   }
+
+  // Write all hit objects to the event
 
   /*if (this->getLogFrequency() > 0 and
       event.getEventHeader().getEventNumber() % this->getLogFrequency() == 0) {
@@ -302,22 +290,19 @@ void Simulator::process(fire::Event &event) {
   n_events_completed_++;
   run_manager_->TerminateOneEvent();
 
-  return; 
+  return;
 }
 
 void Simulator::onProcessStart() {
-  std::cout << "on process start" << std::endl;
-
   // initialize run
   run_manager_->Initialize();
 
   // Get the extra simulation configuring commands
   auto post_init_cmds{
       params_.get<std::vector<std::string>>("post_init_cmds", {})};
-  for (const std::string &cmd : post_init_cmds) {
+  for (const auto &cmd : post_init_cmds) {
     if (allowed(cmd)) {
-      int g4ret{ui_manager_->ApplyCommand(cmd)};
-      if (g4ret > 0) {
+      if (auto g4ret{ui_manager_->ApplyCommand(cmd)}; g4ret > 0) {
         throw fire::Exception("PostInitCmd",
                               "Post Initialization command '" + cmd +
                                   "' returned a failue status from Geant4: " +
@@ -345,27 +330,19 @@ void Simulator::onProcessStart() {
   return;
 }
 
-/*
-void Simulator::onFileClose(fire::EventFile&) {
+void Simulator::onFileClose(const std::string &file_name) {
   // End the current run and print out some basic statistics if verbose
   // level > 0.
   run_manager_->TerminateEventLoop();
 
   // Pass the **real** number of events to the persistency manager
-  persistencyManager_->setNumEvents(n_events_began_, n_events_completed_);
+  // persistencyManager_->setNumEvents(n_events_began_, n_events_completed_);
 
   // Persist any remaining events, call the end of run action and
   // terminate the Geant4 kernel.
   run_manager_->RunTermination();
-
-  // Cleanup persistency manager
-  //  Geant4 expects us to handle the persistency manager
-  //  In order to avoid segfaulting nonsense, I delete it here
-  //  so that it is deleted before the EventFile it references
-  //  is deleted
-  persistencyManager_.reset(nullptr);
 }
-*/
+
 void Simulator::onProcessEnd() {
   std::cout << "[ Simulator ] : "
             << "Started " << n_events_began_ << " events to produce "

@@ -7,7 +7,7 @@
 #include "G4String.hh"
 #include "G4VUserParallelWorld.hh"
 
-#include "g4fire/Geo/AuxInfoReader.h"
+#include "g4fire/geo/AuxInfoReader.h"
 
 namespace g4fire {
 

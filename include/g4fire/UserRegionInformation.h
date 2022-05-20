@@ -1,5 +1,4 @@
-#ifndef G4FIRE_USERREGIONINFORMATION_H_
-#define G4FIRE_USERREGIONINFORMATION_H_
+#pragma once
 
 #include "G4VUserRegionInformation.hh"
 
@@ -18,7 +17,7 @@ class UserRegionInformation : public G4VUserRegionInformation {
  public:
   UserRegionInformation(bool store_secondaries);
 
-  virtual ~UserRegionInformation();
+  ~UserRegionInformation() = default;
 
   void Print() const;
 
@@ -29,5 +28,3 @@ class UserRegionInformation : public G4VUserRegionInformation {
 };
 
 }  // namespace g4fire
-
-#endif
