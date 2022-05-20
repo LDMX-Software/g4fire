@@ -122,6 +122,10 @@ install(TARGETS g4fire
 # need pattern to exclude version header configured by CMake above
 install(DIRECTORY include/ DESTINATION include/ FILES_MATCHING PATTERN "*.h")
 
+configure_file(${g4fire_SOURCE_DIR}/python/g4fire/_bias_operators.py.in
+  ${CMAKE_CURRENT_BINARY_DIR}/python/g4fire/_bias_operators.py)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/g4fire/_bias_operators.py
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/python/g4fire)
 install(DIRECTORY python/ DESTINATION python FILES_MATCHING 
   PATTERN "*.py" 
 )
