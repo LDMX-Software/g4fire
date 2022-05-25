@@ -11,12 +11,8 @@ StackingAction::ClassifyNewTrack(const G4Track *track) {
   // Get proposed new track classification from this plugin.
   for (auto &stacking_action : stacking_actions_) {
     // Get proposed new track classification from this plugin.
-    G4ClassificationOfNewTrack newTrackClass =
+    current_track_class = 
         stacking_action->ClassifyNewTrack(track, current_track_class);
-
-    // Only set the current classification if the plugin changed it.
-    if (newTrackClass != current_track_class)
-      current_track_class = newTrackClass;
   }
 
   return current_track_class;

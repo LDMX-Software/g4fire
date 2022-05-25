@@ -102,23 +102,20 @@ target_include_directories(lhe INTERFACE
 
 add_library(simulator SHARED 
   src/g4fire/G4Session.cxx
-  src/g4fire/UserEventInformation.cxx
-  src/g4fire/UserRegionInformation.cxx
-  src/g4fire/UserTrackInformation.cxx
   src/g4fire/Simulator.cxx)
 target_link_libraries(simulator PUBLIC g4user fire::framework)
 
 add_library(primary_generators SHARED
-  src/g4fire/primary_generators/ParticleGun.cxx
-  src/g4fire/primary_generators/GeneralParticleSource.cxx
-  src/g4fire/primary_generators/LHEPrimaryGenerator.cxx
-  src/g4fire/primary_generators/MultiParticleGunPrimaryGenerator.cxx
+  src/g4fire/plugins/primary_generators/ParticleGun.cxx
+  src/g4fire/plugins/primary_generators/GeneralParticleSource.cxx
+  src/g4fire/plugins/primary_generators/LHEPrimaryGenerator.cxx
+  src/g4fire/plugins/primary_generators/MultiParticleGunPrimaryGenerator.cxx
   )
 target_link_libraries(primary_generators PUBLIC user lhe)
 
 add_library(detector_constructors SHARED
-  src/g4fire/detector_constructors/SimplePrism.cxx
-  src/g4fire/detector_constructors/GDML.cxx)
+  src/g4fire/plugins/detector_constructors/SimplePrism.cxx
+  src/g4fire/plugins/detector_constructors/GDML.cxx)
 
 set_target_properties(
   user g4user lhe simulator primary_generators detector_constructors
