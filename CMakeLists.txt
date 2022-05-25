@@ -92,6 +92,11 @@ add_library(g4user SHARED
   )
 target_link_libraries(g4user PUBLIC user)
 
+add_library(simulator SHARED 
+  src/g4fire/G4Session.cxx
+  src/g4fire/Simulator.cxx)
+target_link_libraries(simulator PUBLIC g4user fire::framework)
+
 add_library(lhe SHARED
   src/g4fire/lhe/LHEEvent.cxx
   src/g4fire/lhe/LHEParticle.cxx
@@ -99,11 +104,6 @@ add_library(lhe SHARED
 target_include_directories(lhe INTERFACE 
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
-
-add_library(simulator SHARED 
-  src/g4fire/G4Session.cxx
-  src/g4fire/Simulator.cxx)
-target_link_libraries(simulator PUBLIC g4user fire::framework)
 
 add_library(primary_generators SHARED
   src/g4fire/plugins/primary_generators/ParticleGun.cxx

@@ -39,7 +39,7 @@ class RunAction : public G4UserRunAction {
    *
    * @param action   action of type RunAction
    */
-  void registerAction(user::Action* run_action) {
+  void attach(user::Action* run_action) {
     run_actions_.push_back(run_action);
   }
 

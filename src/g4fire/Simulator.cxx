@@ -20,16 +20,7 @@
 #include <Randomize.hh>
 #include <G4UImanager.hh>
 
-#include "g4fire/GammaPhysics.h"
 #include "g4fire/G4Session.h"
-#include "g4fire/ParallelWorld.h"
-
-#include "g4fire/g4user/PrimaryGeneratorAction.h"
-#include "g4fire/g4user/SteppingAction.h"
-#include "g4fire/g4user/EventAction.h"
-#include "g4fire/g4user/RunAction.h"
-#include "g4fire/g4user/StackingAction.h"
-#include "g4fire/g4user/TrackingAction.h"
 
 #include "g4fire/user/DetectorConstruction.h"
 #include "g4fire/user/PhysicsConstructor.h"
@@ -46,28 +37,18 @@ const std::vector<std::string> Simulator::invalid_cmds = {
 };
 
 Simulator::Simulator(const fire::config::Parameters &params)
-    : fire::Processor(params), conditions_intf_(this) {
+    : fire::Processor(params), G4RunManager(), conditions_intf_(this) {
   // The UI manager pointer is handled by Geant4
   ui_manager_ = G4UImanager::GetUIpointer();
 
-  // Configure this processor
-  configure(params);
-}
-
-void Simulator::configure(const fire::config::Parameters &params) {
-  std::cout << "Configuring ..." << std::endl;
-
-  // parameters used to configure the simulation
-  params_ = params;
-
   // Set the verbosity level.  The default level  is 0.
-  verbosity_ = params_.get<int>("verbosity", 0);
+  verbosity_ = params.get<int>("verbosity", 0);
 
   // If the verbosity level is set to 0,
   // If the verbosity level is > 1, log everything to a file. Otherwise,
   // dump the output. If a prefix has been specified, append it ot the
   // log message.
-  auto logging_prefix{params_.get<std::string>("logging_prefix", "g4fire_log")};
+  auto logging_prefix{params.get<std::string>("logging_prefix", "g4fire_log")};
   if (verbosity_ == 0)
     session_handle_ = std::make_unique<BatchSession>();
   else if (verbosity_ > 1) {
@@ -80,22 +61,26 @@ void Simulator::configure(const fire::config::Parameters &params) {
   if (session_handle_ != nullptr)
     ui_manager_->SetCoutDestination(session_handle_.get());
 
-  // Instantiate the GDML parser
-  auto parser{g4fire::geo::ParserFactory::getInstance().createParser(
-      "gdml", params_, conditions_intf_)};
-
   // Instantiate the class so cascade params can be set.
   G4CascadeParameters::Instance();
 
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
-  auto det{params_.get<fire::config::Parameters>("detector")};
+  auto det{params.get<fire::config::Parameters>("detector")};
   this->SetUserInitialization(
-      user::DetectorConstruction::Factory::get().create(
+      user::DetectorConstruction::Factory::get().make(
         det.get<std::string>("class_name"), det));
 
+  auto sds{params.get<std::vector<fire::config::Parameters>>("sensitive_detectors")};
+  for (const auto& sd : sds) {
+    sensitive_detectors_.emplace_back(
+        user::SensitiveDetector::Factory::get().make(sd.get<std::string>("class_name"), 
+          conditions_intf_, sd)
+        );
+  }
+
   auto pre_init_cmds =
-      params_.get<std::vector<std::string>>("pre_init_cmds", {});
+      params.get<std::vector<std::string>>("pre_init_cmds", {});
   for (const std::string &cmd : pre_init_cmds) {
     if (allowed(cmd)) {
       int g4ret = ui_manager_->ApplyCommand(cmd);
@@ -106,6 +91,7 @@ void Simulator::configure(const fire::config::Parameters &params) {
                                   std::to_string(g4ret),
                               false);
       }
+      pre_init_cmds_.push_back(cmd);
     } else {
       throw fire::Exception(
           "PreInitCmd",
@@ -114,32 +100,62 @@ void Simulator::configure(const fire::config::Parameters &params) {
           false);
     }
   }
+
+  auto post_init_cmds = params.get<std::vector<std::string>>("post_init_cmds",{});
+  for (const std::string& cmd : post_init_cmds) {
+    if (not allowed(cmd)) {
+      throw fire::Exception("PostInitCmd",
+          "Post Initializatino command '"+cmd+
+          "' is not allowed because another part of Simulator handles it.", false);
+    }
+    post_init_cmds_.push_back(cmd);
+  }
+
+  ref_phys_list_ = params.get<std::string>("reference_phys_list");
+
+  auto generators{
+      params.get<std::vector<fire::config::Parameters> >(
+          "generators", {})};
+  if (generators.empty()) {
+    throw fire::Exception("MissingGenerator",
+                    "Need to define some generator of primaries.", false);
+  }
+
+  for (auto& generator : generators) {
+    primary_generators_.emplace_back(
+        user::PrimaryGenerator::Factory::get().make(
+          generator.get<std::string>("class_name"), generator)
+        );
+  }
+
+  stepping_action_ = new g4user::SteppingAction;
+  event_action_ = new g4user::EventAction;
+  stacking_action_ = new g4user::StackingAction;
+  tracking_action_ = new g4user::TrackingAction;
+  run_action_ = new g4user::RunAction;
+
+  // Create all user actions and attach them to our G4 User Actions
+  auto uas{params.get<std::vector<fire::config::Parameters>>("actions", {})};
+  for (auto &ua : uas) {
+    auto user_action = user::Action::Factory::get().make(ua.get<std::string>("class_name"), ua);
+    for (const user::TYPE& t: user_action->getTypes()) {
+      if (t == user::TYPE::STEPPING) stepping_action_->attach(user_action.get());
+      else if (t == user::TYPE::EVENT) event_action_->attach(user_action.get());
+      else if (t == user::TYPE::STACKING) stacking_action_->attach(user_action.get());
+      else if (t == user::TYPE::TRACKING) tracking_action_->attach(user_action.get());
+      else if (t == user::TYPE::RUN) run_action_->attach(user_action.get());
+    }
+    user_actions_.emplace_back(std::move(user_action));
+  }
+
+  additional_phys_cfg_ = params.get<std::vector<fire::config::Parameters>>("additional_phys",{});
+  biasing_operators_cfg_ = params.get<std::vector<fire::config::Parameters>>("biasing_operators",{});
 }
 
 void Simulator::beforeNewRun(fire::RunHeader &header) {
   // Get the detector header from the user detector construction
   static_cast<user::DetectorConstruction*>(this->userDetector)->RecordConfig(header);
-
-  header.set<int>("Save calorimeter hit contribs",
-                  params_.get<bool>("enable_hit_contribs"));
-  header.set<int>("Compress calorimeter hit contribs",
-                  params_.get<bool>("compress_hit_contribs"));
-  header.set<int>("Included Scoring Planes",
-                  !params_.get<std::string>("scoring_planes").empty());
-  // header.set<int>("Use Random Seed from Event Header",
-  //                       params_.get<bool>("rootPrimaryGenUseSeed"));
-
-  // lambda function for dumping 3-vectors into the run header
-  auto threeVectorDump = [&header](const std::string &name,
-                                   const std::vector<double> &vec) {
-    header.set<float>(name + " X", vec.at(0));
-    header.set<float>(name + " Y", vec.at(1));
-    header.set<float>(name + " Z", vec.at(2));
-  };
-
-  auto beam_spot_delta{params_.get<std::vector<double>>("beam_spot_delta", {})};
-  if (!beam_spot_delta.empty())
-    threeVectorDump("Smear Beam Spot [mm]", beam_spot_delta);
+  for (const auto& sd : sensitive_detectors_) sd->RecordConfig(header);
 
   // lambda function for dumping vectors of strings to the run header
   auto stringVectorDump = [&header](const std::string &name,
@@ -150,91 +166,20 @@ void Simulator::beforeNewRun(fire::RunHeader &header) {
     }
   };
 
-  stringVectorDump("Pre Init Command",
-                   params_.get<std::vector<std::string>>("pre_init_cmds", {}));
-  stringVectorDump("Post Init Command",
-                   params_.get<std::vector<std::string>>("post_init_cmds", {}));
+  stringVectorDump("Pre Init Command", pre_init_cmds_);
+  stringVectorDump("Post Init Command", post_init_cmds_);
+  header.set<std::string>("reference phys list", ref_phys_list_);
 
-  auto bops{PluginFactory::getInstance().getBiasingOperators()};
-  for (const XsecBiasingOperator *bop : bops) {
-    // bop->RecordConfig(header);
-  }
+  // BOPs
+  for (const auto& bop : biasing_operators_) bop->RecordConfig(header);
 
-  /*auto dark_brem{params_.get<fire::config::Parameters>("dark_brem")};
-  if (dark_brem.get<bool>("enable")) {
-    // the dark brem process is enabled, find it and then record its
-    // configuration
-    G4ProcessVector *electron_processes =
-        G4Electron::Electron()->GetProcessManager()->GetProcessList();
-    int n_electron_processes = electron_processes->size();
-    for (int i_process = 0; i_process < n_electron_processes; i_process++) {
-      G4VProcess *process = (*electron_processes)[i_process];
-      if (process->GetProcessName().contains(
-              darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
-        // reset process to wrapped process if it is biased
-        if (dynamic_cast<G4BiasingProcessInterface *>(process))
-          process = dynamic_cast<G4BiasingProcessInterface *>(process)
-                        ->GetWrappedProcess();
-        // record the process configuration to the run header
-        dynamic_cast<darkbrem::G4eDarkBremsstrahlung *>(process)->RecordConfig(
-            header);
-        break;
-      } // this process is the dark brem process
-    }   // loop through electron processes
-  } */    // dark brem has been enabled
+  // Physics
 
-  auto generators{
-      params_.get<std::vector<fire::config::Parameters>>("generators")};
-  int counter = 0;
-  for (auto const &gen : generators) {
-    std::string genID = "Gen " + std::to_string(++counter);
-    auto class_name{gen.get<std::string>("class_name")};
-    header.set<std::string>(genID + " Class", class_name);
+  // Generators
+  for (const auto& pg : primary_generators_) pg->RecordConfig(header);
 
-    if (class_name.find("g4fire::ParticleGun") != std::string::npos) {
-      header.set<float>(genID + " Time [ns]", gen.get<double>("time"));
-      header.set<float>(genID + " Energy [GeV]", gen.get<double>("energy"));
-      header.set<std::string>(genID + " Particle",
-                              gen.get<std::string>("particle"));
-      threeVectorDump(genID + " Position [mm]",
-                      gen.get<std::vector<double>>("position"));
-      threeVectorDump(genID + " Direction",
-                      gen.get<std::vector<double>>("direction"));
-    } else if (class_name.find("g4fire::MultiParticleGunPrimaryGenerator") !=
-               std::string::npos) {
-      header.set<int>(genID + " Poisson Enabled",
-                      gen.get<bool>("enablePoisson"));
-      header.set<int>(genID + " N Particles", gen.get<int>("nParticles"));
-      header.set<int>(genID + " PDG ID", gen.get<int>("pdgID"));
-      threeVectorDump(genID + " Vertex [mm]",
-                      gen.get<std::vector<double>>("vertex"));
-      threeVectorDump(genID + " Momentum [MeV]",
-                      gen.get<std::vector<double>>("momentum"));
-    } else if (class_name.find("g4fire::LHEPrimaryGenerator") !=
-               std::string::npos) {
-      header.set<std::string>(genID + " LHE File",
-                              gen.get<std::string>("filePath"));
-      //}
-      // else if (class_name.find("g4fire::RootCompleteReSim") !=
-      //           std::string::npos) {
-      //  header.set<std::string>(genID + " ROOT File",
-      //                            gen.get<std::string>("filePath"));
-      //} else if (class_name.find("g4fire::RootSimFromEcalSP") !=
-      //           std::string::npos) {
-      //  header.set<std::string>(genID + " ROOT File",
-      //                            gen.get<std::string>("filePath"));
-      //  header.set<float>(genID + " Time Cutoff [ns]",
-      //                           gen.get<double>("time_cutoff"));
-    } else if (class_name.find("g4fire::GeneralParticleSource") !=
-               std::string::npos) {
-      stringVectorDump(genID + " Init Cmd",
-                       gen.get<std::vector<std::string>>("initCommands"));
-    } else {
-      // ldmx_log(warn) << "Unrecognized primary generator '" << class_name <<
-      //"'. "
-      //               << "Will not be saving details to RunHeader.";
-    }
-  }
+  // User Action
+  for (const auto& ua : user_actions_) ua->RecordConfig(header);
 
   // Set a string parameter with the Geant4 SHA-1.
   if (G4RunManagerKernel::GetRunManagerKernel()) {
@@ -284,6 +229,8 @@ void Simulator::process(fire::Event &event) {
 
   // Terminate the event.  This checks if an event is to be stored or
   // stacked for later.
+  for (auto& ua : user_actions_) ua->store(event);
+  for (auto& sd : sensitive_detectors_) sd->store(event);
   n_events_completed_++;
   this->TerminateOneEvent();
 
@@ -293,37 +240,21 @@ void Simulator::process(fire::Event &event) {
 void Simulator::onProcessStart() {
   std::cout << "on process start" << std::endl;
 
-  auto ref_phys_list{params_.get<std::string>("reference_phys_list")};
-  auto physics_list{G4PhysListFactory().GetReferencePhysList(ref_phys_list)};
-  auto additional_phys{params_.get<std::vector<fire::config::Parameters>("additional_physics",{})};
-  for (const auto& phys : additional_phys) {
+  auto physics_list{G4PhysListFactory().GetReferencePhysList(ref_phys_list_)};
+  for (const auto& phys : additional_phys_cfg_) {
     physics_list->RegisterPhysics(
-        user::PhysicsConstructor::Factory::get().create(phys.get<std::string>("class_name"), phys)
+        user::PhysicsConstructor::Factory::get().make(
+          phys.get<std::string>("class_name"), phys)
         );
   }
 
-  std::string parallel_world_path_ = params_.get<std::string>("parallel_world", {});
-  bool pw_enabled_ = !parallel_world_path_.empty();
-  if (pw_enabled_) {
-    // TODO(OM) Use logger instead.
-    std::cout
-        << "[ RunManager ]: Parallel worlds physics list has been registered."
-        << std::endl;
-    physics_list->RegisterPhysics(
-        new G4ParallelWorldPhysics("parallel_world"));
-  }
-
-  auto biasing_operators{params_.get<std::vector<fire::config::Parameters>>(
-      "biasing_operators", {})};
-  if (!biasing_operators.empty()) {
-    std::cout << "[ RunManager ]: Biasing enabled with "
-              << biasing_operators.size() << " operator(s)." << std::endl;
-
+  if (!biasing_operators_cfg_.empty()) {
     // Create all the biasing operators that will be used.
-    for (fire::config::Parameters &bop : biasing_operators) {
-      g4fire::PluginFactory::getInstance().createBiasingOperator(
-          bop.get<std::string>("class_name"),
-          bop.get<std::string>("instance_name"), bop);
+    for (fire::config::Parameters &bop : biasing_operators_cfg_) {
+      biasing_operators_.emplace_back(
+        user::BiasingOperator::Factory::get().make(
+          bop.get<std::string>("class_name"), bop)
+        );
     }
 
     auto biasing_physics{new G4GenericBiasingPhysics()};
@@ -331,30 +262,14 @@ void Simulator::onProcessStart() {
     // Specify which particles are going to be biased. This will put a biasing
     // interface wrapper around *all* processes associated with these
     // particles.
-    for (const g4fire::XsecBiasingOperator *bop :
-         g4fire::PluginFactory::getInstance().getBiasingOperators()) {
-      std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
-                << "' set to bias " << bop->getParticleToBias() << std::endl;
+    for (const auto& bop : biasing_operators_) {
       biasing_physics->Bias(bop->getParticleToBias());
     }
 
     // Register the physics constructor to the physics list:
     physics_list->RegisterPhysics(biasing_physics);
   }
-  this->SetUserInitialization(physics_list);
-
-  // The parallel world needs to be registered before the mass world is
-  // constructed i.e. before G4RunManager::Initialize() is called.
-  if (pw_enabled_) {
-    std::cout << "[ RunManager ]: Parallel worlds have been enabled."
-              << std::endl;
-
-    auto validate_geometry_{params_.get<bool>("validate_detector")};
-    auto pw_parser{new G4GDMLParser()};
-    pw_parser->Read(parallel_world_path_, validate_geometry_);
-    this->userDetector->RegisterParallelWorld(
-        new ParallelWorld(pw_parser, "parallel_world", conditions_intf_));
-  }
+  SetUserInitialization(physics_list);
 
   // This is where the physics lists are told to construct their particles and
   // their processes. They are constructed in order, so it is important to 
@@ -363,47 +278,24 @@ void Simulator::onProcessStart() {
   G4RunManager::Initialize();
   std::cout << "done initializing." << std::endl;
 
-  // Instantiate the primary generator action
-  auto primaryGeneratorAction{new PrimaryGeneratorAction(params_)};
-  SetUserAction(primaryGeneratorAction);
-
-  // Get instances of all G4 actions
-  //      also create them in the factory
-  auto actions{PluginFactory::getInstance().getActions()};
-
-  // Create all user actions
-  auto userActions{
-      params_.get<std::vector<fire::config::Parameters>>("actions", {})};
-  for (auto &userAction : userActions) {
-    PluginFactory::getInstance().createAction(
-        userAction.get<std::string>("class_name"),
-        userAction.get<std::string>("instance_name"), userAction);
-  }
-
-  // Register all actions with the G4 engine
-  for (const auto &[key, act] : actions) {
-    std::visit([this](auto &&arg) { this->SetUserAction(arg); }, act);
-  }
+  // register our G4 user actions with the run control
+  SetUserAction(new g4user::PrimaryGeneratorAction(primary_generators_));
+  SetUserAction(stepping_action_);
+  SetUserAction(event_action_);
+  SetUserAction(stacking_action_);
+  SetUserAction(tracking_action_);
+  SetUserAction(run_action_);
 
   // Get the extra simulation configuring commands
-  auto post_init_cmds{
-      params_.get<std::vector<std::string>>("post_init_cmds", {})};
-  for (const std::string &cmd : post_init_cmds) {
-    if (allowed(cmd)) {
-      int g4ret{ui_manager_->ApplyCommand(cmd)};
-      if (g4ret > 0) {
-        throw fire::Exception("PostInitCmd",
-                              "Post Initialization command '" + cmd +
-                                  "' returned a failue status from Geant4: " +
-                                  std::to_string(g4ret),
-                              false);
-      }
-    } else {
-      throw fire::Exception(
-          "PostInitCmd",
-          "Post Initialization command '" + cmd +
-              "' is not allowed because another part of Simulator handles it.",
-          false);
+  //  we checked that they were allowed in the constructor
+  for (const std::string &cmd : post_init_cmds_) {
+    int g4ret{ui_manager_->ApplyCommand(cmd)};
+    if (g4ret > 0) {
+      throw fire::Exception("PostInitCmd",
+                            "Post Initialization command '" + cmd +
+                                "' returned a failue status from Geant4: " +
+                                std::to_string(g4ret),
+                            false);
     }
   }
 

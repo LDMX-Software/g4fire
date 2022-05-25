@@ -29,7 +29,7 @@ class SteppingAction : public G4UserSteppingAction {
    *
    * @param action  User action of type SteppingAction
    */
-  void registerAction(user::Action *stepping_action) {
+  void attach(user::Action *stepping_action) {
     stepping_actions_.push_back(stepping_action);
   }
 

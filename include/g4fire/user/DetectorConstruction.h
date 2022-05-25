@@ -8,7 +8,7 @@ namespace g4fire::user {
 
 class DetectorConstruction : public G4VUserDetectorConstruction {
  public:
-  using Factory = ::fire::factory::Factory<DetectorConstruction,std::unique_ptr<DetectorConstruction>,const framework::config::Parameters&>;
+  using Factory = ::fire::factory::Factory<DetectorConstruction,DetectorConstruction*,const fire::config::Parameters&>;
  public:
   DetectorConstruction(const fire::config::Parameters& p)
     : G4VUserDetectorConstruction() {}

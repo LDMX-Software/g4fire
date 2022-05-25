@@ -5,9 +5,10 @@
 
 #include <fire/config/Parameters.h>
 #include <fire/factory/Factory.h>
+#include <fire/RunHeader.h>
 
 namespace g4fire::user {
-class PhysicsConstructor : class G4VPhysicsConstructor {
+class PhysicsConstructor : public G4VPhysicsConstructor {
  public:
   using Factory = ::fire::factory::Factory<PhysicsConstructor,PhysicsConstructor*,const fire::config::Parameters&>;
  public:

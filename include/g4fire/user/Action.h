@@ -11,8 +11,8 @@
 
 #include <fire/config/Parameters.h>
 #include <fire/factory/Factory.h>
-
-#include "g4fire/UserEventInformation.h"
+#include <fire/RunHeader.h>
+#include <fire/Event.h>
 
 // Forward Declarations
 class G4Event;
@@ -33,7 +33,7 @@ class Action {
   /**
    * Factory for actions
    */
-  using Factory = ::fire::factory::Factor<Action,std::unique_ptr<Action>,const fire::config::Parameters&>;
+  using Factory = ::fire::factory::Factory<Action,std::unique_ptr<Action>,const fire::config::Parameters&>;
  public:
   /**
    * Configure the action
@@ -155,22 +155,6 @@ class Action {
    * Must be defined by any Actions so that we know what functions to call.
    */
   virtual std::vector<TYPE> getTypes() = 0;
-
- protected:
-  /**
-   * Get a handle to the event information
-   *
-   * This is static just to point out that it doesn't
-   * depend on any of the member variables of this class.
-   * It is just a helper function for shortening any
-   * code that interacts with our event information.
-   *
-   * @returns pointer to the current event information
-   */
-  static UserEventInformation* getEventInfo() {
-    return static_cast<UserEventInformation*>(
-        G4EventManager::GetEventManager()->GetUserInformation());
-  }
 };  // Action
 
 }  // namespace g4fire

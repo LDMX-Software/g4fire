@@ -22,7 +22,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
    * @param params The parameters used to configure the primary
    *                   generator action.
    */
-  PrimaryGeneratorAction(const fire::config::Parameters& params);
+  PrimaryGeneratorAction(std::vector<std::unique_ptr<user::PrimaryGenerator>>& pgs);
 
   /**
    * Class destructor.
@@ -50,7 +50,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
  private:
   /// Manager of all generators used by the event
-  std::vector<std::unique_ptr<PrimaryGenerator>> generators_;
+  std::vector<user::PrimaryGenerator*> generators_;
 };  // PrimaryGeneratorAction
 
 }  // namespace g4fire::g4user

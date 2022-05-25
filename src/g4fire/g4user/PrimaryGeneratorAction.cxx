@@ -9,21 +9,9 @@
 
 namespace g4fire::g4user {
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(const fire::config::Parameters& params)
+PrimaryGeneratorAction::PrimaryGeneratorAction(std::vector<std::unique_ptr<user::PrimaryGenerator>>& pgs)
     : G4VUserPrimaryGeneratorAction() {
-  auto generators{
-      params.get<std::vector<fire::config::Parameters> >(
-          "generators", {})};
-  if (generators.empty()) {
-    throw fire::Exception("MissingGenerator",
-                    "Need to define some generator of primaries.", false);
-  }
-
-  for (auto& generator : generators) {
-    generators_.emplace_back(
-        user::PrimaryGenerator::Factory::make(generator.get<std::string>("class_name"), generator)
-        );
-  }
+  for (auto& pg : pgs) generators_.push_back(pg.get());
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
@@ -41,7 +29,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
 
   // Make our information container and give it to geant4
   //    G4Event owns the event information and will delete it
-  event->SetUserInformation(new UserEventInformation);
+  event->SetUserInformation(new EventInformation);
 
   // Generate the primary vertices using the generators
   std::for_each(generators_.begin(), generators_.end(),

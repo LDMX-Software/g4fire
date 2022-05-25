@@ -7,6 +7,7 @@
 
 #include <fire/config/Parameters.h>
 #include <fire/factory/Factory.h>
+#include <fire/RunHeader.h>
 
 class G4Event;
 

@@ -41,7 +41,7 @@ class EventAction : public G4UserEventAction {
    *
    * @param action   action of type EventAction
    */
-  void registerAction(user::Action* event_action) {
+  void attach(user::Action* event_action) {
     event_actions_.push_back(event_action);
   }
 

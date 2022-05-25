@@ -4,6 +4,9 @@
 #include <fire/config/Parameters.h>
 
 #include <G4VUserEventInformation.hh>
+#include <G4VUserRegionInformation.hh>
+#include <G4VUserTrackInformation.hh>
+#include <G4VUserPrimaryParticleInformation.hh>
 
 namespace g4fire {
 
@@ -24,6 +27,7 @@ using TransientInformation = ::fire::config::Parameters;
  */
 class EventInformation : public G4VUserEventInformation, public TransientInformation {
  public:
+  virtual void Print() const final override {}
   static EventInformation* get(const G4Event* e) {
     return dynamic_cast<EventInformation*>(e->GetUserInformation());
   }

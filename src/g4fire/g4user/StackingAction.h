@@ -42,7 +42,7 @@ class StackingAction : public G4UserStackingAction {
    *
    * @param action   action of type StackingAction
    */
-  void registerAction(user::Action* stacking_action) {
+  void attach(user::Action* stacking_action) {
     stacking_actions_.push_back(stacking_action);
   }
 

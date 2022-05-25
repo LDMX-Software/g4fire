@@ -12,6 +12,17 @@
 #include <G4RunManager.hh>
 
 #include "g4fire/ConditionsInterface.h"
+#include "g4fire/user/PrimaryGenerator.h"
+#include "g4fire/user/SensitiveDetector.h"
+#include "g4fire/user/Action.h"
+#include "g4fire/user/BiasingOperator.h"
+
+#include "g4user/PrimaryGeneratorAction.h"
+#include "g4user/SteppingAction.h"
+#include "g4user/EventAction.h"
+#include "g4user/RunAction.h"
+#include "g4user/StackingAction.h"
+#include "g4user/TrackingAction.h"
 
 class G4UImanager;
 class G4UIsession;
@@ -26,6 +37,18 @@ namespace g4fire {
  */
 class Simulator : public fire::Processor, public G4RunManager {
 public:
+  /*
+   * Configure the simulation given the set of parameters passed by the user
+   * at runtime.
+   *
+   * This method is used to organize the configuration of this class using
+   * the parameters specified in the python configuration passed to fire.
+   * This method will only be called within the constructor and is not
+   * exposed publicly.
+   *
+   * @param[in] params The parameters passed to this class via the python
+   *  config.
+   */
   Simulator(const fire::config::Parameters &params);
 
   /// Default destructor
@@ -51,22 +74,6 @@ public:
   void onNewRun(const fire::RunHeader &header) final override;
 
   /**
-   *  Callback for the EventProcessor to take any necessary action
-   *  when a new file is opened.
-   *
-   *  @param eventFile  The input/output file.
-   */
-  //void onFileOpen(fire::EventFile &eventFile) final override;
-
-  /**
-   * Callback for the EventProcessor to take any necessary action
-   * when a file is closed.
-   *
-   * @param eventFile The intput/output file.
-   */
-  // void onFileClose(fire::EventFile &eventFile) final override;
-
-  /**
    * Initialization of simulation
    *
    * This uses the parameters set in the configure method to
@@ -80,20 +87,6 @@ public:
   void onProcessEnd() final override;
 
  private:
-  /**
-   * Configure the simulation given the set of parameters passed by the user
-   * at runtime.
-   *
-   * This method is used to organize the configuration of this class using
-   * the parameters specified in the python configuration passed to fire.
-   * This method will only be called within the constructor and is not
-   * exposed publicly.
-   *
-   * @param[in] params The parameters passed to this class via the python
-   *  config.
-   */
-  void configure(const fire::config::Parameters &params);
-
   /**
    * Check if the input command is allowed to be run.
    *
@@ -131,15 +124,46 @@ public:
   ///  Conditions interface
   ConditionsInterface conditions_intf_;
 
+  /// the other g4user actions
+  g4user::SteppingAction* stepping_action_;
+  g4user::EventAction* event_action_;
+  g4user::RunAction* run_action_;
+  g4user::StackingAction* stacking_action_;
+  g4user::TrackingAction* tracking_action_;
+
   /*********************************************************
    * Python Configuration Parameters
    *********************************************************/
 
-  /// The parameters used to configure the simulation
-  fire::config::Parameters params_;
-
   /// Vebosity for the simulation
   int verbosity_{1};
+
+  /// post-init commands
+  std::vector<std::string> post_init_cmds_;
+
+  /// pre-init commands
+  std::vector<std::string> pre_init_cmds_;
+
+  /// the sensitive detectors
+  std::vector<std::unique_ptr<user::SensitiveDetector>> sensitive_detectors_;
+
+  /// the reference physics list
+  std::string ref_phys_list_;
+
+  /// the biasing operators
+  std::vector<std::unique_ptr<user::BiasingOperator>> biasing_operators_;
+
+  /// our user actions
+  std::vector<std::unique_ptr<user::Action>> user_actions_;
+
+  /// our primary generators
+  std::vector<std::unique_ptr<user::PrimaryGenerator>> primary_generators_;
+
+  /// the configuration of physics constructors
+  std::vector<fire::config::Parameters> additional_phys_cfg_;
+
+  /// the configuration of biasing operators
+  std::vector<fire::config::Parameters> biasing_operators_cfg_;
 
 }; // Simulator
 } // namespace g4fire

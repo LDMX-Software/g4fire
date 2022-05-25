@@ -1,16 +1,12 @@
 #ifndef G4FIRE_USER_SENSITIVEDETECTOR_H_
 #define G4FIRE_USER_SENSITIVEDETECTOR_H_
 
-#include <fire/config/Parameteres.h>
+#include <fire/config/Parameters.h>
 #include <fire/RunHeader.h>
 
 #include <G4VSensitiveDetector.hh>
 
 #include "g4fire/ConditionsInterface.h"
-/*
-#include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/TrackMap.h"
-*/
 
 namespace g4fire::user {
 
@@ -66,7 +62,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    *
    * @param[in,out] event event bus to add thing(s) to
    */
-  virtual void store(framework::Event& event) = 0;
+  virtual void store(fire::Event& event) = 0;
 
   /**
    * Record the configuration of this
@@ -74,7 +70,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    *
    * @param[in,out] header RunHeader to write configuration to
    */
-  virtual void RecordConfig(framework::RunHeader& header) const = 0;
+  virtual void RecordConfig(fire::RunHeader& header) const = 0;
 
  protected:
   /**
@@ -98,20 +94,9 @@ class SensitiveDetector : public G4VSensitiveDetector {
    */
   bool isGeantino(const G4Step* step) const;
 
-  /**
-   * Get a handle to the current track map.
-   *
-   * The track map is created only after the event
-   * begins, so you will get a segmentation violation
-   * if you call this function before an event has started.
-  const TrackMap& getTrackMap() const {
-    return *(g4fire::user::TrackingAction::getUserTrackingAction()->getTrackMap());
-  }
-   */
-
  private:
   /// Handle to our interface to conditions objects
-  simcore::ConditionsInterface& conditions_interface_;
+  g4fire::ConditionsInterface& conditions_interface_;
 
 };  // SensitiveDetector
 }  // namespace g4fire::user
