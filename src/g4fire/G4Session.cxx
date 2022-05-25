@@ -1,6 +1,6 @@
-#include "g4fire/G4Session.h"
+#include "G4Session.h"
 
-//#include "Framework/Exception/Exception.h"
+#include <fire/exception/Exception.h>
 
 namespace g4fire {
 
@@ -8,14 +8,14 @@ LoggedSession::LoggedSession(const std::string& cout_file_name,
                              const std::string& cerr_file_name) {
   cout_file_.open(cout_file_name);
   if (not cout_file_.is_open()) {
-    //EXCEPTION_RAISE("G4Logging",
-    //                "Unable to open log file '" + cout_file_name + "'.");
+    throw fire::Exception("G4Logging",
+        "Unable to open log file '"+cout_file_name+"'.");
   }
 
   cerr_file_.open(cerr_file_name);
   if (not cerr_file_.is_open()) {
-    //EXCEPTION_RAISE("G4Logging",
-    //                "Unable to open log file '" + cerr_file_name + "'.");
+    throw fire::Exception("G4Logging",
+        "Unable to open log file '"+cerr_file_name+"'.");
   }
 }
 

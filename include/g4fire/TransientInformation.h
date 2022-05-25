@@ -8,6 +8,9 @@
 #include <G4VUserTrackInformation.hh>
 #include <G4VUserPrimaryParticleInformation.hh>
 
+#include <G4Event.hh>
+#include <G4Track.hh>
+
 namespace g4fire {
 
 /**
@@ -54,7 +57,11 @@ class TrackInformation : public G4VUserTrackInformation, public TransientInforma
 /**
  * The primary particle information is transient information about primary particles
  */
-class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation, public TransientInformation {};
+class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation, 
+                                   public TransientInformation {
+ public:
+  virtual void Print() const final override {}
+};
 
 }
 

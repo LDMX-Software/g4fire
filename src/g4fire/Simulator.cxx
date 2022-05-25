@@ -20,7 +20,7 @@
 #include <Randomize.hh>
 #include <G4UImanager.hh>
 
-#include "g4fire/G4Session.h"
+#include "G4Session.h"
 
 #include "g4fire/user/DetectorConstruction.h"
 #include "g4fire/user/PhysicsConstructor.h"

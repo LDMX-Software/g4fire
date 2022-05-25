@@ -1,17 +1,61 @@
-#include "g4fire/ParticleGun.h"
+#include <G4Event.hh>
+#include <G4ParticleTable.hh>
+#include <G4SystemOfUnits.hh>
+#include <G4ThreeVector.hh>
+#include <G4ParticleGun.hh>
 
-#include <memory>
+#include <g4fire/user/PrimaryGenerator.h>
 
-#include "G4Event.hh"
-#include "G4ParticleTable.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4ThreeVector.hh"
+namespace g4fire::plugins::primary_generators {
 
-namespace g4fire {
+/**
+ * @brief Class that extends the functionality of G4ParticleGun.
+ */
+class ParticleGun : public user::PrimaryGenerator {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param params Parameters used to configure the particle gun.
+   *
+   * Parameters:
+   *  verbosity: > 1 means print configuration
+   *  particle : name of particle to shoot (Geant4 naming)
+   *  energy   : energy of particle (GeV)
+   *  position : position to shoot from (mm three-vector)
+   *  time     : time to shoot at (ns)
+   *  direction: direction to shoot in (unitless three-vector)
+   */
+  ParticleGun(const fire::config::Parameters& params);
 
-ParticleGun::ParticleGun(const std::string &name,
-                         fire::config::Parameters &params)
-    : PrimaryGenerator(name, params) {
+  /// Destructor
+  ~ParticleGun() = default;
+
+  /**
+   * Generate the primary vertices in the Geant4 event.
+   *
+   * @param event The Geant4 event.
+   */
+  void GeneratePrimaryVertex(G4Event* event) final override;
+
+  virtual void RecordConfig(fire::RunHeader& rh) const final override;
+ private:
+  /**
+   * The actual Geant4 implementation of the ParticleGun
+   *
+   * mutable because G4 has crap const correctness
+   */
+  mutable G4ParticleGun gun_;
+
+  /**
+   * LDMX Verbosity for this generator
+   */
+  int verbosity_;
+
+};  // ParticleGun
+
+ParticleGun::ParticleGun(const fire::config::Parameters &params)
+    : PrimaryGenerator(params) {
   verbosity_ = params.get<int>("verbosity");
 
   auto particle_table{G4ParticleTable::GetParticleTable()};
@@ -66,6 +110,10 @@ void ParticleGun::GeneratePrimaryVertex(G4Event *event) {
   gun_.GeneratePrimaryVertex(event);
 }
 
-} // namespace g4fire
+void ParticleGun::RecordConfig(fire::RunHeader& rh) const {
+  rh.set<float>("ParticleGun Position X", gun_.GetParticlePosition().x());
+}
 
-DECLARE_GENERATOR(g4fire, ParticleGun)
+} // namespace g4fire::plugins::primary_generators
+
+DECLARE_GENERATOR(g4fire::plugins::primary_generators::ParticleGun);

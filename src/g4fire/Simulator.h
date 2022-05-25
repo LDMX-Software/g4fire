@@ -24,11 +24,8 @@
 #include "g4user/StackingAction.h"
 #include "g4user/TrackingAction.h"
 
-class G4UImanager;
 class G4UIsession;
-class G4GDMLParser;
-class G4GDMLMessenger;
-class G4CascadeParameters;
+class G4UImanager;
 
 namespace g4fire {
 
