@@ -116,6 +116,7 @@ target_link_libraries(primary_generators PUBLIC user) # lhe)
 add_library(detector_constructors SHARED
   src/g4fire/plugins/detector_constructors/SimplePrism.cxx
   src/g4fire/plugins/detector_constructors/GDML.cxx)
+target_link_libraries(detector_constructors PUBLIC user)
 
 set_target_properties(
   user g4user simulator primary_generators detector_constructors

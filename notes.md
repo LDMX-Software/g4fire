@@ -9,7 +9,11 @@ with which to do things.
   - put header files internal to g4fire in src alongside implementation file
 - src : source files for constructing library
 - test : testing for g4fire
-- ldmx : ldmx-specific library that will be build downstream of g4fire
+- plugins : non-necessary but potentially helpful generic plugins for g4fire
+  - built downstream of g4fire
+  - will be able to be deactivated with `G4FIRE_ENABLE_PLUGINS=OFF`
+- ldmx : ldmx-specific library
+  - will be build downstream of g4fire
   - including event objects, SDs, action for storing sim particles
 
 ### User Classes
