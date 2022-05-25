@@ -10,6 +10,7 @@ with which to do things.
 - src : source files for constructing library
 - test : testing for g4fire
 - ldmx : ldmx-specific library that will be build downstream of g4fire
+  - including event objects, SDs, action for storing sim particles
 
 ### User Classes
 These classes can be derived, registered, and dynamically loaded.
@@ -21,7 +22,7 @@ Detector | defining detector to be simulated | simple rectangle prism and GDML r
 Sensitive Detectors | generate "hits" in detector volumes | None (maybe Calorimeter/Tracker ?)
 Biasing Operator | biasing processes in specific volumes | None
 Primary Generators | starting simulation | ParticleGun, LHE, GPS
-Generalized Actions | filtering and/or watching at G4 callbacks | None
+Generalized Actions | filtering and/or watching at G4 callbacks | Event weight calculator, PN/EN deduction
 
 ### Procedure
 Separated these tasks into the different Simulator member.
