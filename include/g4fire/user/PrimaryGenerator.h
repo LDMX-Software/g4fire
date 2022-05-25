@@ -37,6 +37,8 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   /// Destructor
   virtual ~PrimaryGenerator() = default;
 
+  virtual void RecordConfig(fire::RunHeader& rh) const = 0;
+
   /**
    * Generate a primary vertex.
    *

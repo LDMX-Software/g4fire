@@ -14,6 +14,7 @@ class PhysicsConstructor : class G4VPhysicsConstructor {
   PhysicsConstructor(const fire::config::Parameters& p)
     : G4VPhysicsConstructor(p.get<std::string>("name")) {}
   virtual ~PhysicsConstructor() = default;
+  virtual void RecordConfig(fire::RunHeader& rh) const = 0;
   virtual void ConstructParticle() = 0;
   virtual void ConstructProcess() = 0;
 };

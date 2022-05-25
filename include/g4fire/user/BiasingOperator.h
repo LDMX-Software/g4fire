@@ -157,7 +157,7 @@ class BiasingOperator : public G4VBiasingOperator {
    *
    * @param[in,out] header RunHeader to write configuration to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
+  virtual void RecordConfig(fire::RunHeader& header) const = 0;
 
  protected:
   /**

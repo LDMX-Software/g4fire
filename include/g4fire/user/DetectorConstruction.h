@@ -13,6 +13,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   DetectorConstruction(const fire::config::Parameters& p)
     : G4VUserDetectorConstruction() {}
   ~DetectorConstruction() = default;
+  virtual void RecordConfig(fire::RunHeader& rh) const = 0;
   virtual G4VPhysicalVolume* Construct() = 0;
 };  // DetectorConstruction
 

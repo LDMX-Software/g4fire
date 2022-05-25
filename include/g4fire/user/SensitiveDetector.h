@@ -66,7 +66,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    *
    * @param[in,out] event event bus to add thing(s) to
    */
-  virtual void saveHits(framework::Event& event) = 0;
+  virtual void store(framework::Event& event) = 0;
 
   /**
    * Record the configuration of this

@@ -46,6 +46,20 @@ class Action {
   virtual ~Action() = default;
 
   /**
+   * Record the configuration of this action into the pass run header
+   */
+  virtual void RecordConfig(fire::RunHeader& rh) const = 0;
+
+  /**
+   * Call for when an event is to be kept. After EndOfEventAction
+   * and before the next BeginOfEventAction, you can use this opportunity
+   * to store objects in the event bus.
+   *
+   * This will only be called if the event is not aborted.
+   */
+  virtual void store(fire::Event& event) {}
+
+  /**
    * Method called at the beginning of every event.
    *
    * TYPE::EVENT
