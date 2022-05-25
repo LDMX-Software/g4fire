@@ -22,7 +22,12 @@ using TransientInformation = ::fire::config::Parameters;
 /**
  * The event information is transient information about the entire event
  */
-class EventInformation : public G4VUserEventInformation, public TransientInformation {};
+class EventInformation : public G4VUserEventInformation, public TransientInformation {
+ public:
+  static EventInformation* get(const G4Event* e) {
+    return dynamic_cast<EventInformation*>(e->GetUserInformation());
+  }
+};
 
 /**
  * The region information is transient information about regions
@@ -38,10 +43,7 @@ class TrackInformation : public G4VUserTrackInformation, public TransientInforma
    * Helper function to get the transient information about a track
    */
   static TrackInformation* get(const G4Track* t) {
-    if (not t->GetUserInformation()) {
-      const_cast<G4Track*>(t)->SetUserInformation(new TrackInformation);
-    }
-    return dynamic_cast<TrackInformation*>(t->GetUserInformation);
+    return dynamic_cast<TrackInformation*>(t->GetUserInformation());
   }
 };
 
