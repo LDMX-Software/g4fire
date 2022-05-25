@@ -4,7 +4,7 @@
 
 namespace g4fire::plugins::detector_construction {
 
-class GDML {
+class GDML : public user::DetectorConstruction {
   std::string gdml_file_path_;
  public:
   GDML(const fire::config::Parameters& p)

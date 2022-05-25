@@ -2,6 +2,8 @@
 #define G4FIRE_USER_DETECTORCONSTRUCTION_H
 
 #include <fire/factory/Factory.h>
+#include <fire/config/Parameters.h>
+#include <fire/RunHeader.h>
 #include <G4VUserDetectorConstruction.hh>
 
 namespace g4fire::user {

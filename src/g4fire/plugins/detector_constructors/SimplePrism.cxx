@@ -3,6 +3,7 @@
 #include <G4Box.hh>
 #include <G4LogicalVolume.hh>
 #include <G4NistManager.hh>
+#include <G4PVPlacement.hh>
 
 namespace g4fire::plugins::detector_constructions {
 
@@ -17,21 +18,21 @@ class SimplePrism : public user::DetectorConstruction {
       box_material_ = p.get<std::string>("box_material");
       world_material_ = p.get<std::string>("world_material");
   }
-  virtual void RecordConfig(fire::RunHeader& rh) {
-    rh.set<float>("SimplePrism X [mm]", box_dimensions_mm_.at(0));
-    rh.set<float>("SimplePrism Y [mm]", box_dimensions_mm_.at(1));
-    rh.set<float>("SimplePrism Z [mm]", box_dimensions_mm_.at(2));
-    rh.set<std::string>("SimplePrism Box Material", box_material_);
-    rh.set<std::string>("SimplePrism World Material", world_material_);
+  virtual void RecordConfig(fire::RunHeader& rh) const {
+    rh.set("SimplePrism X [mm]", box_dimensions_mm_.at(0));
+    rh.set("SimplePrism Y [mm]", box_dimensions_mm_.at(1));
+    rh.set("SimplePrism Z [mm]", box_dimensions_mm_.at(2));
+    rh.set("SimplePrism Box Material", box_material_);
+    rh.set("SimplePrism World Material", world_material_);
   }
   virtual G4VPhysicalVolume* Construct() {
     // Get nist material manager
     G4NistManager* nist = G4NistManager::Instance();
+    using CLHEP::mm;
 
-    G4double
-      box_x = box_dimensions_mm_.at(0)*mm,
-      box_z = box_dimensions_mm_.at(1)*mm,
-      box_z = box_dimensions_mm_.at(2)*mm;
+    G4double box_x{box_dimensions_mm_.at(0)*mm},
+             box_y{box_dimensions_mm_.at(1)*mm},
+             box_z{box_dimensions_mm_.at(2)*mm};
     G4Material* box_mat = nist->FindOrBuildMaterial(box_material_);
     if (not box_mat) {
       fire::Exception("BadMaterial","Material '"+box_material_+"' unkown to G4NistManager.");
@@ -60,7 +61,7 @@ class SimplePrism : public user::DetectorConstruction {
           0,               //its mother  volume
           false,           //no boolean operation
           0,               //copy number
-          checkOverlaps);  //overlaps checking
+          false);          //overlaps checking
 
     G4Box* solidBox = new G4Box("Box",
         0.5*box_x, 0.5*box_y, 0.5*box_z);
@@ -76,7 +77,7 @@ class SimplePrism : public user::DetectorConstruction {
         logicWorld,      //its mother  volume
         false,           //no boolean operation
         0,               //copy number
-        checkOverlaps);  //overlaps checking
+        false);          //overlaps checking
 
     //always return the physical World
     return physWorld;
