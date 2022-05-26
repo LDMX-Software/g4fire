@@ -33,14 +33,16 @@ class Action {
   /**
    * Factory for actions
    */
-  using Factory = ::fire::factory::Factory<Action,std::unique_ptr<Action>,const fire::config::Parameters&>;
+  using Factory = ::fire::factory::Factory<Action,
+        std::unique_ptr<Action>,
+        const fire::config::Parameters&>;
  public:
   /**
    * Configure the action
    *
    * @param name Name given the to class instance.
    */
-  Action(const fire::config::Parameters& params) {}
+  Action(const fire::config::Parameters& params);
 
   /// Destructor
   virtual ~Action() = default;
@@ -57,7 +59,7 @@ class Action {
    *
    * This will only be called if the event is not aborted.
    */
-  virtual void store(fire::Event& event) {}
+  virtual void store(fire::Event& event);
 
   /**
    * Method called at the beginning of every event.
@@ -66,7 +68,7 @@ class Action {
    *
    * @param event Geant4 event object.
    */
-  virtual void BeginOfEventAction(const G4Event*) {}
+  virtual void BeginOfEventAction(const G4Event*);
 
   /**
    * Method called at the end of every event.
@@ -75,7 +77,7 @@ class Action {
    *
    * @param event Geant4 event object.
    */
-  virtual void EndOfEventAction(const G4Event*) {}
+  virtual void EndOfEventAction(const G4Event*);
 
   /**
    * Method called at the beginning of a run.
@@ -84,7 +86,7 @@ class Action {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void BeginOfRunAction(const G4Run*) {}
+  virtual void BeginOfRunAction(const G4Run*);
 
   /**
    * Method called at the end of a run.
@@ -93,7 +95,7 @@ class Action {
    *
    * @param run Current Geant4 run object.
    */
-  virtual void EndOfRunAction(const G4Run*) {}
+  virtual void EndOfRunAction(const G4Run*);
 
   /**
    * Method called before the UserTrackingAction.
@@ -102,7 +104,7 @@ class Action {
    *
    * @param track current Geant4 track
    */
-  virtual void PreUserTrackingAction(const G4Track*) {}
+  virtual void PreUserTrackingAction(const G4Track*);
 
   /**
    * Method called after the UserTrackingAction.
@@ -111,7 +113,7 @@ class Action {
    *
    * @param track current Geant4 track
    */
-  virtual void PostUserTrackingAction(const G4Track*) {}
+  virtual void PostUserTrackingAction(const G4Track*);
 
   /**
    * Method called after each simulation step.
@@ -120,7 +122,7 @@ class Action {
    *
    * @param current Geant4 step
    */
-  virtual void stepping(const G4Step*) {}
+  virtual void stepping(const G4Step*);
 
   /**
    * Method called when a track is updated
@@ -131,23 +133,21 @@ class Action {
    * @param current tracks' classification
    */
   virtual G4ClassificationOfNewTrack ClassifyNewTrack(
-      const G4Track*, const G4ClassificationOfNewTrack& cl) {
-    return cl;
-  };
+      const G4Track*, const G4ClassificationOfNewTrack& cl);
 
   /**
    * Method called at the beginning of a new stage
    *
    * TYPE::STACKING
    */
-  virtual void NewStage() {}
+  virtual void NewStage();
 
   /**
    * Method called at the beginning of a new event
    *
    * TYPE::STACKING
    */
-  virtual void PrepareNewEvent() {}
+  virtual void PrepareNewEvent();
 
   /**
    * @return The user action types

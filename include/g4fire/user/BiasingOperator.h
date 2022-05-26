@@ -7,15 +7,6 @@
 
 #include <G4BOptnChangeCrossSection.hh>
 #include <G4BiasingProcessInterface.hh>
-#include <G4BiasingProcessSharedData.hh>
-#include <G4Electron.hh>
-#include <G4Gamma.hh>
-#include <G4Neutron.hh>
-#include <G4KaonZeroLong.hh>
-#include <G4ParticleDefinition.hh>
-#include <G4ParticleTable.hh>
-#include <G4ProcessManager.hh>
-#include <G4RunManager.hh>
 #include <G4Track.hh>
 #include <G4VBiasingOperator.hh>
 
@@ -38,7 +29,8 @@ class BiasingOperator : public G4VBiasingOperator {
   /**
    * Factory for biasing operators
    */
-  using Factory = ::fire::factory::Factory<BiasingOperator,std::unique_ptr<BiasingOperator>,const fire::config::Parameters&>;
+  using Factory = ::fire::factory::Factory<BiasingOperator,
+        std::unique_ptr<BiasingOperator>,const fire::config::Parameters&>;
  public:
   /**
    * Constructor
@@ -51,8 +43,7 @@ class BiasingOperator : public G4VBiasingOperator {
    *
    * @param params python configuration parameters
    */
-  BiasingOperator(const fire::config::Parameters& params) 
-    : G4VBiasingOperator(params.get<std::string>("name")) {}
+  BiasingOperator(const fire::config::Parameters& params);
 
   /// Destructor 
   virtual ~BiasingOperator() = default;
@@ -67,33 +58,7 @@ class BiasingOperator : public G4VBiasingOperator {
    * call `BiasingOperator::StartRun()` at the beginning of
    * their own StartRun.
    */
-  virtual void StartRun() {
-    if (this->getParticleToBias().compare("gamma") == 0) {
-      process_manager_ = G4Gamma::GammaDefinition()->GetProcessManager();
-    } else if (this->getParticleToBias().compare("e-") == 0) {
-      process_manager_ = G4Electron::ElectronDefinition()->GetProcessManager();
-    } else if (this->getParticleToBias().compare("neutron") == 0) {
-      process_manager_ = G4Neutron::NeutronDefinition()->GetProcessManager();
-    } else if (this->getParticleToBias().compare("kaon0L") == 0) {
-      process_manager_ = G4KaonZeroLong::KaonZeroLongDefinition()->GetProcessManager();
-    } else {
-      //EXCEPTION_RAISE("BiasSetup", "Invalid particle type '" +
-      //                                 this->getParticleToBias() + "'.");
-    }
-  
-    // TODO(OM): Use logger instead
-    std::cout << "[ BiasingOperator ]: Biasing particles of type "
-              << this->getParticleToBias() << std::endl;
-  
-    if (processIsBiased(this->getProcessToBias())) {
-      xsec_operation_ =
-          new G4BOptnChangeCrossSection("changeXsec-" + this->getProcessToBias());
-    } else {
-      //EXCEPTION_RAISE("BiasSetup",
-      //                this->getProcessToBias() +
-      //                    " is not found in list of biased processes!");
-    }
-  }
+  virtual void StartRun();
 
   /**
    * Attach ourselves to the input logical volume if it should be biased
@@ -174,11 +139,7 @@ class BiasingOperator : public G4VBiasingOperator {
    * @param biased_xsec the biased cross section
    * @return the biasing operation with the input biased cross section
    */
-  G4VBiasingOperation* BiasedXsec(double biased_xsec) {
-    xsec_operation_->SetBiasedCrossSection(biased_xsec);
-    xsec_operation_->Sample();
-    return xsec_operation_;
-  }
+  G4VBiasingOperation* BiasedXsec(double biased_xsec);
 
   /**
    * Check if the given processed is being biased.
@@ -186,26 +147,7 @@ class BiasingOperator : public G4VBiasingOperator {
    * @param process Process of interest
    * @return true if the process is being biased, false otherwise
    */
-  bool processIsBiased(std::string process) {
-    // Loop over all processes and check if the given process is being
-    // biased.
-    const G4BiasingProcessSharedData* shared_data{
-        G4BiasingProcessInterface::GetSharedData(process_manager_)};
-    if (shared_data) {
-      for (size_t iprocess = 0;
-           iprocess < (shared_data->GetPhysicsBiasingProcessInterfaces()).size();
-           ++iprocess) {
-        const G4BiasingProcessInterface* wrapperProcess =
-            (shared_data->GetPhysicsBiasingProcessInterfaces())[iprocess];
-  
-        if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(
-                process) == 0) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+  bool processIsBiased(const std::string& process);
 
   /// Cross-section biasing operation.
   G4BOptnChangeCrossSection* xsec_operation_{nullptr};

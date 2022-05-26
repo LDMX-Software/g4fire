@@ -24,7 +24,8 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   /**
    * Factory for primary generators
    */
-  using Factory = ::fire::factory::Factory<PrimaryGenerator,std::unique_ptr<PrimaryGenerator>,const fire::config::Parameters&>;
+  using Factory = ::fire::factory::Factory<PrimaryGenerator,
+        std::unique_ptr<PrimaryGenerator>,const fire::config::Parameters&>;
  public:
   /**
    * Configure the primary generator
@@ -32,8 +33,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    * @param name Name given the to class instance.
    * @param The parameter set used to configure this class.
    */
-  PrimaryGenerator(const fire::config::Parameters &params)
-    : G4VPrimaryGenerator() {}
+  PrimaryGenerator(const fire::config::Parameters &params);
 
   /// Destructor
   virtual ~PrimaryGenerator() = default;

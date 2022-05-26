@@ -10,10 +10,14 @@
 namespace g4fire::user {
 class PhysicsConstructor : public G4VPhysicsConstructor {
  public:
-  using Factory = ::fire::factory::Factory<PhysicsConstructor,PhysicsConstructor*,const fire::config::Parameters&>;
+  /**
+   * returns raw pointer because Geant4 physics list handles
+   * clean up
+   */
+  using Factory = ::fire::factory::Factory<PhysicsConstructor,
+        PhysicsConstructor*,const fire::config::Parameters&>;
  public:
-  PhysicsConstructor(const fire::config::Parameters& p)
-    : G4VPhysicsConstructor(p.get<std::string>("name")) {}
+  PhysicsConstructor(const fire::config::Parameters& p);
   virtual ~PhysicsConstructor() = default;
   virtual void RecordConfig(fire::RunHeader& rh) const = 0;
   virtual void ConstructParticle() = 0;

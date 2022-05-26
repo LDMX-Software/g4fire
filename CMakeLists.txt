@@ -76,11 +76,18 @@ target_include_directories(version
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>"
   )
 
-add_library(user INTERFACE)
-target_include_directories(user INTERFACE 
+add_library(user SHARED
+  src/g4fire/user/Action.cxx
+  src/g4fire/user/BiasingOperator.cxx
+  src/g4fire/user/DetectorConstruction.cxx
+  src/g4fire/user/PhysicsConstructor.cxx
+  src/g4fire/user/PrimaryGenerator.cxx
+  src/g4fire/user/SensitiveDetector.cxx
+  )
+target_include_directories(user PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
-target_link_libraries(user INTERFACE Geant4::Interface fire::config)
+target_link_libraries(user PUBLIC Geant4::Interface fire::config)
 
 add_library(g4user SHARED
   src/g4fire/g4user/EventAction.cxx
