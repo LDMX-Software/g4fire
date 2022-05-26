@@ -1,29 +1,45 @@
 #include "g4fire/LHEPrimaryGenerator.h"
 
-#include "G4Event.hh"
-#include "G4IonTable.hh"
-#include "G4PhysicalConstants.hh"
-#include "G4RunManager.hh"
-#include "G4SystemOfUnits.hh"
+#include <G4Event.hh>
+#include <G4IonTable.hh>
+#include <G4PhysicalConstants.hh>
+#include <G4RunManager.hh>
+#include <G4SystemOfUnits.hh>
 
-#include "fire/exception/Exception.h"
+#include <fire/exception/Exception.h>
 
-#include "g4fire/UserPrimaryParticleInformation.h"
+#include "g4fire/user/PrimaryGenerator.h"
+#include "g4fire/lhe/LHEEvent.h"
+#include "g4fire/TransientInformation.h"
 
-namespace g4fire {
+namespace g4fire::plugins::primary_generators {
+
+class LHEPrimaryGenerator : public user::PrimaryGenerator {
+  std::ifstream lhe_file_;
+ public:
+  LHEPrimaryGenerator(const fire::config::Parameters& p);
+  void GeneratoePrimaryVertex(G4Event* event) final override;
+  void RecordConfig(fire::RunHeader& rh) const final override;
+};
 
 LHEPrimaryGenerator::LHEPrimaryGenerator(
-    const std::string& name, fire::config::Parameters& params)
-    : PrimaryGenerator(name, params) {
-  std::string filePath = params_.get<std::string>("filePath");
-  reader_ = new LHEReader(filePath);
+    const fire::config::Parameters& params)
+    : PrimaryGenerator(params.get<std::string>("name")) {
+  auto fp{params.get<std::string>("file_path")};
+  lhe_file_.open(fp);
+  if (not lhe_file_.is_open()) {
+    throw fire::Exception("BadFile",
+        "Unable to open '"+fp+"'.");
+  }
 }
 
-LHEPrimaryGenerator::~LHEPrimaryGenerator() { delete reader_; }
+LHEPrimaryGenerator::~LHEPrimaryGenerator() {}
 
 void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
-  LHEEvent* lheEvent = reader_->readNextEvent();
-
+  LHEEvent lhe_event;
+  if (not (lhe_file_ >> lhe_event)) {
+    // done
+  }
   if (lheEvent != NULL) {
     G4PrimaryVertex* vertex = new G4PrimaryVertex();
     vertex->SetPosition(lheEvent->getVertex()[0], lheEvent->getVertex()[1],
