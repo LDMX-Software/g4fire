@@ -57,7 +57,8 @@ class Action {
    * and before the next BeginOfEventAction, you can use this opportunity
    * to store objects in the event bus.
    *
-   * This will only be called if the event is not aborted.
+   * This will only be called if the event is not aborted and it is called
+   * for all Actions regardless of type.
    */
   virtual void store(fire::Event& event);
 
@@ -155,6 +156,16 @@ class Action {
    * Must be defined by any Actions so that we know what functions to call.
    */
   virtual std::vector<TYPE> getTypes() = 0;
+
+ protected:
+  /**
+   * Get the current event information
+   *
+   * This is guaranteed by g4fire to be a valid pointer as long as 
+   * it is being called from within a STACKING, STEPPING, TRACKING,
+   * or EVENT callback method above.
+   */
+  UserEventInformation* Action::getEventInfo() const;
 };  // Action
 
 }  // namespace g4fire

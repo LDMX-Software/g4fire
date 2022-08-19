@@ -18,4 +18,8 @@ G4ClassificationOfNewTrack Action::ClassifyNewTrack(const G4Track*,
 void Action::NewStage() {}
 void Action::PrepareNewEvent() {}
 
+UserEventInformation* Action::getEventInfo() const {
+  return static_cast<UserEventInformation*>(G4EventManager::GetEventManager()->GetCurrentEvent()->GetUserInformation());
+}
+
 }
