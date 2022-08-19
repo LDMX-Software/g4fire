@@ -77,6 +77,12 @@ Simulator::Simulator(const fire::config::Parameters &params)
         user::SensitiveDetector::Factory::get().make(sd.get<std::string>("class_name"), 
           conditions_intf_, sd)
         );
+    for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
+      if (sensitive_detectors_.back()->isSensDet(volume)) {
+        // log message?
+        volume->SetSensitiveDetector(sensitive_detectors_.back().get());
+      }
+    }
   }
 
   auto pre_init_cmds =
