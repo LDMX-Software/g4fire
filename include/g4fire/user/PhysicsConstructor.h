@@ -1,11 +1,11 @@
 #ifndef G4FIRE_USER_PHYSICSCONSTRUCTOR_H
 #define G4FIRE_USER_PHYSICSCONSTRUCTOR_H
 
-#include <G4VPhysicsConstructor.hh>
-
 #include <fire/config/Parameters.h>
 #include <fire/factory/Factory.h>
 #include <fire/RunHeader.h>
+
+#include <G4VPhysicsConstructor.hh>
 
 namespace g4fire::user {
 class PhysicsConstructor : public G4VPhysicsConstructor {

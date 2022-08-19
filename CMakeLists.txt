@@ -36,7 +36,6 @@ include (Geant4)
 setup_geant4_target ()
 find_package (Boost REQUIRED COMPONENTS log)
 find_package (fire REQUIRED)
-find_package (Eigen3 REQUIRED NO_MODULE)
 
 # Execute the command to extract the SHA1 hash of the current git tag.
 # 'git' is removed from within the container to discourage opening a shell
@@ -108,9 +107,10 @@ add_library(lhe SHARED
   src/g4fire/lhe/LHEEvent.cxx
   src/g4fire/lhe/LHEParticle.cxx
   )
-target_include_directories(lhe SHARED
+target_include_directories(lhe PUBLIC 
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
+target_link_libraries(lhe PUBLIC Geant4::Interface fire::exception)
 
 add_library(primary_generators SHARED
   src/g4fire/plugins/primary_generators/ParticleGun.cxx
@@ -126,14 +126,14 @@ add_library(detector_constructors SHARED
 target_link_libraries(detector_constructors PUBLIC user)
 
 set_target_properties(
-  user g4user simulator primary_generators detector_constructors
+  user g4user simulator lhe primary_generators detector_constructors
   PROPERTIES CXX_STANDARD 17
              CXX_STANDARD_REQUIRED YES
              CXX_EXTENSIONS NO
              PREFIX "libg4fire_")
 
 install(TARGETS 
-  user g4user simulator primary_generators detector_constructors
+  user g4user simulator lhe primary_generators detector_constructors
   EXPORT g4fireTargets
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib

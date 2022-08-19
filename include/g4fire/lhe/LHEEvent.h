@@ -3,6 +3,8 @@
 #include <vector>
 #include <istream>
 
+#include "g4fire/lhe/LHEParticle.h"
+
 namespace g4fire {
 
 /**

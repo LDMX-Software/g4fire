@@ -1,8 +1,8 @@
+#include <g4fire/user/PrimaryGenerator.h>
+
 #include <G4Event.hh>
 #include <G4UImanager.hh>
 #include <G4GeneralParticleSource.hh>
-
-#include <g4fire/user/PrimaryGenerator.h>
 
 namespace g4fire::plugins::primary_generators {
 

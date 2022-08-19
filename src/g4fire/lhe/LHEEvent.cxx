@@ -1,4 +1,4 @@
-#include "g4fire/LHEEvent.h"
+#include "g4fire/lhe/LHEEvent.h"
 
 #include "fire/exception/Exception.h"
 
@@ -19,10 +19,12 @@ void LHEEvent::load(std::istream& is) {
   // next line after '<event>' tag is event information
   //    use 'getline' to avoid bleading into other line
   getline(is, line);
-  std::istreamstream iss(line);
+  std::istringstream iss(line);
   iss >> nup_ >> idprup_ >> xwgtup_ >> scalup_ >> aqedup_ >> aqcdup_;
-  vtx_ = {0.,0.,0.};
   vtxt_ = 0.;
+  vtx_[0] = 0.;
+  vtx_[1] = 0.;
+  vtx_[2] = 0.;
 
   while (getline(is, line)) {
     if (line == "</event>") break;
@@ -60,8 +62,8 @@ void LHEEvent::load(std::istream& is) {
 
   for (auto& particle : particles_) {
     int m0{particle.getMOTHUP(0)}, m1{particle.getMOTHUP(1)};
-    if (m0 > 0) particle.setMother(0, &particles[m0-1]);
-    if (m1 > 0) particle.setMother(1, &particles[m1-1]);
+    if (m0 > 0) particle.setMother(0, &particles_[m0-1]);
+    if (m1 > 0) particle.setMother(1, &particles_[m1-1]);
   }
 }
 

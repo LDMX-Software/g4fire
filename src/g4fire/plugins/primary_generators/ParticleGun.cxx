@@ -1,10 +1,10 @@
+#include <g4fire/user/PrimaryGenerator.h>
+
 #include <G4Event.hh>
 #include <G4ParticleTable.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4ThreeVector.hh>
 #include <G4ParticleGun.hh>
-
-#include <g4fire/user/PrimaryGenerator.h>
 
 namespace g4fire::plugins::primary_generators {
 

@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include <G4VPrimaryGenerator.hh>
-
 #include <fire/config/Parameters.h>
 #include <fire/factory/Factory.h>
 #include <fire/RunHeader.h>
+
+#include <G4VPrimaryGenerator.hh>
 
 class G4Event;
 

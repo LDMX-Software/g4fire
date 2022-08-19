@@ -1,5 +1,7 @@
 #include "g4fire/user/Action.h"
 
+#include <G4EventManager.hh>
+
 namespace g4fire::user {
 
 Action::Action(const fire::config::Parameters& p) {}
@@ -18,8 +20,11 @@ G4ClassificationOfNewTrack Action::ClassifyNewTrack(const G4Track*,
 void Action::NewStage() {}
 void Action::PrepareNewEvent() {}
 
-UserEventInformation* Action::getEventInfo() const {
-  return static_cast<UserEventInformation*>(G4EventManager::GetEventManager()->GetCurrentEvent()->GetUserInformation());
+EventInformation* Action::getEventInfo() const {
+  return static_cast<EventInformation*>(
+      G4EventManager::GetEventManager()
+        ->GetConstCurrentEvent()
+        ->GetUserInformation());
 }
 
 }

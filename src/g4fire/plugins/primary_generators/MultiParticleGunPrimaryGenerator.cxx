@@ -1,3 +1,6 @@
+#include <g4fire/user/PrimaryGenerator.h>
+#include <g4fire/TransientInformation.h>
+
 #include <random>
 
 #include <CLHEP/Units/PhysicalConstants.h>
@@ -5,9 +8,6 @@
 #include <G4ThreeVector.hh>
 #include <G4PrimaryVertex.hh>
 #include <G4PrimaryParticle.hh>
-
-#include <g4fire/TransientInformation.h>
-#include <g4fire/user/PrimaryGenerator.h>
 
 namespace g4fire::plugins::primary_generators {
 

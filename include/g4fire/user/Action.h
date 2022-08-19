@@ -6,13 +6,14 @@
 #include <string>
 #include <vector>
 
-#include <G4EventManager.hh>
-#include <G4UserStackingAction.hh>
-
-#include <fire/config/Parameters.h>
-#include <fire/factory/Factory.h>
 #include <fire/RunHeader.h>
 #include <fire/Event.h>
+#include <fire/config/Parameters.h>
+#include <fire/factory/Factory.h>
+
+#include <G4ClassificationOfNewTrack.hh>
+
+#include "g4fire/TransientInformation.h"
 
 // Forward Declarations
 class G4Event;
@@ -165,7 +166,7 @@ class Action {
    * it is being called from within a STACKING, STEPPING, TRACKING,
    * or EVENT callback method above.
    */
-  UserEventInformation* Action::getEventInfo() const;
+  EventInformation* getEventInfo() const;
 };  // Action
 
 }  // namespace g4fire

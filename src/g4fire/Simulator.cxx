@@ -15,6 +15,7 @@
 #include <G4Electron.hh>
 #include <G4GDMLParser.hh>
 #include <G4GeometryManager.hh>
+#include <G4LogicalVolumeStore.hh>
 #include <G4UIsession.hh>
 #include <G4PhysListFactory.hh>
 #include <Randomize.hh>
@@ -223,16 +224,6 @@ void Simulator::process(fire::Event &event) {
     for (auto& sd : sensitive_detectors_) sd->EndOfEvent();                            
     this->abortEvent();         // get out of processors loop
   }
-
-  auto event_info = static_cast<UserEventInformation*>(
-      G4RunManager::GetRunManager()->GetCurrentEvent()->GetUserInformation());
-  auto& event_header = event.getEventHeader();
-  event_header.setWeight(event_info->get<double>("weight"));
-
-  // Save the state of the random engine to an output string
-  std::ostringstream stream;
-  G4Random::saveFullState(stream);
-  event_header.set("eventSeed", stream.str());
 
   // Terminate the event by persisting tracks that have passed
   // all storage cuts and giving the event bus to all the SD

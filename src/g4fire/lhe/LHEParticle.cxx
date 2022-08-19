@@ -1,4 +1,4 @@
-#include "g4fire/LHEParticle.h"
+#include "g4fire/lhe/LHEParticle.h"
 
 #include "fire/exception/Exception.h" 
 

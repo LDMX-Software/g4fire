@@ -3,10 +3,10 @@
 
 #include <vector>
 
+#include "g4fire/user/Action.h"
+
 #include <G4RunManager.hh>
 #include <G4UserTrackingAction.hh>
-
-#include "g4fire/user/Action.h"
 
 namespace g4fire::g4user {
 
