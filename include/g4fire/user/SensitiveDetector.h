@@ -36,16 +36,12 @@ class SensitiveDetector : public G4VSensitiveDetector {
 
   /**
    * Here, we must determine if we should be attached to the 
-   * input logical volume. Use G4LogicalVolume::SetSensitiveDetector
-   * if the input lv is this sensitive detecotr
-   *
-   * ```cpp
-   * lv->SetSensitiveDetector(this);
-   * ```
+   * input logical volume. Return 'true' if we should be attached
+   * to it and 'false' otherwise.
    * 
    * @param[in] lv logical volume to check
    */
-  virtual void isSensDet(G4LogicalVolume* lv) const = 0;
+  virtual bool isSensDet(G4LogicalVolume* lv) const = 0;
 
   /**
    * This is Geant4's handle to tell us that a particle has stepped
@@ -62,7 +58,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    *
    * @param[in,out] event event bus to add thing(s) to
    */
-  virtual void store(fire::Event& event) = 0;
+  virtual void saveHits(fire::Event& event) = 0;
 
   /**
    * Record the configuration of this
@@ -71,6 +67,22 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * @param[in,out] header RunHeader to write configuration to
    */
   virtual void RecordConfig(fire::RunHeader& header) const = 0;
+
+  /**
+   * This is Geant4's handle to tell us the event is ending
+   *
+   * Since we are handling the Hit Collections (HC) directly,
+   * the input to this function is of no use to us. This is simply
+   * here to make sure that users of g4fire don't use this function
+   * and instead use the argument-less function below which we will
+   * call.
+   */
+  virtual void EndOfEvent(G4HCofThisEvent*) final override {}
+
+  /**
+   * Cleanup SD and prepare a new-event state
+   */
+  virtual void EndOfEvent() = 0;
 
  protected:
   /**

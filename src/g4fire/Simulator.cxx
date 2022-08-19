@@ -205,7 +205,6 @@ void Simulator::onNewRun(const fire::RunHeader &) {
 }
 
 void Simulator::process(fire::Event &event) {
-  std::cout << "Processing." << std::endl;
   // Generate and process a Geant4 event.
   n_events_began_++;
   this->ProcessOneEvent(event.header().number());
@@ -215,22 +214,28 @@ void Simulator::process(fire::Event &event) {
   // the next event.
   if (this->GetCurrentEvent()->IsAborted()) {
     this->TerminateOneEvent();  // clean up event objects
-    this->abortEvent();                // get out of processors loop
+    for (auto& sd : sensitive_detectors_) sd->EndOfEvent();                            
+    this->abortEvent();         // get out of processors loop
   }
 
-  /*if (this->getLogFrequency() > 0 and
-      event.getEventHeader().getEventNumber() % this->getLogFrequency() == 0) {
-    // print according to log frequency and verbosity
-    if (verbosity_ > 1) {
-      std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
-      event.Print();
-    }
-  }*/
+  auto event_info = static_cast<UserEventInformation*>(
+      G4RunManager::GetRunManager()->GetCurrentEvent()->GetUserInformation());
+  auto& event_header = event.getEventHeader();
+  event_header.setWeight(event_info->get<double>("weight"));
 
-  // Terminate the event.  This checks if an event is to be stored or
-  // stacked for later.
+  // Save the state of the random engine to an output string
+  std::ostringstream stream;
+  G4Random::saveFullState(stream);
+  event_header.set("eventSeed", stream.str());
+
+  // Terminate the event by persisting tracks that have passed
+  // all storage cuts and giving the event bus to all the SD
+  // and UA callbacks for them to store their event information.
   for (auto& ua : user_actions_) ua->store(event);
-  for (auto& sd : sensitive_detectors_) sd->store(event);
+  for (auto& sd : sensitive_detectors_) {
+    sd->saveHits(event);
+    sd->EndOfEvent();
+  }
   n_events_completed_++;
   this->TerminateOneEvent();
 
