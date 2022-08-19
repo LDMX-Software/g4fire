@@ -6,7 +6,6 @@ with several helpful member functions.
 
 from fire.cfg import Processor
 
-
 class Simulator(Processor):
     """A instance of the simulation configuration
 

@@ -4,15 +4,10 @@ Mainly focused on reducing the number of places that certain parameter and class
 names are hardcoded into the python configuration.
 """
 
-from ._primary_generator import PrimaryGenerator
+from cfg import PrimaryGenerator
 
-class gun(PrimaryGenerator):
+class ParticleGun(PrimaryGenerator):
     """New basic particle gun primary generator
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
 
     Attributes
     ----------
@@ -31,30 +26,23 @@ class gun(PrimaryGenerator):
 
     Examples
     --------
-        myGun = gun( 'myGun' )
-        myGun.particle = 'e-'
-        myGun.energy = 4.0
-        myGun.direction = [ 0., 0., 1. ]
-        myGun.position = [ 0., 0., 0. ]
+        four_gev_electrons = ParticleGun()
+        four_gev_electrons.particle = 'e-'
+        four_gev_electrons.energy = 4.0
     """
-    def __init__(self, name):
-        super().__init__(name, "g4fire::ParticleGun")
+    def __init__(self):
+        super().__init__(
+                "g4fire::plugins::primary_generators::ParticleGun",
+                particle = 'e-',
+                energy = 4.0,
+                time = 0.,
+                verbosity = 0,
+                position = [0.,0.,0.],
+                direction = [0.,0.,1.]
+                )
 
-        self.time = 0.
-        self.verbosity = 0
-        self.particle = ''
-        self.energy = 0.
-        self.position = []
-        self.direction = []
-
-
-class multi(PrimaryGenerator):
+class MultiParticleGun(PrimaryGenerator):
     """New multi particle gun primary generator
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
 
     Attributes
     ----------
@@ -69,101 +57,34 @@ class multi(PrimaryGenerator):
     pdgID : int
         PDG ID of particle(s) to shoot
     """
-    def __init__(self, name):
-        super().__init__(name, 'g4fire::MultiParticleGunPrimaryGenerator')
+    def __init__(self):
+        super().__init__('g4fire::plugins::primary_generators::MultiParticleGunPrimaryGenerator',
+                enablePoisson = False,
+                vertex = [0.,0.,0.],
+                momentum = [0.,0.,1.],
+                nParticles = 1,
+                pdgID = 11)
 
-        #turn off Poisson by default
-        self.enablePoisson = False
-        self.vertex = []
-        self.momentum = []
-        self.nParticles = 1
-        self.pdgID = 0
-
-
-class lhe(PrimaryGenerator):
+class LHEPrimaryGenerator(PrimaryGenerator):
     """New LHE file primary generator
 
     Parameters
     ----------
-    name : str
-        name of new primary generator
     filePath : str
         path to LHE file containing the primary vertices
     """
-    def __init__(self, name, filePath):
-        super().__init__(name, 'g4fire::LHEPrimaryGenerator')
-
+    def __init__(self, filePath):
+        super().__init__('g4fire::plugins::primary_generators::LHEPrimaryGenerator',
+                filePath = 'NONEGIVEN')
         self.filePath = filePath
 
-
-"""
-class completeReSim(PrimaryGenerator):
-    New complete re-simprimary generator
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
-    file_path : str
-        path to ROOT file containing the SimParticles to re-simulate
-
-    Attributes
-    ----------
-    collection_name : str
-        Name of SimParticles collection to re-sim
-    pass_name : str
-        Pass name of SimParticles to re-sim
-    
-    def __init__(self, name, file_path):
-        super().__init__(name, 'g4fire::RootCompleteReSim')
-
-        self.filePath = file_path
-        self.collection_name = 'SimParticles'
-        self.pass_name = ''
-        self.tree_name = 'LDMX_Events'
-        self.compressionSetting = 9
-
-class ecalSP(PrimaryGenerator):
-    New ecal scoring planes primary generator
-
-    Sets the collection name, pass name, and time cutoff
-    to reasonable defaults.
-
-    Parameters
-    ----------
-    name : str
-        name of new primary generator
-    filePath : str
-        path to ROOT file containing the EcalScoringPlanes to re-simulate
-
-
-    Attributes
-    ----------
-    collection_name : str, optional
-        Name of EcalScoringPlaneHits collection to re-sim
-    pass_name : str, optional
-        Pass name of EcalScoringPlaneHits to re-sim
-    time_cutoff : float, optional
-        Maximum time of scoring plane hit to still re-sim [ns]
-    def __init__(self, name, filePath):
-        super().__init__(name, 'g4fire::RootSimFromEcalSP')
-
-        self.filePath = filePath
-        self.collection_name = 'EcalScoringPlaneHits'
-        self.pass_name = ''
-        self.time_cutoff = 50.
-"""
-
-
-class gps(PrimaryGenerator):
+class GeneralParticleSource(PrimaryGenerator):
     """New general particle source
 
     The input initialization commands are run in the order that they are listed.
 
     Parameters
     ----------
-    name : str
-        name of new primary generator
     initCommands : list of strings
         List of Geant4 commands to initialize this GeneralParticleSource
 
@@ -174,7 +95,7 @@ class gps(PrimaryGenerator):
 
     Examples
     --------
-        myGPS = gps( 'myGPS' , [
+        myGPS = GeneralParticleSource([
             "/gps/particle e-",
             "/gps/pos/type Plane",
             "/gps/pos/shape Square",
@@ -189,121 +110,8 @@ class gps(PrimaryGenerator):
             "/gps/ene/intercept 1"
             ] )
     """
-    def __init__(self, name, initCommands):
-        super().__init__(name, 'g4fire::GeneralParticleSource')
+    def __init__(self, initCommands):
+        super().__init__(name, 'g4fire::plugins::primary_generators::GeneralParticleSource',
+                initCommands = [])
         self.initCommands = initCommands
 
-"""
-def single_4gev_e_upstream_tagger():
-    Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
-
-    The position and direction are set such that the electron will be bent by 
-    the field and arrive at the target at approximately [0, 0, 0] (assuming 
-    it's not smeared).
-
-    The gun position below requires the particles to be fired at 4.5 degrees.
-    The direction vector is calculated as follows: 
-    
-    dir_vector = [ sin(4.5) = .3138/4, 0, cos(4.5) = 3.9877/4 ] 
-    
-    Returns
-    -------
-    Instance of a particle gun configured to fire a single 4 Gev electron 
-    directly upstream of the tagger tracker.  
-
-    particle_gun = gun('single_4gev_e_upstream_tagger')
-    particle_gun.particle = 'e-'
-    particle_gun.position = [-27.926, 0, -700]  # mm
-    import math
-    theta = math.radians(4.5)
-    particle_gun.direction = [math.sin(theta), 0, math.cos(theta)]  #unitless
-    particle_gun.energy = 4.0  # GeV
-
-    return particle_gun
-
-"""
-
-"""
-def single_4gev_e_upstream_target():
-    Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
-
-    The position and direction are set such that the electron will be bent by 
-    the field and arrive at the target at approximately [0, 0, 0] (assuming 
-    it's not smeared).
-    
-    Returns
-    -------
-    Instance of a particle gun configured to fire a single 4 Gev electron 
-    directly upstream of the tagger tracker.  
-
-
-    particle_gun = gun('single_4gev_e_upstream_target')
-    particle_gun.particle = 'e-'
-    particle_gun.position = [0., 0., -1.2]  # mm
-    particle_gun.direction = [0., 0., 1]
-    particle_gun.energy = 4.0  # GeV
-
-    return particle_gun
-
-"""
-"""
-def single_1pt2gev_e_upstream_tagger():
-    Configure a particle gun to fire a 1.2 GeV electron upstream of the tagger tracker.
-
-    This is used to study the rejection of off energy electrons in the tagger
-    tracker. The position and direction are set such that the electron will be 
-    bent by  the field and arrive at the target at approximately [0, 0, 0]
-    (assuming it's not smeared).
-
-    The gun position below requires the particles to be fired at 11.011 degrees.
-    The direction vector is calculated as follows: 
-    
-    dir_vector = [ sin(11.011) = .2292/1.2, 0, cos(11.011) = 1.1779/1.2 ] 
-
-    
-    Returns
-    -------
-    Instance of a particle gun configured to fire a single 1.2 Gev electron 
-    directly upstream of the tagger tracker.  
-
-    particle_gun = gun("single_1.2gev_e_upstream_tagger")
-    particle_gun.particle = 'e-'
-    particle_gun.position = [-36.387, 0, -700]  #mm
-    import math
-    theta = math.radians(11.011)
-    particle_gun.direction = [math.sin(theta), 0, math.cos(theta)]  #unitless
-    particle_gun.energy = 1.2  #GeV
-
-    return particle_gun
-"""
-
-"""
-def single_8gev_e_upstream_tagger():
-    Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
-
-    This is used to study the rejection of off energy electrons in the tagger
-    tracker. The position and direction are set such that the electron will be 
-    bent by  the field and arrive at the target at approximately [0, 0, 0]
-    (assuming it's not smeared).
-
-    The gun position below requires the particles to be fired at 2.5 degrees.
-    The direction vector is calculated as follows: 
-    
-    dir_vector = [ 8.*sin(2.5) = .349, 0, 8.*cos(2.5) = 7.9924 ] 
-
-    
-    Returns
-    -------
-    Instance of a particle gun configured to fire a single 8 Gev electron 
-    directly upstream of the tagger tracker.  
-
-    particle_gun = gun("single_1.2gev_e_upstream_tagger")
-    particle_gun.particle = 'e-'
-    particle_gun.position = [-14.292, 0, -700]  #mm
-    import math
-    theta = math.radians(2.5)
-    particle_gun.direction = [math.sin(theta), 0, math.cos(theta)]  #unitless
-    particle_gun.energy = 8.0  #GeV
-
-    return particle_gun
-"""

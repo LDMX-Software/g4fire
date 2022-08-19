@@ -7,6 +7,23 @@
 
 namespace g4fire::plugins::detector_constructions {
 
+/**
+ * Construct a simple box where there is one material inside
+ * and another material outside. 
+ *
+ * The center of the box is the origin of the world coordinate system. 
+ * The materials are taken from G4NistManager.
+ * You can find out the list of available materials from the Geant4
+ * you have compiled g4fire with by launching a Geant4 interactive
+ * terminal and running
+ * ```
+ * Idle> /material/nist/listMaterials all
+ * ```
+ * or by compiling a program which just runs
+ * ```cpp
+ * G4NistManager::Instance()->ListMaterials("all");
+ * ```
+ */
 class SimplePrism : public user::DetectorConstruction {
   std::vector<float> box_dimensions_mm_; 
   std::string box_material_;
@@ -35,14 +52,14 @@ class SimplePrism : public user::DetectorConstruction {
              box_z{box_dimensions_mm_.at(2)*mm};
     G4Material* box_mat = nist->FindOrBuildMaterial(box_material_);
     if (not box_mat) {
-      fire::Exception("BadMaterial","Material '"+box_material_+"' unkown to G4NistManager.");
+      throw fire::Exception("BadMaterial","Material '"+box_material_+"' unkown to G4NistManager.");
     }
 
     G4double
       world_x(box_x*1.2), world_y(box_y*1.2), world_z(box_z*1.2);
     G4Material* world_mat = nist->FindOrBuildMaterial(world_material_);
     if (not world_mat) {
-      fire::Exception("BadMaterial","Material '"+box_material_+"' unkown to G4NistManager.");
+      throw fire::Exception("BadMaterial","Material '"+box_material_+"' unkown to G4NistManager.");
     }
 
     G4Box* solidWorld =
