@@ -4,7 +4,7 @@ Mainly focused on reducing the number of places that certain parameter and class
 names are hardcoded into the python configuration.
 """
 
-from cfg import PrimaryGenerator
+from .cfg import PrimaryGenerator
 
 class ParticleGun(PrimaryGenerator):
     """New basic particle gun primary generator

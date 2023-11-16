@@ -3,7 +3,7 @@
 Helpful as examples as well
 """
 
-from cfg import DetectorConstruction
+from .cfg import DetectorConstruction
 
 class GDML(DetectorConstruction) :
     """Parse the detector from GDML

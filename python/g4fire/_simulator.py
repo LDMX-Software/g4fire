@@ -78,7 +78,7 @@ class Simulator(Processor):
                          detector=detector, 
                          description=description, 
                          generators=generators,
-                         module="g4fire",
+                         module="g4fire_simulator",
                          scoring_planes=scoring_planes,
                          beam_spot_delta=beam_spot_delta,
                          time_shift_primaries=time_shift_primaries,
